@@ -1,0 +1,35 @@
+{
+  "name": "babel-plugin-transform-jsx-vue3",
+  "version": "0.2.3",
+  "description": "transform jsx in vue3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vueComponent/jsx.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vueComponent/jsx/issues"
+  },
+  "homepage": "https://github.com/vueComponent/jsx#readme",
+  "peerDependencies": {
+    "vue": "^3.0.0-alpha.8"
+  },
+  "dependencies": {
+    "esutils": "^2.0.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-helper-vue-jsx-merge-props": "^2.0.3",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0"
+  }
+}
