@@ -1,18 +1,18 @@
-var esutils = require('esutils')
-var groupProps = require('./lib/group-props')
+var esutils = require('esutils');
+var groupProps = require('./lib/group-props');
 
 var isInsideJsxExpression = function (t, path) {
   if (!path.parentPath) {
-    return false
+    return false;
   }
   if (t.isJSXExpressionContainer(path.parentPath)) {
-    return true
+    return true;
   }
-  return isInsideJsxExpression(t, path.parentPath)
-}
+  return isInsideJsxExpression(t, path.parentPath);
+};
 
 module.exports = function (babel) {
-  var t = babel.types
+  var t = babel.types;
 
   return {
     inherits: require('babel-plugin-syntax-jsx'),
@@ -20,70 +20,97 @@ module.exports = function (babel) {
       JSXNamespacedName(path) {
         throw path.buildCodeFrameError(
           'Namespaced tags/attributes are not supported. JSX is not XML.\n' +
-          'For attributes like xlink:href, use xlinkHref instead.'
-        )
+            'For attributes like xlink:href, use xlinkHref instead.',
+        );
       },
       JSXElement: {
         exit(path, file) {
           // turn tag into createElement call
-          var callExpr = buildElementCall(path.get('openingElement'), file)
+          var callExpr = buildElementCall(path.get('openingElement'), file);
           if (path.node.children.length) {
             // add children array as 3rd arg
-            callExpr.arguments.push(t.arrayExpression(path.node.children))
+            callExpr.arguments.push(t.arrayExpression(path.node.children));
             if (callExpr.arguments.length >= 3) {
-              callExpr._prettyCall = true
+              callExpr._prettyCall = true;
             }
           }
-          path.replaceWith(t.inherits(callExpr, path.node))
-        }
+          path.replaceWith(t.inherits(callExpr, path.node));
+        },
       },
-      'Program'(path, file) {
+      Program(path, file) {
         path.traverse({
-          'ObjectMethod|ClassMethod'(path) {
-            const params = path.get('params')
-
+          'ObjectMethod|ClassMethod|ArrowFunctionExpression'(path) {
+            const params = path.get('params');
 
             // do nothing if there is no JSX inside
             const jsxChecker = {
-              hasJsx: false
-            }
-            path.traverse({
-              JSXElement() {
-                this.hasJsx = true
-              }
-            }, jsxChecker)
+              hasJsx: false,
+            };
+            path.traverse(
+              {
+                JSXElement() {
+                  this.hasJsx = true;
+                },
+              },
+              jsxChecker,
+            );
             if (!jsxChecker.hasJsx) {
-              return
+              return;
             }
             // do nothing if this method is a part of JSX expression
             if (isInsideJsxExpression(t, path)) {
-              return
+              return;
             }
             // remove h if there is (h) param
             if (params.length && params[0].node.name === 'h') {
               params[0].remove();
             }
             // inject h otherwise
-            var h = file.addImport('babel-plugin-transform-jsx-vue3/injectCode', 'dynamicRender', '_h_render');
-
-            path.get('body').unshiftContainer('body', t.variableDeclaration('const', [
-              t.variableDeclarator(
-                t.identifier('h'),
-                h
-              )
-            ]))
+            var _h = file.addImport(
+              'babel-plugin-transform-jsx-vue3/injectCode',
+              'dynamicRender',
+              '_h_render',
+            );
+            path.traverse({
+              JSXElement: {
+                exit(path2, file2) {
+                  // turn tag into createElement call
+                  var callExpr = buildElementCall(path2.get('openingElement'), file2, _h);
+                  if (path2.node.children.length) {
+                    // add children array as 3rd arg
+                    callExpr.arguments.push(t.arrayExpression(path2.node.children));
+                    if (callExpr.arguments.length >= 3) {
+                      callExpr._prettyCall = true;
+                    }
+                  }
+                  path2.replaceWith(t.inherits(callExpr, path2.node));
+                },
+              },
+            });
+            // var a = path.get('body');
+            // if (a) {
+            //   a.unshiftContainer(
+            //     'body',
+            //     t.variableDeclaration('const', [t.variableDeclarator(t.identifier('h'), h)]),
+            //   );
+            // }
           },
           JSXOpeningElement(path) {
-            const tag = path.get('name').node.name
-            const attributes = path.get('attributes')
-            const typeAttribute = attributes.find(attributePath => attributePath.node.name && attributePath.node.name.name === 'type')
-            const type = typeAttribute && t.isStringLiteral(typeAttribute.node.value) ? typeAttribute.node.value.value : null
+            const tag = path.get('name').node.name;
+            const attributes = path.get('attributes');
+            const typeAttribute = attributes.find(
+              (attributePath) => attributePath.node.name && attributePath.node.name.name === 'type',
+            );
+            const type =
+              typeAttribute && t.isStringLiteral(typeAttribute.node.value)
+                ? typeAttribute.node.value.value
+                : null;
 
-            attributes.forEach(attributePath => {
-              const attribute = attributePath.get('name')
+            attributes.forEach((attributePath) => {
+              const attribute = attributePath.get('name');
 
               if (!attribute.node) {
-                return
+                return;
               }
 
               // const attr = attribute.node.name
@@ -91,55 +118,55 @@ module.exports = function (babel) {
               // if (mustUseProp(tag, type, attr) && t.isJSXExpressionContainer(attributePath.node.value)) {
               //   attribute.replaceWith(t.JSXIdentifier(`domProps-${attr}`))
               // }
-            })
-          }
-        })
-      }
-    }
-  }
+            });
+          },
+        });
+      },
+    },
+  };
 
-  function buildElementCall(path, file) {
-    path.parent.children = t.react.buildChildren(path.parent)
-    var tagExpr = convertJSXIdentifier(path.node.name, path.node)
-    var args = []
+  function buildElementCall(path, file, _h) {
+    path.parent.children = t.react.buildChildren(path.parent);
+    var tagExpr = convertJSXIdentifier(path.node.name, path.node);
+    var args = [];
 
-    var tagName
+    var tagName;
     if (t.isIdentifier(tagExpr)) {
-      tagName = tagExpr.name
+      tagName = tagExpr.name;
     } else if (t.isLiteral(tagExpr)) {
-      tagName = tagExpr.value
+      tagName = tagExpr.value;
     }
 
     if (t.react.isCompatTag(tagName)) {
-      args.push(t.stringLiteral(tagName))
+      args.push(t.stringLiteral(tagName));
     } else {
-      args.push(tagExpr)
+      args.push(tagExpr);
     }
 
-    var attribs = path.node.attributes
+    var attribs = path.node.attributes;
     if (attribs.length) {
-      attribs = buildOpeningElementAttributes(attribs, file)
-      args.push(attribs)
+      attribs = buildOpeningElementAttributes(attribs, file);
+      args.push(attribs);
     }
-    return t.callExpression(t.identifier('h'), args)
+    return t.callExpression(_h, args);
   }
 
   function convertJSXIdentifier(node, parent) {
     if (t.isJSXIdentifier(node)) {
       if (node.name === 'this' && t.isReferenced(node, parent)) {
-        return t.thisExpression()
+        return t.thisExpression();
       } else if (esutils.keyword.isIdentifierNameES6(node.name)) {
-        node.type = 'Identifier'
+        node.type = 'Identifier';
       } else {
-        return t.stringLiteral(node.name)
+        return t.stringLiteral(node.name);
       }
     } else if (t.isJSXMemberExpression(node)) {
       return t.memberExpression(
         convertJSXIdentifier(node.object, node),
-        convertJSXIdentifier(node.property, node)
-      )
+        convertJSXIdentifier(node.property, node),
+      );
     }
-    return node
+    return node;
   }
 
   /**
@@ -150,64 +177,65 @@ module.exports = function (babel) {
    */
 
   function buildOpeningElementAttributes(attribs, file) {
-    var _props = []
-    var objs = []
+    var _props = [];
+    var objs = [];
 
     function pushProps() {
-      if (!_props.length) return
-      objs.push(t.objectExpression(_props))
-      _props = []
+      if (!_props.length) return;
+      objs.push(t.objectExpression(_props));
+      _props = [];
     }
 
     while (attribs.length) {
-      var prop = attribs.shift()
+      var prop = attribs.shift();
       if (t.isJSXSpreadAttribute(prop)) {
-        pushProps()
-        prop.argument._isSpread = true
-        objs.push(prop.argument)
+        pushProps();
+        prop.argument._isSpread = true;
+        objs.push(prop.argument);
       } else {
-        _props.push(convertAttribute(prop))
+        _props.push(convertAttribute(prop));
       }
     }
 
-    pushProps()
+    pushProps();
 
     objs = objs.map(function (o) {
-      return o._isSpread ? o : groupProps(o.properties, t)
-    })
+      return o._isSpread ? o : groupProps(o.properties, t);
+    });
     if (objs.length === 1 && !objs[0]._isSpread) {
       // only one object and it is not spread
-      attribs = objs[0]
-      return attribs
+      attribs = objs[0];
+      return attribs;
     }
     // add prop merging helper
-    var helper = file.addImport('babel-plugin-transform-jsx-vue3/injectCode', 'mergeJSXProps', '_mergeJSXProps')
+    var helper = file.addImport(
+      'babel-plugin-transform-jsx-vue3/injectCode',
+      'mergeJSXProps',
+      '_mergeJSXProps',
+    );
     // spread it
-    attribs = t.callExpression(
-      helper,
-      [t.arrayExpression(objs)]
-    )
-    return attribs
+    attribs = t.callExpression(helper, [t.arrayExpression(objs)]);
+    return attribs;
   }
 
   function convertAttribute(node) {
-    var value = convertAttributeValue(node.value || t.booleanLiteral(true))
+    var value = convertAttributeValue(node.value || t.booleanLiteral(true));
     if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
-      value.value = value.value.replace(/\n\s+/g, ' ')
+      value.value = value.value.replace(/\n\s+/g, ' ');
     }
     if (t.isValidIdentifier(node.name.name)) {
-      node.name.type = 'Identifier'
+      node.name.type = 'Identifier';
     } else {
-      node.name = t.stringLiteral(node.name.name)
+      node.name = t.stringLiteral(node.name.name);
     }
-    return t.inherits(t.objectProperty(node.name, value), node)
+    return t.inherits(t.objectProperty(node.name, value), node);
   }
 
   function convertAttributeValue(node) {
     if (t.isJSXExpressionContainer(node)) {
-      return node.expression
+      return node.expression;
     } else {
-      return node
+      return node;
     }
   }
-}
+};

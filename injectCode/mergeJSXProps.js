@@ -1,7 +1,7 @@
 // let nestRE = /^(on|nativeOn|class|style|hook)$/;
 // 首字母转为大写
 function firstWordCase(nestedKey) {
-  return nestedKey.replace(/^[a-z]/, val => {
+  return nestedKey.replace(/^[a-z]/, (val) => {
     return val.toUpperCase();
   });
 }
