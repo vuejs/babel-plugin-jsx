@@ -1,0 +1,20 @@
+{
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "env",
+          {
+            "targets": {
+              "node": "current"
+            }
+          }
+        ]
+      ],
+      "plugins": [
+        "./index"
+      ]
+    }
+  },
+  "sourceMaps": "inline"
+}
