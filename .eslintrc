@@ -1,0 +1,26 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true,
+    "jest": true,
+    "es6": true
+  },
+  "extends": "eslint-config-airbnb/base",
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "ecmaVersion": 8,
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "rules": {
+    "no-nested-ternary": [0],
+    "no-param-reassign": [0],
+    "no-use-before-define": [0],
+    "no-plusplus": [0],
+    "import/no-extraneous-dependencies": [0]
+  }
+}
