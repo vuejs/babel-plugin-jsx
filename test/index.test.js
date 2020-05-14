@@ -1,21 +1,32 @@
-import { createApp } from 'vue';
-
-const render = (app) => {
-  const root = document.createElement('div');
-  document.body.append(root);
-  createApp(app).mount(root);
-  return root;
-};
+import { shallowMount } from '@vue/test-utils';
 
 test('should render with setup', () => {
-  const App = {
+  const wrapper = shallowMount({
     setup() {
       return () => <div>123</div>;
     },
-  };
+  });
+  expect(wrapper.text()).toBe('123');
+});
 
-  const wrapper = render(App);
-  expect(wrapper.innerHTML).toBe('<div>123</div>');
+test('Extracts attrs', () => {
+  const wrapper = shallowMount({
+    setup() {
+      return () => <div id="hi" dir="ltr" />;
+    },
+  });
+  expect(wrapper.element.id).toBe('hi');
+  expect(wrapper.element.dir).toBe('ltr');
+});
+
+test('Binds attrs', () => {
+  const id = 'foo';
+  const wrapper = shallowMount({
+    setup() {
+      return () => <div>{id}</div>;
+    },
+  });
+  expect(wrapper.text()).toBe('foo');
 });
 
 test('should not fallthrough with inheritAttrs: false', () => {
@@ -23,12 +34,14 @@ test('should not fallthrough with inheritAttrs: false', () => {
 
   Child.inheritAttrs = false;
 
-  const Parent = () => (
-    <Child class="parent" foo={1} />
-  );
-
-  const wrapper = render(Parent);
-  expect(wrapper.innerHTML).toBe('<div>1</div>');
+  const wrapper = shallowMount({
+    setup() {
+      return () => (
+        <Child class="parent" foo={1} />
+      );
+    },
+  });
+  expect(wrapper.text()).toBe('1');
 });
 
 
@@ -38,28 +51,40 @@ test('should render', () => {
       return <div>1234</div>;
     },
   };
-  const wrapper = render(App);
-  expect(wrapper.innerHTML).toBe('<div>1234</div>');
+  const wrapper = shallowMount(App);
+  expect(wrapper.html()).toBe('<div>1234</div>');
 });
 
 test('xlink:href', () => {
-  const wrapper = render(() => <use xlinkHref={'#name'}></use>);
-  expect(wrapper.innerHTML).toBe('<use xlink:href="#name"></use>');
+  const wrapper = shallowMount({
+    setup() {
+      return () => <use xlinkHref={'#name'}></use>;
+    },
+  });
+  expect(wrapper.attributes()['xlink:href']).toBe('#name');
 });
 
-// test('Merge class', () => {
-//   const wrapper = render(() => <div class="a" {...{ class: 'b' } } />);
-//   expect(wrapper.innerHTML).toBe('<div class="a b"></div>');
-// });
+// // test('Merge class', () => {
+// //   const wrapper = render(() => <div class="a" {...{ class: 'b' } } />);
+// //   expect(wrapper.innerHTML).toBe('<div class="a b"></div>');
+// // });
 
 test('JSXSpreadChild', () => {
   const a = ['1', '2'];
-  const wrapper = render(() => <div>{[...a]}</div>);
-  expect(wrapper.innerHTML).toBe('<div>12</div>');
+  const wrapper = shallowMount({
+    setup() {
+      return () => <div>{[...a]}</div>;
+    },
+  });
+  expect(wrapper.text).toBe('12');
 });
 
 test('domProps input[value]', () => {
   const val = 'foo';
-  const wrapper = render(() => <input type="text" value={val} />);
-  expect(wrapper.innerHTML).toBe('<input type="text">');
+  const wrapper = shallowMount({
+    setup() {
+      return () => <input type="text" value={val} />;
+    },
+  });
+  expect(wrapper.html()).toBe('<input type="text">');
 });
