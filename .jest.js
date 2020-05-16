@@ -1,5 +1,7 @@
+const { h, mergeProps } = require('vue');
 module.exports = {
   globals: {
-    "_h": require('vue').h // TODO: for jest error  _h is not defined
+    "_h": h,
+    "_mergeProps": mergeProps
   }
 }

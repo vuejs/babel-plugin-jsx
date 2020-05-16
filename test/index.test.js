@@ -64,10 +64,40 @@ test('xlink:href', () => {
   expect(wrapper.attributes()['xlink:href']).toBe('#name');
 });
 
-// // test('Merge class', () => {
-// //   const wrapper = render(() => <div class="a" {...{ class: 'b' } } />);
-// //   expect(wrapper.innerHTML).toBe('<div class="a b"></div>');
-// // });
+test('Merge class', () => {
+  const wrapper = shallowMount({
+    setup() {
+      return () => <div class="a" {...{ class: 'b' } } />;
+    },
+  });
+  expect(wrapper.html()).toBe('<div class="a b"></div>');
+});
+
+test('Merge style', () => {
+  const propsA = {
+    style: {
+      color: 'red',
+    },
+  };
+  const propsB = {
+    style: [
+      {
+        color: 'blue',
+        width: '200px',
+      },
+      {
+        width: '300px',
+        height: '300px',
+      },
+    ],
+  };
+  const wrapper = shallowMount({
+    setup() {
+      return () => <div { ...propsA } { ...propsB } />;
+    },
+  });
+  expect(wrapper.html()).toBe('<div style="color: blue; width: 300px; height: 300px;"></div>');
+});
 
 test('JSXSpreadChild', () => {
   const a = ['1', '2'];
@@ -76,7 +106,7 @@ test('JSXSpreadChild', () => {
       return () => <div>{[...a]}</div>;
     },
   });
-  expect(wrapper.text).toBe('12');
+  expect(wrapper.text()).toBe('12');
 });
 
 test('domProps input[value]', () => {
@@ -87,4 +117,43 @@ test('domProps input[value]', () => {
     },
   });
   expect(wrapper.html()).toBe('<input type="text">');
+});
+
+test('Spread (single object expression)', () => {
+  const props = {
+    innerHTML: 123,
+    other: '1',
+  };
+  const wrapper = shallowMount({
+    render() {
+      return <div {...props}></div>;
+    },
+  });
+  expect(wrapper.html()).toBe('<div other="1">123</div>');
+});
+
+test('Spread (mixed)', () => {
+  const calls = [];
+  const data = {
+    id: 'hehe',
+    onClick() {
+      calls.push(3);
+    },
+    innerHTML: 2,
+    class: ['a', 'b'],
+  };
+
+  shallowMount({
+    setup() {
+      return () => (
+        <div
+          href="huhu"
+          {...data}
+          class={{ c: true }}
+          onClick={() => calls.push(4)}
+          hook-insert={() => calls.push(2)}
+        />
+      );
+    },
+  });
 });
