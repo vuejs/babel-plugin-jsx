@@ -85,9 +85,14 @@ const transformJSXAttribute = (path, attributesToMerge, injected) => {
   if (name === 'on') {
     const { properties = [] } = getJSXAttributeValue(path);
     properties.forEach((property) => {
-      property.key = t.identifier(transformOn(property.key.name));
+      attributesToMerge.push(t.objectExpression([
+        t.objectProperty(
+          t.identifier(transformOn(property.key.name)),
+          property.value,
+        ),
+      ]));
     });
-    return t.spreadElement(t.objectExpression(properties));
+    return null;
   }
   if (rootAttributes.includes(name) || eventRE.test(name)) {
     attributesToMerge.push(
