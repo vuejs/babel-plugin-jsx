@@ -14,7 +14,11 @@ const rootAttributes = ['class', 'style'];
 
 const transformOn = (event = '') => `on${event[0].toUpperCase()}${event.substr(1)}`;
 
-const filterEmpty = (value) => value !== undefined && value !== null;
+const filterEmpty = (value) => (
+  value !== undefined
+    && value !== null
+    && !t.isJSXEmptyExpression(value)
+);
 
 /**
  * Transform JSXMemberExpression to MemberExpression
