@@ -2,13 +2,11 @@ const syntaxJsx = require('@babel/plugin-syntax-jsx').default;
 const t = require('@babel/types');
 const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
-const helperModuleImports = require('@babel/helper-module-imports');
+const { addNamed } = require('@babel/helper-module-imports');
 
-const jsxInjectionPATH = 'PACKAGE/lib/jsxInjection';
 const xlinkRE = /^xlink([A-Z])/;
 const eventRE = /^on[A-Z][a-z]+$/;
 const rootAttributes = ['class', 'style'];
-const dirRE = /^v-/;
 
 /**
  * click --> onClick
@@ -21,6 +19,13 @@ const filterEmpty = (value) => (
     && value !== null
     && !t.isJSXEmptyExpression(value)
 );
+
+/**
+ * Checks if string is describing a directive
+ * @param src string
+ */
+const isDirective = (src) => src.startsWith('v-')
+  || (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
 
 /**
  * Transform JSXMemberExpression to MemberExpression
@@ -86,7 +91,7 @@ const getJSXAttributeValue = (path, injected) => {
   return null;
 };
 
-const transformJSXAttribute = (path, attributesToMerge, injected, directives) => {
+const transformJSXAttribute = (path, attributesToMerge, directives, injected) => {
   let name = getJSXAttributeName(path);
   if (name === 'on') {
     const { properties = [] } = getJSXAttributeValue(path);
@@ -100,11 +105,15 @@ const transformJSXAttribute = (path, attributesToMerge, injected, directives) =>
     });
     return null;
   }
-  if (dirRE.test(name)) {
-    directives.push(t.objectExpression([
-      t.objectProperty(t.identifier('name'), t.stringLiteral(name.replace(dirRE, ''))),
-      t.objectProperty(t.identifier('value'), getJSXAttributeValue(path)),
-      t.objectProperty(t.identifier('_internal_directive_flag'), t.booleanLiteral(true)),
+  if (isDirective(name)) {
+    const directiveName = name.startsWith('v-')
+      ? name.replace('v-', '')
+      : name.replace(`v${name[1]}`, name[1].toLowerCase());
+    directives.push(t.arrayExpression([
+      t.callExpression(injected.resolveDirective, [
+        t.stringLiteral(directiveName),
+      ]),
+      getJSXAttributeValue(path),
     ]));
     return null;
   }
@@ -157,11 +166,11 @@ const transformJSXSpreadAttribute = (path, attributesToMerge) => {
   })));
 };
 
-const transformAttribute = (path, attributesToMerge, injected, directives) => (path.isJSXAttribute()
-  ? transformJSXAttribute(path, attributesToMerge, injected, directives)
+const transformAttribute = (path, attributesToMerge, directives, injected) => (path.isJSXAttribute()
+  ? transformJSXAttribute(path, attributesToMerge, directives, injected)
   : transformJSXSpreadAttribute(path, attributesToMerge));
 
-const getAttributes = (path, injected) => {
+const getAttributes = (path, directives, injected) => {
   const attributes = path.get('openingElement').get('attributes');
   if (attributes.length === 0) {
     return t.nullLiteral();
@@ -169,10 +178,9 @@ const getAttributes = (path, injected) => {
 
   const attributesToMerge = [];
   const attributeArray = [];
-  const directives = [];
   attributes
     .forEach((attribute) => {
-      const attr = transformAttribute(attribute, attributesToMerge, injected, directives);
+      const attr = transformAttribute(attribute, attributesToMerge, directives, injected);
       if (attr) {
         attributeArray.push(attr);
       }
@@ -182,7 +190,6 @@ const getAttributes = (path, injected) => {
     [
       ...attributesToMerge,
       t.objectExpression(attributeArray),
-      t.objectExpression([t.objectProperty(t.identifier('directives'), t.arrayExpression(directives))]),
     ],
   );
 };
@@ -278,11 +285,21 @@ const getChildren = (paths, injected) => paths
     throw new Error(`getChildren: ${path.type} is not supported`);
   }).filter(filterEmpty);
 
-const transformJSXElement = (path, injected) => t.callExpression(injected.h, [
-  getTag(path),
-  getAttributes(path, injected),
-  t.arrayExpression(getChildren(path.get('children'), injected)),
-]);
+const transformJSXElement = (path, injected) => {
+  const directives = [];
+  const h = t.callExpression(injected.h, [
+    getTag(path),
+    getAttributes(path, directives, injected),
+    t.arrayExpression(getChildren(path.get('children'), injected)),
+  ]);
+  if (!directives.length) {
+    return h;
+  }
+  return t.callExpression(injected.withDirectives, [
+    h,
+    t.arrayExpression(directives),
+  ]);
+};
 
 module.exports = () => ({
   name: 'babel-plugin-transform-vue-jsx',
@@ -291,15 +308,23 @@ module.exports = () => ({
     JSXElement: {
       exit(path, state) {
         if (!state.vueCreateElementInjected) {
-          state.vueCreateElementInjected = helperModuleImports.addNamed(path, 'jsxRender', jsxInjectionPATH);
+          state.vueCreateElementInjected = addNamed(path, 'h', 'vue');
         }
         if (!state.vueMergePropsInjected) {
-          state.vueMergePropsInjected = helperModuleImports.addNamed(path, 'jsxMergeProps', jsxInjectionPATH);
+          state.vueMergePropsInjected = addNamed(path, 'mergeProps', 'vue');
+        }
+        if (!state.vueWithDirectivesInjected) {
+          state.vueWithDirectivesInjected = addNamed(path, 'withDirectives', 'vue');
+        }
+        if (!state.vueResolveDirectiveInjected) {
+          state.vueResolveDirectiveInjected = addNamed(path, 'resolveDirective', 'vue');
         }
         path.replaceWith(
           transformJSXElement(path, {
             h: state.vueCreateElementInjected,
             mergeProps: state.vueMergePropsInjected,
+            withDirectives: state.vueWithDirectivesInjected,
+            resolveDirective: state.vueResolveDirectiveInjected,
           }),
         );
       },

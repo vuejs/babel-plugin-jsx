@@ -145,7 +145,7 @@ test('domProps input[checked]', () => {
     },
   });
 
-  expect(wrapper.componentVM);
+  expect(wrapper.vm.$.subTree.props.checked).toBe(val);
 });
 
 test('domProps option[selected]', () => {
@@ -155,7 +155,18 @@ test('domProps option[selected]', () => {
       return <option selected={val} />;
     },
   });
-  expect(wrapper);
+  expect(wrapper.vm.$.subTree.props.selected).toBe(val);
+});
+
+test('domProps video[muted]', () => {
+  const val = 'foo';
+  const wrapper = shallowMount({
+    render() {
+      return <video muted={val} />;
+    },
+  });
+
+  expect(wrapper.vm.$.subTree.props.muted).toBe(val);
 });
 
 test('Spread (single object expression)', () => {
@@ -190,6 +201,7 @@ test('Spread (mixed)', async () => {
           {...data}
           class={{ c: true }}
           onClick={() => calls.push(4)}
+          hook-insert={() => calls.push(2)}
         />
       );
     },
@@ -203,4 +215,30 @@ test('Spread (mixed)', async () => {
   await wrapper.trigger('click');
 
   expect(calls).toEqual(expect.arrayContaining([3, 4]));
+});
+
+test('directive', () => {
+  const calls = [];
+  const customDirective = {
+    mounted() {
+      calls.push(1);
+    },
+  };
+  const wrapper = shallowMount(({
+    directives: { custom: customDirective },
+    setup() {
+      return () => (
+        <a
+          v-custom={{
+            value: 123,
+            modifiers: { modifier: true },
+            arg: 'arg',
+          }}
+        />
+      );
+    },
+  }));
+  const node = wrapper.vm.$.subTree;
+  expect(calls).toEqual(expect.arrayContaining([1]));
+  expect(node.dirs).toHaveLength(1);
 });
