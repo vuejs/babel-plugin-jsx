@@ -24,7 +24,7 @@ const App = defineComponent(() => {
   };
 
   return () => (
-    <div>
+    <>
       Foo {count.value}
       <SuperButton
         buttonText="VueComponent"
@@ -33,7 +33,7 @@ const App = defineComponent(() => {
           click: inc,
         }}
       />
-    </div>
+    </>
   );
 });
 

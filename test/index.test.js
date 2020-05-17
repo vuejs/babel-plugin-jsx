@@ -1,5 +1,14 @@
 import { shallowMount } from '@vue/test-utils';
 
+test('should render with render function', () => {
+  const wrapper = shallowMount({
+    render() {
+      return <div>123</div>;
+    },
+  });
+  expect(wrapper.text()).toBe('123');
+});
+
 test('should render with setup', () => {
   const wrapper = shallowMount({
     setup() {
@@ -44,16 +53,25 @@ test('should not fallthrough with inheritAttrs: false', () => {
   expect(wrapper.text()).toBe('1');
 });
 
+test('Fragment', () => {
+  const Child = () => <div>123</div>;
 
-test('should render', () => {
-  const App = {
-    render() {
-      return <div>1234</div>;
+  Child.inheritAttrs = false;
+
+  const wrapper = shallowMount({
+    setup() {
+      return () => (
+        <>
+          <Child />
+          <div>456</div>
+        </>
+      );
     },
-  };
-  const wrapper = shallowMount(App);
-  expect(wrapper.html()).toBe('<div>1234</div>');
+  });
+
+  expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
 });
+
 
 test('xlink:href', () => {
   const wrapper = shallowMount({
@@ -119,6 +137,27 @@ test('domProps input[value]', () => {
   expect(wrapper.html()).toBe('<input type="text">');
 });
 
+test('domProps input[checked]', () => {
+  const val = 'foo';
+  const wrapper = shallowMount({
+    setup() {
+      return () => <input checked={val} />;
+    },
+  });
+
+  expect(wrapper.componentVM);
+});
+
+test('domProps option[selected]', () => {
+  const val = 'foo';
+  const wrapper = shallowMount({
+    render() {
+      return <option selected={val} />;
+    },
+  });
+  expect(wrapper);
+});
+
 test('Spread (single object expression)', () => {
   const props = {
     innerHTML: 123,
@@ -132,7 +171,7 @@ test('Spread (single object expression)', () => {
   expect(wrapper.html()).toBe('<div other="1">123</div>');
 });
 
-test('Spread (mixed)', () => {
+test('Spread (mixed)', async () => {
   const calls = [];
   const data = {
     id: 'hehe',
@@ -143,7 +182,7 @@ test('Spread (mixed)', () => {
     class: ['a', 'b'],
   };
 
-  shallowMount({
+  const wrapper = shallowMount({
     setup() {
       return () => (
         <div
@@ -151,9 +190,17 @@ test('Spread (mixed)', () => {
           {...data}
           class={{ c: true }}
           onClick={() => calls.push(4)}
-          hook-insert={() => calls.push(2)}
         />
       );
     },
   });
+
+  expect(wrapper.attributes('id')).toBe('hehe');
+  expect(wrapper.attributes('href')).toBe('huhu');
+  expect(wrapper.text()).toBe('2');
+  expect(wrapper.classes()).toEqual(expect.arrayContaining(['a', 'b', 'c']));
+
+  await wrapper.trigger('click');
+
+  expect(calls).toEqual(expect.arrayContaining([3, 4]));
 });
