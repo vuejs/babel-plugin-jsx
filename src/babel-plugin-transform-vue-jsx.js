@@ -4,9 +4,11 @@ const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
 const helperModuleImports = require('@babel/helper-module-imports');
 
+const jsxInjectionPATH = 'PACKAGE/lib/jsxInjection';
 const xlinkRE = /^xlink([A-Z])/;
 const eventRE = /^on[A-Z][a-z]+$/;
 const rootAttributes = ['class', 'style'];
+const dirRE = /^v-/;
 
 /**
  * click --> onClick
@@ -84,7 +86,7 @@ const getJSXAttributeValue = (path, injected) => {
   return null;
 };
 
-const transformJSXAttribute = (path, attributesToMerge, injected) => {
+const transformJSXAttribute = (path, attributesToMerge, injected, directives) => {
   let name = getJSXAttributeName(path);
   if (name === 'on') {
     const { properties = [] } = getJSXAttributeValue(path);
@@ -96,6 +98,14 @@ const transformJSXAttribute = (path, attributesToMerge, injected) => {
         ),
       ]));
     });
+    return null;
+  }
+  if (dirRE.test(name)) {
+    directives.push(t.objectExpression([
+      t.objectProperty(t.identifier('name'), t.stringLiteral(name.replace(dirRE, ''))),
+      t.objectProperty(t.identifier('value'), getJSXAttributeValue(path)),
+      t.objectProperty(t.identifier('_internal_directive_flag'), t.booleanLiteral(true)),
+    ]));
     return null;
   }
   if (rootAttributes.includes(name) || eventRE.test(name)) {
@@ -147,8 +157,8 @@ const transformJSXSpreadAttribute = (path, attributesToMerge) => {
   })));
 };
 
-const transformAttribute = (path, attributesToMerge, injected) => (path.isJSXAttribute()
-  ? transformJSXAttribute(path, attributesToMerge, injected)
+const transformAttribute = (path, attributesToMerge, injected, directives) => (path.isJSXAttribute()
+  ? transformJSXAttribute(path, attributesToMerge, injected, directives)
   : transformJSXSpreadAttribute(path, attributesToMerge));
 
 const getAttributes = (path, injected) => {
@@ -159,9 +169,10 @@ const getAttributes = (path, injected) => {
 
   const attributesToMerge = [];
   const attributeArray = [];
+  const directives = [];
   attributes
     .forEach((attribute) => {
-      const attr = transformAttribute(attribute, attributesToMerge, injected);
+      const attr = transformAttribute(attribute, attributesToMerge, injected, directives);
       if (attr) {
         attributeArray.push(attr);
       }
@@ -171,6 +182,7 @@ const getAttributes = (path, injected) => {
     [
       ...attributesToMerge,
       t.objectExpression(attributeArray),
+      t.objectExpression([t.objectProperty(t.identifier('directives'), t.arrayExpression(directives))]),
     ],
   );
 };
@@ -279,10 +291,10 @@ module.exports = () => ({
     JSXElement: {
       exit(path, state) {
         if (!state.vueCreateElementInjected) {
-          state.vueCreateElementInjected = helperModuleImports.addNamed(path, 'h', 'vue');
+          state.vueCreateElementInjected = helperModuleImports.addNamed(path, 'jsxRender', jsxInjectionPATH);
         }
         if (!state.vueMergePropsInjected) {
-          state.vueMergePropsInjected = helperModuleImports.addNamed(path, 'mergeProps', 'vue');
+          state.vueMergePropsInjected = helperModuleImports.addNamed(path, 'jsxMergeProps', jsxInjectionPATH);
         }
         path.replaceWith(
           transformJSXElement(path, {

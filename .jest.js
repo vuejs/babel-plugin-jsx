@@ -1,8 +1,17 @@
-const { h, mergeProps } = require('vue');
+const path = require('path')
+const jsxInjectionPATH = 'PACKAGE/lib/jsxInjection';
+const { jsxRender,jsxMergeProps } = require("./lib/jsxInjection");
+
 module.exports = {
-  globals: {
-    "_h": h,
-    "_mergeProps": mergeProps
+  moduleNameMapper:{
+    [jsxInjectionPATH]:path.resolve(__dirname,'./lib/jsxInjection')
   },
-  setupFiles: ['./tests/setup.js'],
+  "transform": {
+    "^.+\\.[t|j]sx?$": "babel-jest"
+  },
+  modulePaths :["<rootDir>/lib/"],
+  globals: {
+    _jsxRender:jsxRender,
+    _jsxMergeProps:jsxMergeProps
+  }
 }
