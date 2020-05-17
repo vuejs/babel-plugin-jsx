@@ -1,5 +1,7 @@
 const path = require('path');
 
+const jsxInjectionPATH = 'PACKAGE/lib/jsxInjection';
+
 module.exports = {
   mode: 'development',
   devtool: 'cheap-module-eval-source-map',
@@ -16,6 +18,14 @@ module.exports = {
         exclude: /node_modules/,
       },
     ],
+  },
+  resolve: {
+    alias: {
+      [jsxInjectionPATH]: path.resolve(
+        __dirname,
+        './lib/jsxInjection',
+      ),
+    },
   },
   devServer: {
     inline: true,
