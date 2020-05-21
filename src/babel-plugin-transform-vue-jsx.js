@@ -109,12 +109,16 @@ const transformJSXAttribute = (path, attributesToMerge, directives, injected) =>
     const directiveName = name.startsWith('v-')
       ? name.replace('v-', '')
       : name.replace(`v${name[1]}`, name[1].toLowerCase());
-    directives.push(t.arrayExpression([
-      t.callExpression(injected.resolveDirective, [
-        t.stringLiteral(directiveName),
-      ]),
-      getJSXAttributeValue(path),
-    ]));
+    if (directiveName === '_model') {
+      directives.push(getJSXAttributeValue(path));
+    } else {
+      directives.push(t.arrayExpression([
+        t.callExpression(injected.resolveDirective, [
+          t.stringLiteral(directiveName),
+        ]),
+        getJSXAttributeValue(path),
+      ]));
+    }
     return null;
   }
   if (rootAttributes.includes(name) || eventRE.test(name)) {
