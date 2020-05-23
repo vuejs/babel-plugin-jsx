@@ -111,6 +111,11 @@ const transformJSXAttribute = (path, attributesToMerge, directives, injected) =>
       : name.replace(`v${name[1]}`, name[1].toLowerCase());
     if (directiveName === '_model') {
       directives.push(getJSXAttributeValue(path));
+    } else if (directiveName === 'show') {
+      directives.push(t.arrayExpression([
+        injected.vShow,
+        getJSXAttributeValue(path),
+      ]));
     } else {
       directives.push(t.arrayExpression([
         t.callExpression(injected.resolveDirective, [
@@ -323,12 +328,16 @@ module.exports = () => ({
         if (!state.vueResolveDirectiveInjected) {
           state.vueResolveDirectiveInjected = addNamed(path, 'resolveDirective', 'vue');
         }
+        if (!state.vueVShowInjected) {
+          state.vueVShowInjected = addNamed(path, 'vShow', 'vue');
+        }
         path.replaceWith(
           transformJSXElement(path, {
             h: state.vueCreateElementInjected,
             mergeProps: state.vueMergePropsInjected,
             withDirectives: state.vueWithDirectivesInjected,
             resolveDirective: state.vueResolveDirectiveInjected,
+            vShow: state.vueVShowInjected,
           }),
         );
       },
