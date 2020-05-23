@@ -66,6 +66,44 @@ const App = () => (
 )
 ```
 
+### Directives
+
+> It is recommended to use camelCase version of it (`vModel`) in JSX, but you can use kebab-case too (`v-model`).
+
+v-show
+
+```jsx
+const App = {
+  data() {
+    return { visible: true };
+  },
+  render() {
+    return <input vShow={this.visible} />;
+  },
+};
+```
+
+v-model
+
+* You should use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
+
+```jsx
+export default {
+  data: () => ({
+    test: 'Hello World',
+  }),
+  render() {
+    return (
+      <>
+        <input type="text" vModel_trim={this.test} />
+        {this.test}
+      </>
+    )
+  },
+}
+```
+
+
 ## Compatibility
 
 This repo is only compatible with:
