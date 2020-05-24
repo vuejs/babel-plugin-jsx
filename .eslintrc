@@ -8,14 +8,7 @@
     "es6": true
   },
   "extends": "eslint-config-airbnb/base",
-  "parserOptions": {
-    "parser": "babel-eslint",
-    "ecmaVersion": 8,
-    "ecmaFeatures": {
-      "jsx": true,
-      "experimentalObjectRestSpread": true
-    }
-  },
+  "parser": "babel-eslint",
   "rules": {
     "no-nested-ternary": [0],
     "no-param-reassign": [0],
