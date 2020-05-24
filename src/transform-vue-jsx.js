@@ -1,4 +1,3 @@
-const t = require('@babel/types');
 const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
 const { addNamed } = require('@babel/helper-module-imports');
@@ -13,12 +12,6 @@ const rootAttributes = ['class', 'style'];
 
 const transformOn = (event = '') => `on${event[0].toUpperCase()}${event.substr(1)}`;
 
-const filterEmpty = (value) => (
-  value !== undefined
-    && value !== null
-    && !t.isJSXEmptyExpression(value)
-);
-
 /**
  * Checks if string is describing a directive
  * @param src string
@@ -28,15 +21,16 @@ const isDirective = (src) => src.startsWith('v-')
 
 /**
  * Transform JSXMemberExpression to MemberExpression
+ * @param t
  * @param path JSXMemberExpression
  * @returns MemberExpression
  */
-const transformJSXMemberExpression = (path) => {
+const transformJSXMemberExpression = (t, path) => {
   const objectPath = path.get('object');
   const propertyPath = path.get('property');
 
   const transformedObject = objectPath.isJSXMemberExpression()
-    ? transformJSXMemberExpression(objectPath)
+    ? transformJSXMemberExpression(t, objectPath)
     : objectPath.isJSXIdentifier()
       ? t.identifier(objectPath.node.name)
       : t.nullLiteral();
@@ -46,10 +40,11 @@ const transformJSXMemberExpression = (path) => {
 
 /**
  * Get tag (first attribute for h) from JSXOpeningElement
+ * @param t
  * @param path JSXOpeningElement
  * @returns Identifier | StringLiteral | MemberExpression
  */
-const getTag = (path) => {
+const getTag = (t, path) => {
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
@@ -61,12 +56,12 @@ const getTag = (path) => {
   }
 
   if (namePath.isJSXMemberExpression()) {
-    return transformJSXMemberExpression(namePath);
+    return transformJSXMemberExpression(t, namePath);
   }
   throw new Error(`getTag: ${namePath.type} is not supported`);
 };
 
-const getJSXAttributeName = (path) => {
+const getJSXAttributeName = (t, path) => {
   const nameNode = path.node.name;
   if (t.isJSXIdentifier(nameNode)) {
     return nameNode.name;
@@ -75,10 +70,10 @@ const getJSXAttributeName = (path) => {
   return `${nameNode.namespace.name}:${nameNode.name.name}`;
 };
 
-const getJSXAttributeValue = (path, injected) => {
+const getJSXAttributeValue = (t, path, injected) => {
   const valuePath = path.get('value');
   if (valuePath.isJSXElement()) {
-    return transformJSXElement(valuePath, injected);
+    return transformJSXElement(t, valuePath, injected);
   }
   if (valuePath.isStringLiteral()) {
     return valuePath.node;
@@ -90,10 +85,10 @@ const getJSXAttributeValue = (path, injected) => {
   return null;
 };
 
-const transformJSXAttribute = (path, attributesToMerge, directives, injected) => {
-  let name = getJSXAttributeName(path);
+const transformJSXAttribute = (t, path, attributesToMerge, directives, injected) => {
+  let name = getJSXAttributeName(t, path);
   if (name === 'on') {
-    const { properties = [] } = getJSXAttributeValue(path);
+    const { properties = [] } = getJSXAttributeValue(t, path);
     properties.forEach((property) => {
       attributesToMerge.push(t.objectExpression([
         t.objectProperty(
@@ -109,18 +104,18 @@ const transformJSXAttribute = (path, attributesToMerge, directives, injected) =>
       ? name.replace('v-', '')
       : name.replace(`v${name[1]}`, name[1].toLowerCase());
     if (directiveName === '_model') {
-      directives.push(getJSXAttributeValue(path));
+      directives.push(getJSXAttributeValue(t, path));
     } else if (directiveName === 'show') {
       directives.push(t.arrayExpression([
         injected.vShow,
-        getJSXAttributeValue(path),
+        getJSXAttributeValue(t, path),
       ]));
     } else {
       directives.push(t.arrayExpression([
         t.callExpression(injected.resolveDirective, [
           t.stringLiteral(directiveName),
         ]),
-        getJSXAttributeValue(path),
+        getJSXAttributeValue(t, path),
       ]));
     }
     return null;
@@ -132,7 +127,7 @@ const transformJSXAttribute = (path, attributesToMerge, directives, injected) =>
           t.stringLiteral(
             name,
           ),
-          getJSXAttributeValue(path, injected),
+          getJSXAttributeValue(t, path, injected),
         ),
       ]),
     );
@@ -146,11 +141,11 @@ const transformJSXAttribute = (path, attributesToMerge, directives, injected) =>
     t.stringLiteral(
       name,
     ),
-    getJSXAttributeValue(path, injected) || t.booleanLiteral(true),
+    getJSXAttributeValue(t, path, injected) || t.booleanLiteral(true),
   );
 };
 
-const transformJSXSpreadAttribute = (path, attributesToMerge) => {
+const transformJSXSpreadAttribute = (t, path, attributesToMerge) => {
   const argument = path.get('argument').node;
   const { properties } = argument;
   if (!properties) {
@@ -174,11 +169,12 @@ const transformJSXSpreadAttribute = (path, attributesToMerge) => {
   })));
 };
 
-const transformAttribute = (path, attributesToMerge, directives, injected) => (path.isJSXAttribute()
-  ? transformJSXAttribute(path, attributesToMerge, directives, injected)
-  : transformJSXSpreadAttribute(path, attributesToMerge));
+const transformAttribute = (t, path, attributesToMerge, directives, injected) => (
+  path.isJSXAttribute()
+    ? transformJSXAttribute(t, path, attributesToMerge, directives, injected)
+    : transformJSXSpreadAttribute(t, path, attributesToMerge));
 
-const getAttributes = (path, directives, injected) => {
+const getAttributes = (t, path, directives, injected) => {
   const attributes = path.get('openingElement').get('attributes');
   if (attributes.length === 0) {
     return t.nullLiteral();
@@ -188,7 +184,7 @@ const getAttributes = (path, directives, injected) => {
   const attributeArray = [];
   attributes
     .forEach((attribute) => {
-      const attr = transformAttribute(attribute, attributesToMerge, directives, injected);
+      const attr = transformAttribute(t, attribute, attributesToMerge, directives, injected);
       if (attr) {
         attributeArray.push(attr);
       }
@@ -204,10 +200,11 @@ const getAttributes = (path, directives, injected) => {
 
 /**
  * Transform JSXText to StringLiteral
+ * @param t
  * @param path JSXText
  * @returns StringLiteral
  */
-const transformJSXText = (path) => {
+const transformJSXText = (t, path) => {
   const { node } = path;
   const lines = node.value.split(/\r\n|\n|\r/);
 
@@ -262,43 +259,49 @@ const transformJSXExpressionContainer = (path) => path.get('expression').node;
 
 /**
  * Transform JSXSpreadChild
+ * @param t
  * @param path JSXSpreadChild
  * @returns SpreadElement
  */
-const transformJSXSpreadChild = (path) => t.spreadElement(path.get('expression').node);
+const transformJSXSpreadChild = (t, path) => t.spreadElement(path.get('expression').node);
 
 /**
  * Get children from Array of JSX children
+ * @param t
  * @param paths Array<JSXText | JSXExpressionContainer | JSXSpreadChild | JSXElement>
  * @param injected {}
  * @returns Array<Expression | SpreadElement>
  */
-const getChildren = (paths, injected) => paths
+const getChildren = (t, paths, injected) => paths
   .map((path) => {
     if (path.isJSXText()) {
-      return transformJSXText(path);
+      return transformJSXText(t, path);
     }
     if (path.isJSXExpressionContainer()) {
       return transformJSXExpressionContainer(path);
     }
     if (path.isJSXSpreadChild()) {
-      return transformJSXSpreadChild(path);
+      return transformJSXSpreadChild(t, path);
     }
     if (path.isCallExpression()) {
       return path.node;
     }
     if (path.isJSXElement()) {
-      return transformJSXElement(path, injected);
+      return transformJSXElement(t, path, injected);
     }
     throw new Error(`getChildren: ${path.type} is not supported`);
-  }).filter(filterEmpty);
+  }).filter((value) => (
+    value !== undefined
+      && value !== null
+      && !t.isJSXEmptyExpression(value)
+  ));
 
-const transformJSXElement = (path, injected) => {
+const transformJSXElement = (t, path, injected) => {
   const directives = [];
   const h = t.callExpression(injected.h, [
-    getTag(path),
-    getAttributes(path, directives, injected),
-    t.arrayExpression(getChildren(path.get('children'), injected)),
+    getTag(t, path),
+    getAttributes(t, path, directives, injected),
+    t.arrayExpression(getChildren(t, path.get('children'), injected)),
   ]);
   if (!directives.length) {
     return h;
@@ -309,33 +312,33 @@ const transformJSXElement = (path, injected) => {
   ]);
 };
 
-module.exports = {
+module.exports = (t) => ({
   JSXElement: {
-    exit(path, state) {
-      if (!state.vueCreateElementInjected) {
-        state.vueCreateElementInjected = addNamed(path, 'h', 'vue');
+    exit(path) {
+      if (!path.vueCreateElementInjected) {
+        path.vueCreateElementInjected = addNamed(path, 'h', 'vue');
       }
-      if (!state.vueMergePropsInjected) {
-        state.vueMergePropsInjected = addNamed(path, 'mergeProps', 'vue');
+      if (!path.vueMergePropsInjected) {
+        path.vueMergePropsInjected = addNamed(path, 'mergeProps', 'vue');
       }
-      if (!state.vueWithDirectivesInjected) {
-        state.vueWithDirectivesInjected = addNamed(path, 'withDirectives', 'vue');
+      if (!path.vueWithDirectivesInjected) {
+        path.vueWithDirectivesInjected = addNamed(path, 'withDirectives', 'vue');
       }
-      if (!state.vueResolveDirectiveInjected) {
-        state.vueResolveDirectiveInjected = addNamed(path, 'resolveDirective', 'vue');
+      if (!path.vueResolveDirectiveInjected) {
+        path.vueResolveDirectiveInjected = addNamed(path, 'resolveDirective', 'vue');
       }
-      if (!state.vueVShowInjected) {
-        state.vueVShowInjected = addNamed(path, 'vShow', 'vue');
+      if (!path.vueVShowInjected) {
+        path.vueVShowInjected = addNamed(path, 'vShow', 'vue');
       }
       path.replaceWith(
-        transformJSXElement(path, {
-          h: state.vueCreateElementInjected,
-          mergeProps: state.vueMergePropsInjected,
-          withDirectives: state.vueWithDirectivesInjected,
-          resolveDirective: state.vueResolveDirectiveInjected,
-          vShow: state.vueVShowInjected,
+        transformJSXElement(t, path, {
+          h: path.vueCreateElementInjected,
+          mergeProps: path.vueMergePropsInjected,
+          withDirectives: path.vueWithDirectivesInjected,
+          resolveDirective: path.vueResolveDirectiveInjected,
+          vShow: path.vueVShowInjected,
         }),
       );
     },
   },
-};
+});

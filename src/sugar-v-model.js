@@ -1,4 +1,3 @@
-const t = require('@babel/types');
 const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
 const camelCase = require('camelcase');
@@ -33,7 +32,6 @@ const addProp = (path, value) => {
 /**
  * Get JSX element tag name
  *
- * @param t
  * @param path Path<JSXOpeningElement>
  */
 const getTagName = (path) => path.get('name.name').node;
@@ -44,7 +42,7 @@ const getTagName = (path) => path.get('name.name').node;
  * @param t
  * @param path Path<JSXOpeningElement>
  */
-const getType = (path) => {
+const getType = (t, path) => {
   const typePath = path
     .get('attributes')
     .find(
@@ -64,7 +62,7 @@ const getType = (path) => {
  * @param path JSXOpeningElement
  * @returns boolean
  */
-const isComponent = (path) => {
+const isComponent = (t, path) => {
   const name = path.get('name');
 
   if (t.isJSXMemberExpression(name)) {
@@ -77,11 +75,12 @@ const isComponent = (path) => {
 };
 
 /**
+ * @param t
  * Transform vModel
 */
-const getModelDirective = (path, state, value) => {
+const getModelDirective = (t, path, value) => {
   const tag = getTagName(path);
-  const type = getType(path);
+  const type = getType(t, path);
 
   addProp(path, t.jsxSpreadAttribute(
     t.objectExpression([
@@ -95,7 +94,7 @@ const getModelDirective = (path, state, value) => {
     ]),
   ));
 
-  if (isComponent(path)) {
+  if (isComponent(t, path)) {
     addProp(path, t.jsxAttribute(t.jsxIdentifier('modelValue'), t.jsxExpressionContainer(value)));
     return null;
   }
@@ -103,35 +102,35 @@ const getModelDirective = (path, state, value) => {
   let modelToUse;
   switch (tag) {
     case 'select':
-      if (!state.vueVModelSelect) {
-        state.vueVModelSelect = addNamed(path, 'vModelSelect', 'vue');
+      if (!path.vueVModelSelect) {
+        path.vueVModelSelect = addNamed(path, 'vModelSelect', 'vue');
       }
-      modelToUse = state.vueVModelSelect;
+      modelToUse = path.vueVModelSelect;
       break;
     case 'textarea':
-      if (!state.vueVModelText) {
-        state.vueVModelText = addNamed(path, 'vModelText', 'vue');
+      if (!path.vueVModelText) {
+        path.vueVModelText = addNamed(path, 'vModelText', 'vue');
       }
       break;
     default:
       switch (type) {
         case 'checkbox':
-          if (!state.vueVModelCheckbox) {
-            state.vueVModelCheckbox = addNamed(path, 'vModelCheckbox', 'vue');
+          if (!path.vueVModelCheckbox) {
+            path.vueVModelCheckbox = addNamed(path, 'vModelCheckbox', 'vue');
           }
-          modelToUse = state.vueVModelCheckbox;
+          modelToUse = path.vueVModelCheckbox;
           break;
         case 'radio':
-          if (!state.vueVModelRadio) {
-            state.vueVModelRadio = addNamed(path, 'vModelRadio', 'vue');
+          if (!path.vueVModelRadio) {
+            path.vueVModelRadio = addNamed(path, 'vModelRadio', 'vue');
           }
-          modelToUse = state.vueVModelRadio;
+          modelToUse = path.vueVModelRadio;
           break;
         default:
-          if (!state.vueVModelText) {
-            state.vueVModelText = addNamed(path, 'vModelText', 'vue');
+          if (!path.vueVModelText) {
+            path.vueVModelText = addNamed(path, 'vModelText', 'vue');
           }
-          modelToUse = state.vueVModelText;
+          modelToUse = path.vueVModelText;
       }
   }
 
@@ -142,10 +141,11 @@ const getModelDirective = (path, state, value) => {
 /**
  * Parse vModel metadata
  *
+ * @param t
  * @param  path JSXAttribute
  * @returns null | Object<{ modifiers: Set<string>, valuePath: Path<Expression>}>
  */
-const parseVModel = (path) => {
+const parseVModel = (t, path) => {
   if (t.isJSXNamespacedName(path.get('name')) || !startsWithCamel(path.get('name.name').node, 'v-model')) {
     return null;
   }
@@ -162,10 +162,10 @@ const parseVModel = (path) => {
   };
 };
 
-module.exports = {
+module.exports = (t) => ({
   JSXAttribute: {
-    exit(path, state) {
-      const parsed = parseVModel(path);
+    exit(path) {
+      const parsed = parseVModel(t, path);
       if (!parsed) {
         return;
       }
@@ -174,7 +174,7 @@ module.exports = {
 
       const parent = path.parentPath;
       // v-model={xx} --> v-_model={[directive, xx, void 0, { a: true, b: true }]}
-      const directive = getModelDirective(parent, state, value);
+      const directive = getModelDirective(t, parent, value);
       if (directive) {
         path.replaceWith(
           t.jsxAttribute(
@@ -201,4 +201,4 @@ module.exports = {
       }
     },
   },
-};
+});

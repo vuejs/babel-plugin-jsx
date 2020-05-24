@@ -1,7 +1,6 @@
-const t = require('@babel/types');
 const helperModuleImports = require('@babel/helper-module-imports');
 
-const transformFragment = (path, { name }) => {
+const transformFragment = (t, path, { name }) => {
   const children = path.get('children') || [];
   return t.jsxElement(
     t.jsxOpeningElement(t.jsxIdentifier(name), []),
@@ -11,13 +10,13 @@ const transformFragment = (path, { name }) => {
   );
 };
 
-module.exports = {
+module.exports = (t) => ({
   JSXFragment: {
-    enter(path, state) {
-      if (!state.vueFragment) {
-        state.vueFragment = helperModuleImports.addNamed(path, 'Fragment', 'vue');
+    enter(path) {
+      if (!path.vueFragment) {
+        path.vueFragment = helperModuleImports.addNamed(path, 'Fragment', 'vue');
       }
-      path.replaceWith(transformFragment(path, state.vueFragment));
+      path.replaceWith(transformFragment(t, path, path.vueFragment));
     },
   },
-};
+});
