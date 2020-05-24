@@ -2,6 +2,22 @@
 
 To add Vue JSX support.
 
+## Installation
+
+Install the preset with:
+
+```
+npm install @ant-design-vue/babel-preset-jsx
+```
+
+Then add the preset to .babelrc:
+
+```
+{
+  "presets": ["@ant-design-vue/babel-preset-jsx"]
+}
+```
+
 ## Syntax
 
 ### Content
