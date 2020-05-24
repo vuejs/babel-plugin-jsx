@@ -1,4 +1,3 @@
-const syntaxJsx = require('@babel/plugin-syntax-jsx').default;
 const t = require('@babel/types');
 const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
@@ -163,47 +162,43 @@ const parseVModel = (path) => {
   };
 };
 
-module.exports = () => ({
-  name: 'babel-sugar-v-model',
-  inherits: syntaxJsx,
-  visitor: {
-    JSXAttribute: {
-      exit(path, state) {
-        const parsed = parseVModel(path);
-        if (!parsed) {
-          return;
-        }
+module.exports = {
+  JSXAttribute: {
+    exit(path, state) {
+      const parsed = parseVModel(path);
+      if (!parsed) {
+        return;
+      }
 
-        const { modifiers, value } = parsed;
+      const { modifiers, value } = parsed;
 
-        const parent = path.parentPath;
-        // v-model={xx} --> v-_model={[directive, xx, void 0, { a: true, b: true }]}
-        const directive = getModelDirective(parent, state, value);
-        if (directive) {
-          path.replaceWith(
-            t.jsxAttribute(
-              t.jsxIdentifier('v-_model'), // TODO
-              t.jsxExpressionContainer(
-                t.arrayExpression([
-                  directive,
-                  value,
-                  modifiers.size && t.unaryExpression('void', t.numericLiteral(0), true),
-                  modifiers.size && t.objectExpression(
-                    [...modifiers].map(
-                      (modifier) => t.objectProperty(
-                        t.identifier(modifier),
-                        t.booleanLiteral(true),
-                      ),
+      const parent = path.parentPath;
+      // v-model={xx} --> v-_model={[directive, xx, void 0, { a: true, b: true }]}
+      const directive = getModelDirective(parent, state, value);
+      if (directive) {
+        path.replaceWith(
+          t.jsxAttribute(
+            t.jsxIdentifier('v-_model'), // TODO
+            t.jsxExpressionContainer(
+              t.arrayExpression([
+                directive,
+                value,
+                modifiers.size && t.unaryExpression('void', t.numericLiteral(0), true),
+                modifiers.size && t.objectExpression(
+                  [...modifiers].map(
+                    (modifier) => t.objectProperty(
+                      t.identifier(modifier),
+                      t.booleanLiteral(true),
                     ),
                   ),
-                ].filter(Boolean)),
-              ),
+                ),
+              ].filter(Boolean)),
             ),
-          );
-        } else {
-          path.remove();
-        }
-      },
+          ),
+        );
+      } else {
+        path.remove();
+      }
     },
   },
-});
+};

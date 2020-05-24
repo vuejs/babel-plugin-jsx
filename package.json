@@ -1,7 +1,7 @@
 {
-  "name": "@ant-design-vue/babel-preset-jsx",
+  "name": "@ant-design-vue/babel-plugin-jsx",
   "version": "1.0.0-alpha.0",
-  "description": "Babel preset for Vue 3.0 JSX",
+  "description": "Babel plugin for Vue 3.0 JSX",
   "main": "src/index.js",
   "scripts": {
     "dev": "webpack-dev-server",

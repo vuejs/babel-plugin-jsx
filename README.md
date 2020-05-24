@@ -1,20 +1,20 @@
-# Babel Preset JSX for Vue 3.0
+# Babel Plugin JSX for Vue 3.0
 
 To add Vue JSX support.
 
 ## Installation
 
-Install the preset with:
+Install the plugin with:
 
 ```
-npm install @ant-design-vue/babel-preset-jsx
+npm install @ant-design-vue/babel-plugin-jsx
 ```
 
-Then add the preset to .babelrc:
+Then add the plugin to .babelrc:
 
 ```
 {
-  "presets": ["@ant-design-vue/babel-preset-jsx"]
+  "plugins": ["@ant-design-vue/babel-plugin-jsx"]
 }
 ```
 

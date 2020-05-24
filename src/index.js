@@ -1,11 +1,14 @@
-const babelSugarVModel = require('./babel-sugar-v-model');
-const babelPluginTransformVueJsx = require('./babel-plugin-transform-vue-jsx');
-const babelSugarFragment = require('./babel-sugar-fragment');
+const syntaxJsx = require('@babel/plugin-syntax-jsx').default;
+const tranformVueJSX = require('./transform-vue-jsx');
+const sugarVModel = require('./sugar-v-model');
+const sugarFragment = require('./sugar-fragment');
 
 module.exports = () => ({
-  plugins: [
-    babelSugarVModel,
-    babelPluginTransformVueJsx,
-    babelSugarFragment,
-  ],
+  name: 'babel-plugin-jsx',
+  inherits: syntaxJsx,
+  visitor: {
+    ...sugarVModel,
+    ...tranformVueJSX,
+    ...sugarFragment,
+  },
 });

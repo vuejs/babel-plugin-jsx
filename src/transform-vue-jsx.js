@@ -1,4 +1,3 @@
-const syntaxJsx = require('@babel/plugin-syntax-jsx').default;
 const t = require('@babel/types');
 const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
@@ -310,37 +309,33 @@ const transformJSXElement = (path, injected) => {
   ]);
 };
 
-module.exports = () => ({
-  name: 'babel-plugin-transform-vue-jsx',
-  inherits: syntaxJsx,
-  visitor: {
-    JSXElement: {
-      exit(path, state) {
-        if (!state.vueCreateElementInjected) {
-          state.vueCreateElementInjected = addNamed(path, 'h', 'vue');
-        }
-        if (!state.vueMergePropsInjected) {
-          state.vueMergePropsInjected = addNamed(path, 'mergeProps', 'vue');
-        }
-        if (!state.vueWithDirectivesInjected) {
-          state.vueWithDirectivesInjected = addNamed(path, 'withDirectives', 'vue');
-        }
-        if (!state.vueResolveDirectiveInjected) {
-          state.vueResolveDirectiveInjected = addNamed(path, 'resolveDirective', 'vue');
-        }
-        if (!state.vueVShowInjected) {
-          state.vueVShowInjected = addNamed(path, 'vShow', 'vue');
-        }
-        path.replaceWith(
-          transformJSXElement(path, {
-            h: state.vueCreateElementInjected,
-            mergeProps: state.vueMergePropsInjected,
-            withDirectives: state.vueWithDirectivesInjected,
-            resolveDirective: state.vueResolveDirectiveInjected,
-            vShow: state.vueVShowInjected,
-          }),
-        );
-      },
+module.exports = {
+  JSXElement: {
+    exit(path, state) {
+      if (!state.vueCreateElementInjected) {
+        state.vueCreateElementInjected = addNamed(path, 'h', 'vue');
+      }
+      if (!state.vueMergePropsInjected) {
+        state.vueMergePropsInjected = addNamed(path, 'mergeProps', 'vue');
+      }
+      if (!state.vueWithDirectivesInjected) {
+        state.vueWithDirectivesInjected = addNamed(path, 'withDirectives', 'vue');
+      }
+      if (!state.vueResolveDirectiveInjected) {
+        state.vueResolveDirectiveInjected = addNamed(path, 'resolveDirective', 'vue');
+      }
+      if (!state.vueVShowInjected) {
+        state.vueVShowInjected = addNamed(path, 'vShow', 'vue');
+      }
+      path.replaceWith(
+        transformJSXElement(path, {
+          h: state.vueCreateElementInjected,
+          mergeProps: state.vueMergePropsInjected,
+          withDirectives: state.vueWithDirectivesInjected,
+          resolveDirective: state.vueResolveDirectiveInjected,
+          vShow: state.vueVShowInjected,
+        }),
+      );
     },
   },
-});
+};
