@@ -1,6 +1,6 @@
 {
   "name": "@ant-design-vue/babel-plugin-jsx",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.2",
   "description": "Babel plugin for Vue 3.0 JSX",
   "main": "src/index.js",
   "scripts": {
