@@ -1,11 +1,19 @@
-# `babel-plugin-jsx`
+# @ant-design-vue/babel-plugin-jsx
 
-> TODO: description
+To add Vue JSX support.
 
-## Usage
+## Installation
+
+Install the plugin with:
 
 ```
-const babelPluginJsx = require('babel-plugin-jsx');
+npm install @ant-design-vue/babel-plugin-jsx
+```
 
-// TODO: DEMONSTRATE API
+Then add the plugin to .babelrc:
+
+```
+{
+  "plugins": ["@ant-design-vue/babel-plugin-jsx"]
+}
 ```

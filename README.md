@@ -7,14 +7,16 @@ To add Vue JSX support.
 Install the plugin with:
 
 ```
-npm install @ant-design-vue/babel-plugin-jsx
+npm install @ant-design-vue/babel-plugin-jsx -D
+
+npm install @ant-design-vue/babel-helper-vue-transform-on
 ```
 
 Then add the plugin to .babelrc:
 
 ```
 {
-  "plugins": ["@ant-design-vue/babel-plugin-jsx"]
+  "plugins": ["@ant-design-vue/babel-plugin-jsx", { "transformOn": true }]
 }
 ```
 
