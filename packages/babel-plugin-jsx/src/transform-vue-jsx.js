@@ -287,6 +287,7 @@ const getChildren = (t, paths) => paths
       && !t.isJSXEmptyExpression(value)
   ));
 
+
 const transformJSXElement = (t, path, state) => {
   const directives = [];
   const tag = getTag(t, path);
@@ -294,7 +295,7 @@ const transformJSXElement = (t, path, state) => {
   const h = t.callExpression(state.h, [
     tag,
     getAttributes(t, path, state, directives),
-    !t.isStringLiteral(tag)
+    !t.isStringLiteral(tag) && !tag.name.includes('Fragment')
       ? t.objectExpression([
         t.objectProperty(
           t.identifier('default'),
@@ -326,9 +327,7 @@ module.exports = (t) => ({
   JSXElement: {
     exit(path, state) {
       imports.forEach((m) => {
-        if (!state[m]) {
-          state[m] = addNamed(path, m, 'vue');
-        }
+        state[m] = addNamed(path, m, 'vue');
       });
       path.replaceWith(
         transformJSXElement(t, path, state),
