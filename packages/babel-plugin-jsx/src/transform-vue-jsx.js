@@ -1,16 +1,11 @@
 const htmlTags = require('html-tags');
 const svgTags = require('svg-tags');
-const { addNamed } = require('@babel/helper-module-imports');
+const { addNamed, addDefault } = require('@babel/helper-module-imports');
 
 const xlinkRE = /^xlink([A-Z])/;
 const eventRE = /^on[A-Z][a-z]+$/;
 const rootAttributes = ['class', 'style'];
 
-/**
- * click --> onClick
- */
-
-const transformOn = (event = '') => `on${event[0].toUpperCase()}${event.substr(1)}`;
 
 /**
  * Checks if string is describing a directive
@@ -85,18 +80,15 @@ const getJSXAttributeValue = (t, path) => {
   return null;
 };
 
-const transformJSXAttribute = (t, path, attributesToMerge, directives) => {
+const transformJSXAttribute = (t, path, state, attributesToMerge, directives) => {
   let name = getJSXAttributeName(t, path);
-  if (name === 'on') {
-    const { properties = [] } = getJSXAttributeValue(t, path);
-    properties.forEach((property) => {
-      attributesToMerge.push(t.objectExpression([
-        t.objectProperty(
-          t.identifier(transformOn(property.key.name)),
-          property.value,
-        ),
-      ]));
-    });
+  const attributeValue = getJSXAttributeValue(t, path);
+  if (state.opts.transformOn && (name === 'on' || name === 'nativeOn')) {
+    const transformOn = addDefault(path, '@ant-design-vue/babel-helper-vue-transform-on', { nameHint: '_transformOn' });
+    attributesToMerge.push(t.callExpression(
+      transformOn,
+      [attributeValue || t.booleanLiteral(true)],
+    ));
     return null;
   }
   if (isDirective(name)) {
@@ -104,18 +96,18 @@ const transformJSXAttribute = (t, path, attributesToMerge, directives) => {
       ? name.replace('v-', '')
       : name.replace(`v${name[1]}`, name[1].toLowerCase());
     if (directiveName === '_model') {
-      directives.push(getJSXAttributeValue(t, path));
+      directives.push(attributeValue);
     } else if (directiveName === 'show') {
       directives.push(t.arrayExpression([
-        path.vShow,
-        getJSXAttributeValue(t, path),
+        state.vShow,
+        attributeValue,
       ]));
     } else {
       directives.push(t.arrayExpression([
-        t.callExpression(path.resolveDirective, [
+        t.callExpression(state.resolveDirective, [
           t.stringLiteral(directiveName),
         ]),
-        getJSXAttributeValue(t, path),
+        attributeValue,
       ]));
     }
     return null;
@@ -127,7 +119,7 @@ const transformJSXAttribute = (t, path, attributesToMerge, directives) => {
           t.stringLiteral(
             name,
           ),
-          getJSXAttributeValue(t, path),
+          attributeValue,
         ),
       ]),
     );
@@ -141,7 +133,7 @@ const transformJSXAttribute = (t, path, attributesToMerge, directives) => {
     t.stringLiteral(
       name,
     ),
-    getJSXAttributeValue(t, path) || t.booleanLiteral(true),
+    attributeValue || t.booleanLiteral(true),
   );
 };
 
@@ -169,12 +161,12 @@ const transformJSXSpreadAttribute = (t, path, attributesToMerge) => {
   })));
 };
 
-const transformAttribute = (t, path, attributesToMerge, directives) => (
+const transformAttribute = (t, path, state, attributesToMerge, directives) => (
   path.isJSXAttribute()
-    ? transformJSXAttribute(t, path, attributesToMerge, directives)
+    ? transformJSXAttribute(t, path, state, attributesToMerge, directives)
     : transformJSXSpreadAttribute(t, path, attributesToMerge));
 
-const getAttributes = (t, path, directives) => {
+const getAttributes = (t, path, state, directives) => {
   const attributes = path.get('openingElement').get('attributes');
   if (attributes.length === 0) {
     return t.nullLiteral();
@@ -184,13 +176,13 @@ const getAttributes = (t, path, directives) => {
   const attributeArray = [];
   attributes
     .forEach((attribute) => {
-      const attr = transformAttribute(t, attribute, attributesToMerge, directives);
+      const attr = transformAttribute(t, attribute, state, attributesToMerge, directives);
       if (attr) {
         attributeArray.push(attr);
       }
     });
   return t.callExpression(
-    path.mergeProps,
+    state.mergeProps,
     [
       ...attributesToMerge,
       t.objectExpression(attributeArray),
@@ -295,18 +287,18 @@ const getChildren = (t, paths) => paths
       && !t.isJSXEmptyExpression(value)
   ));
 
-const transformJSXElement = (t, path) => {
+const transformJSXElement = (t, path, state) => {
   const directives = [];
   const tag = getTag(t, path);
   const children = t.arrayExpression(getChildren(t, path.get('children')));
-  const h = t.callExpression(path.h, [
+  const h = t.callExpression(state.h, [
     tag,
-    getAttributes(t, path, directives),
+    getAttributes(t, path, state, directives),
     !t.isStringLiteral(tag)
       ? t.objectExpression([
         t.objectProperty(
           t.identifier('default'),
-          t.callExpression(path.withCtx, [
+          t.callExpression(state.withCtx, [
             t.arrowFunctionExpression(
               [],
               children,
@@ -319,7 +311,7 @@ const transformJSXElement = (t, path) => {
   if (!directives.length) {
     return h;
   }
-  return t.callExpression(path.withDirectives, [
+  return t.callExpression(state.withDirectives, [
     h,
     t.arrayExpression(directives),
   ]);
@@ -332,14 +324,14 @@ const imports = [
 
 module.exports = (t) => ({
   JSXElement: {
-    exit(path) {
+    exit(path, state) {
       imports.forEach((m) => {
-        if (!path[m]) {
-          path[m] = addNamed(path, m, 'vue');
+        if (!state[m]) {
+          state[m] = addNamed(path, m, 'vue');
         }
       });
       path.replaceWith(
-        transformJSXElement(t, path),
+        transformJSXElement(t, path, state),
       );
     },
   },

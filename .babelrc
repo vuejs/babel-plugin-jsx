@@ -1,8 +1,0 @@
-{
-  "presets": [
-    "@babel/env"
-  ],
-  "plugins": [
-    "./src/index.js"
-  ]
-}

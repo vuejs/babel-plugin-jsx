@@ -3,12 +3,12 @@ const tranformVueJSX = require('./transform-vue-jsx');
 const sugarVModel = require('./sugar-v-model');
 const sugarFragment = require('./sugar-fragment');
 
-module.exports = ({ types: t }) => ({
+module.exports = ({ types: t }, opts = {}) => ({
   name: 'babel-plugin-jsx',
   inherits: syntaxJsx,
   visitor: {
     ...sugarVModel(t),
-    ...tranformVueJSX(t),
+    ...tranformVueJSX(t, opts),
     ...sugarFragment(t),
   },
 });
