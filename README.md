@@ -16,111 +16,21 @@ Then add the plugin to .babelrc:
 
 ```
 {
-  "plugins": ["@ant-design-vue/babel-plugin-jsx", { "transformOn": true }]
+  "plugins": ["@ant-design-vue/babel-plugin-jsx", { "transformOn": true, "compatibleProps": true }]
 }
 ```
 
-## Syntax
+## Usage
 
-### Content
-functional component
+### options
 
-```jsx
-const App = () => <div></div>
-```
+* transformOn
 
-with render
+transform `on: { click: xx }` to `onClick: xxx`, and you should install `@ant-design-vue/babel-helper-vue-transform-on`
 
-```jsx
-const App = {
-  render() {
-    return <div>Vue 3.0</div>
-  }
-}
-```
+* compatibleProps
 
-```jsx
-const App = defineComponent(() => {
-  const count = ref(0);
-
-  const inc = () => {
-    count.value++;
-  };
-
-  return () => (
-    <div onClick={inc}>
-      {count.value}
-    </div>
-  )
-})
-```
-
-fragment
-
-```jsx
-const App = () => (
-  <>
-    <span>I'm</span>
-    <span>Fragment</span>
-  </>
-)
-```
-
-### Attributes/Props
-
-```jsx
-const App = () => <input type="email" />
-```
-
-with a dynamic binding:
-
-```jsx
-const placeholderText = 'email'
-const App = () => (
-  <input
-    type="email"
-    placeholder={placeholderText}
-  />
-)
-```
-
-### Directives
-
-> It is recommended to use camelCase version of it (`vModel`) in JSX, but you can use kebab-case too (`v-model`).
-
-v-show
-
-```jsx
-const App = {
-  data() {
-    return { visible: true };
-  },
-  render() {
-    return <input vShow={this.visible} />;
-  },
-};
-```
-
-v-model
-
-* You should use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
-
-```jsx
-export default {
-  data: () => ({
-    test: 'Hello World',
-  }),
-  render() {
-    return (
-      <>
-        <input type="text" vModel_trim={this.test} />
-        {this.test}
-      </>
-    )
-  },
-}
-```
-
+compatible with Vue 2.x and you should install `@ant-design-vue/babel-helper-vue-compatible-props`
 
 ## Compatibility
 
