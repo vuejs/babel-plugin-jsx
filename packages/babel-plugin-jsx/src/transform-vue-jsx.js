@@ -292,9 +292,13 @@ const transformJSXElement = (t, path, state) => {
   const directives = [];
   const tag = getTag(t, path);
   const children = t.arrayExpression(getChildren(t, path.get('children')));
+  const attributes = getAttributes(t, path, state, directives);
+  const compatibleProps = addDefault(
+    path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
+  );
   const h = t.callExpression(state.h, [
     tag,
-    getAttributes(t, path, state, directives),
+    state.opts.compatibleProps ? t.callExpression(compatibleProps, [attributes]) : attributes,
     !t.isStringLiteral(tag) && !tag.name.includes('Fragment')
       ? t.objectExpression([
         t.objectProperty(
