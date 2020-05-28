@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "lint": "eslint --ext .js src",
-    "test": "jest --config .jest.js"
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/vueComponent/jsx/issues"
