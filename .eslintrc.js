@@ -6,7 +6,7 @@ module.exports = {
     jest: true,
     es6: true,
   },
-  extends: 'eslint-config-airbnb/base',
+  extends: 'eslint-config-airbnb-base',
   parser: 'babel-eslint',
   rules: {
     'no-nested-ternary': [0],
