@@ -1,5 +1,11 @@
 module.exports = {
   root: true,
+  parserOptions: {
+    ecmaVersion: 2020,
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   env: {
     browser: true,
     node: true,
@@ -7,7 +13,6 @@ module.exports = {
     es6: true,
   },
   extends: 'eslint-config-airbnb-base',
-  parser: 'babel-eslint',
   rules: {
     'no-nested-ternary': [0],
     'no-param-reassign': [0],
