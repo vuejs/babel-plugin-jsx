@@ -1,0 +1,18 @@
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    node: true,
+    jest: true,
+    es6: true,
+  },
+  extends: 'eslint-config-airbnb/base',
+  parser: 'babel-eslint',
+  rules: {
+    'no-nested-ternary': [0],
+    'no-param-reassign': [0],
+    'no-use-before-define': [0],
+    'no-plusplus': [0],
+    'import/no-extraneous-dependencies': [0],
+  },
+};
