@@ -1,4 +1,8 @@
 {
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "publish": "lerna publish"
   },
@@ -8,9 +12,8 @@
     "jsx"
   ],
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.0.0",
-    "eslint-config-airbnb": "^18.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "lerna": "^3.19.0"
   }
