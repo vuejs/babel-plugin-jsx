@@ -179,7 +179,7 @@ module.exports = (t) => ({
       if (directive) {
         path.replaceWith(
           t.jsxAttribute(
-            t.jsxIdentifier('v-_model'), // TODO
+            t.jsxIdentifier('_model'), // TODO
             t.jsxExpressionContainer(
               t.arrayExpression([
                 directive,

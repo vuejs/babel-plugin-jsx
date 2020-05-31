@@ -188,8 +188,12 @@ const buildProps = (t, path, state) => {
     .forEach((prop) => {
       if (prop.isJSXAttribute()) {
         let name = getJSXAttributeName(t, prop);
-        const attributeValue = getJSXAttributeValue(t, prop);
 
+        if (name === '_model') {
+          name = 'onUpdate:modelValue';
+        }
+
+        const attributeValue = getJSXAttributeValue(t, prop);
         if (!t.isStringLiteral(attributeValue)) {
           if (
             !isComponent
@@ -201,7 +205,9 @@ const buildProps = (t, path, state) => {
             && name !== 'onUpdate:modelValue'
           ) {
             hasHydrationEventBinding = true;
-          } else if (name === 'class' && !isComponent) {
+          }
+
+          if (name === 'class' && !isComponent) {
             hasClassBinding = true;
           } else if (name === 'style' && !isComponent) {
             hasStyleBinding = true;
@@ -228,24 +234,26 @@ const buildProps = (t, path, state) => {
           ));
           return;
         }
-        if (isDirective(name)) {
-          const directiveName = name.startsWith('v-')
-            ? name.replace('v-', '')
-            : name.replace(`v${name[1]}`, name[1].toLowerCase());
-          if (directiveName === '_model') {
+        if (isDirective(name) || name === 'onUpdate:modelValue') {
+          if (name === 'onUpdate:modelValue') {
             directives.push(attributeValue);
-          } else if (directiveName === 'show') {
-            directives.push(t.arrayExpression([
-              state.get('vShow'),
-              attributeValue,
-            ]));
           } else {
-            directives.push(t.arrayExpression([
-              t.callExpression(state.get('resolveDirective'), [
-                t.stringLiteral(directiveName),
-              ]),
-              attributeValue,
-            ]));
+            const directiveName = name.startsWith('v-')
+              ? name.replace('v-', '')
+              : name.replace(`v${name[1]}`, name[1].toLowerCase());
+            if (directiveName === 'show') {
+              directives.push(t.arrayExpression([
+                state.get('vShow'),
+                attributeValue,
+              ]));
+            } else {
+              directives.push(t.arrayExpression([
+                t.callExpression(state.get('resolveDirective'), [
+                  t.stringLiteral(directiveName),
+                ]),
+                attributeValue,
+              ]));
+            }
           }
           return;
         }
@@ -261,7 +269,8 @@ const buildProps = (t, path, state) => {
             ]),
           );
           return;
-        } if (name.match(xlinkRE)) {
+        }
+        if (name.match(xlinkRE)) {
           name = name.replace(xlinkRE, (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`);
         }
         propsExpression.push(t.objectProperty(
