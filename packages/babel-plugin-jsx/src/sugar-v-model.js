@@ -155,6 +155,7 @@ const parseVModel = (t, path) => {
   }
 
   const modifiers = path.get('name.name').node.split('_');
+  modifiers.shift();
 
   return {
     modifiers: new Set(modifiers),
