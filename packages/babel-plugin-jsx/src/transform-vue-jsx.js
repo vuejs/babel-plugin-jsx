@@ -194,7 +194,7 @@ const buildProps = (t, path, state) => {
         }
 
         const attributeValue = getJSXAttributeValue(t, prop);
-        if (!t.isStringLiteral(attributeValue)) {
+        if (!t.isStringLiteral(attributeValue) || name === 'ref') {
           if (
             !isComponent
             && isOn(name)
@@ -207,7 +207,9 @@ const buildProps = (t, path, state) => {
             hasHydrationEventBinding = true;
           }
 
-          if (name === 'class' && !isComponent) {
+          if (name === 'ref') {
+            hasRef = true;
+          } else if (name === 'class' && !isComponent) {
             hasClassBinding = true;
           } else if (name === 'style' && !isComponent) {
             hasStyleBinding = true;
@@ -219,8 +221,6 @@ const buildProps = (t, path, state) => {
           ) {
             dynamicPropNames.push(name);
           }
-        } else if (name === 'ref') {
-          hasRef = true;
         }
         if (state.opts.transformOn && (name === 'on' || name === 'nativeOn')) {
           const transformOn = addDefault(
