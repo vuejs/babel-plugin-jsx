@@ -160,6 +160,28 @@ const checkIsComponent = (t, path) => {
   return !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
 
+/**
+ *  Check if an attribute value is constant
+ * @param t
+ * @param path
+ * @returns boolean
+ */
+const isConstant = (t, path) => {
+  if (t.isIdentifier(path)) {
+    return path.name === 'undefined';
+  }
+  if (t.isArrayExpression(path)) {
+    return path.elements.every((element) => isConstant(t, element));
+  }
+  if (t.isObjectExpression(path)) {
+    return path.properties.every((property) => isConstant(t, property.value));
+  }
+  if (t.isLiteral(path)) {
+    return true;
+  }
+  return false;
+};
+
 const buildProps = (t, path, state) => {
   const isComponent = checkIsComponent(t, path);
   const props = path.get('openingElement').get('attributes');
@@ -194,7 +216,8 @@ const buildProps = (t, path, state) => {
         }
 
         const attributeValue = getJSXAttributeValue(t, prop);
-        if (!t.isStringLiteral(attributeValue) || name === 'ref') {
+
+        if (!isConstant(t, attributeValue) || name === 'ref') {
           if (
             !isComponent
             && isOn(name)
