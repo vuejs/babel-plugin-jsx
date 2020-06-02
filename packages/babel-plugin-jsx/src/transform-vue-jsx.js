@@ -467,19 +467,22 @@ const transformJSXElement = (t, path, state) => {
   const createVNode = t.callExpression(state.get('createVNode'), [
     tag,
     state.opts.compatibleProps ? t.callExpression(compatibleProps, [props]) : props,
-    isComponent
-      ? t.objectExpression([
-        t.objectProperty(
-          t.identifier('default'),
-          t.callExpression(state.get('withCtx'), [
-            t.arrowFunctionExpression(
-              [],
-              children,
+    children.elements.length
+      ? (
+        isComponent
+          ? t.objectExpression([
+            t.objectProperty(
+              t.identifier('default'),
+              t.callExpression(state.get('withCtx'), [
+                t.arrowFunctionExpression(
+                  [],
+                  children,
+                ),
+              ]),
             ),
-          ]),
-        ),
-      ])
-      : children,
+          ])
+          : children
+      ) : t.nullLiteral(),
     patchFlag && t.addComment(t.numericLiteral(patchFlag), 'leading', ` ${flagNames} `),
     dynamicPropNames.length
       && t.arrayExpression(dynamicPropNames.map((name) => t.stringLiteral(name))),
