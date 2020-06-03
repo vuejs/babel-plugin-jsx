@@ -1,3 +1,4 @@
+import { ref } from 'vue';
 import { shallowMount, mount } from '@vue/test-utils';
 
 describe('Transform JSX', () => {
@@ -241,5 +242,81 @@ describe('Transform JSX', () => {
     const node = wrapper.vm.$.subTree;
     expect(calls).toEqual(expect.arrayContaining([1]));
     expect(node.dirs).toHaveLength(1);
+  });
+});
+
+describe('Patch Flags', () => {
+  let renders = 0;
+  const Child = {
+    setup(props) {
+      return () => {
+        renders++;
+        return <div>{props.text}</div>;
+      };
+    },
+  };
+  Child.inheritAttrs = false;
+
+  it('should render when props change', async () => {
+    const wrapper = mount({
+      setup() {
+        const count = ref(0);
+        const inc = () => {
+          count.value++;
+        };
+        return () => (
+          <div onClick={inc}>
+            <Child text={count.value} />
+          </div>
+        );
+      },
+    });
+
+    expect(renders).toBe(1);
+    await wrapper.trigger('click');
+    expect(renders).toBe(2);
+  });
+
+  it('should not render with static props', async () => {
+    renders = 0;
+    const wrapper = mount({
+      setup() {
+        const count = ref(0);
+        const inc = () => {
+          count.value++;
+        };
+        return () => (
+          <div onClick={inc}>
+            <Child text={1} />
+          </div>
+        );
+      },
+    });
+
+    expect(renders).toBe(1);
+    await wrapper.trigger('click');
+    expect(renders).toBe(1);
+  });
+
+  it('should not render when props does not change', async () => {
+    renders = 0;
+    const wrapper = mount({
+      setup() {
+        const count = ref(0);
+        const s = ref('a');
+        const inc = () => {
+          count.value++;
+        };
+        return () => (
+          <div onClick={inc}>
+            <Child text={s.value} />
+            {count.value}
+          </div>
+        );
+      },
+    });
+
+    await wrapper.trigger('click');
+    expect(renders).toBe(1);
   });
 });
