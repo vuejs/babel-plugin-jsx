@@ -453,10 +453,6 @@ const transformJSXElement = (t, path, state) => {
     dynamicPropNames = [],
   } = buildProps(t, path, state);
 
-  const compatibleProps = addDefault(
-    path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
-  );
-
   const flagNames = Object.keys(PatchFlagNames)
     .map(Number)
     .filter((n) => n > 0 && patchFlag & n)
@@ -466,7 +462,9 @@ const transformJSXElement = (t, path, state) => {
   const isComponent = checkIsComponent(t, path);
   const createVNode = t.callExpression(state.get('createVNode'), [
     tag,
-    state.opts.compatibleProps ? t.callExpression(compatibleProps, [props]) : props,
+    state.opts.compatibleProps ? t.callExpression(addDefault(
+      path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
+    ), [props]) : props,
     children.elements.length
       ? (
         isComponent
