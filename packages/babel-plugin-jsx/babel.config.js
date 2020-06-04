@@ -8,6 +8,7 @@ module.exports = {
     ],
   ],
   plugins: [
-    ['./src/index.js', { transformOn: true }],
+    /* eslint-disable-next-line global-require */
+    [require('./src/index.js'), { transformOn: true }],
   ],
 };
