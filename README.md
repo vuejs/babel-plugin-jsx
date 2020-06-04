@@ -26,11 +26,10 @@ Then add the plugin to .babelrc:
 
 * transformOn
 
-transform `on: { click: xx }` to `onClick: xxx`, and you should install `@ant-design-vue/babel-helper-vue-transform-on`
-
+transform `on: { click: xx }` to `onClick: xxx`
 * compatibleProps
 
-compatible with Vue 2.x and you should install `@ant-design-vue/babel-helper-vue-compatible-props`
+compatible with Vue 2.x
 
 ## Compatibility
 
