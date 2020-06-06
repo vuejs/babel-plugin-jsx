@@ -1,22 +1,30 @@
-const helperModuleImports = require('@babel/helper-module-imports');
+import { addNamespace } from '@babel/helper-module-imports';
 
-const transformFragment = (t, path, { name }) => {
+const transformFragment = (t, path, Fragment) => {
   const children = path.get('children') || [];
   return t.jsxElement(
-    t.jsxOpeningElement(t.jsxIdentifier(name), []),
-    t.jsxClosingElement(t.jsxIdentifier(name)),
+    t.jsxOpeningElement(Fragment, []),
+    t.jsxClosingElement(Fragment),
     children.map(({ node }) => node),
     false,
   );
 };
 
-module.exports = (t) => ({
+export default (t) => ({
   JSXFragment: {
-    enter(path) {
-      if (!path.vueFragment) {
-        path.vueFragment = helperModuleImports.addNamed(path, 'Fragment', 'vue');
+    enter(path, state) {
+      if (!state.get('vue')) {
+        state.set('vue', addNamespace(path, 'vue'));
       }
-      path.replaceWith(transformFragment(t, path, path.vueFragment));
+      path.replaceWith(
+        transformFragment(
+          t, path,
+          t.jsxMemberExpression(
+            t.jsxIdentifier(state.get('vue').name),
+            t.jsxIdentifier('Fragment'),
+          ),
+        ),
+      );
     },
   },
 });

@@ -3,12 +3,12 @@ module.exports = {
     [
       '@babel/env',
       {
-        // "modules": "cjs"
+        // modules: 'cjs',
       },
     ],
   ],
   plugins: [
     /* eslint-disable-next-line global-require */
-    [require('./src/index.js'), { transformOn: true }],
+    [require('./dist/index.js'), { transformOn: true }],
   ],
 };

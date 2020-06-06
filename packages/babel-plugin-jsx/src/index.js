@@ -1,9 +1,9 @@
-const syntaxJsx = require('@babel/plugin-syntax-jsx').default;
-const tranformVueJSX = require('./transform-vue-jsx');
-const sugarVModel = require('./sugar-v-model');
-const sugarFragment = require('./sugar-fragment');
+import syntaxJsx from '@babel/plugin-syntax-jsx';
+import tranformVueJSX from './transform-vue-jsx';
+import sugarVModel from './sugar-v-model';
+import sugarFragment from './sugar-fragment';
 
-module.exports = ({ types: t }) => ({
+export default ({ types: t }) => ({
   name: 'babel-plugin-jsx',
   inherits: syntaxJsx,
   visitor: {

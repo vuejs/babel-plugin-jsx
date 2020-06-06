@@ -1,119 +1,22 @@
-const htmlTags = require('html-tags');
-const svgTags = require('svg-tags');
-const { addNamed, addDefault } = require('@babel/helper-module-imports');
+import { addDefault, addNamespace } from '@babel/helper-module-imports';
+import {
+  createIdentifier,
+  PatchFlags,
+  PatchFlagNames,
+  isDirective,
+  checkIsComponent,
+  getTag,
+  getJSXAttributeName,
+  transformJSXText,
+  transformJSXExpressionContainer,
+  transformJSXSpreadChild,
+} from './utils';
 
 const xlinkRE = /^xlink([A-Z])/;
 const onRE = /^on[A-Z][a-z]+$/;
 const rootAttributes = ['class', 'style'];
 
 const isOn = (key) => onRE.test(key);
-
-const PatchFlags = {
-  TEXT: 1,
-  CLASS: 1 << 1,
-  STYLE: 1 << 2,
-  PROPS: 1 << 3,
-  FULL_PROPS: 1 << 4,
-  HYDRATE_EVENTS: 1 << 5,
-  STABLE_FRAGMENT: 1 << 6,
-  KEYED_FRAGMENT: 1 << 7,
-  UNKEYED_FRAGMENT: 1 << 8,
-  NEED_PATCH: 1 << 9,
-  DYNAMIC_SLOTS: 1 << 10,
-  HOISTED: -1,
-  BAIL: -2,
-};
-
-// dev only flag -> name mapping
-const PatchFlagNames = {
-  [PatchFlags.TEXT]: 'TEXT',
-  [PatchFlags.CLASS]: 'CLASS',
-  [PatchFlags.STYLE]: 'STYLE',
-  [PatchFlags.PROPS]: 'PROPS',
-  [PatchFlags.FULL_PROPS]: 'FULL_PROPS',
-  [PatchFlags.HYDRATE_EVENTS]: 'HYDRATE_EVENTS',
-  [PatchFlags.STABLE_FRAGMENT]: 'STABLE_FRAGMENT',
-  [PatchFlags.KEYED_FRAGMENT]: 'KEYED_FRAGMENT',
-  [PatchFlags.UNKEYED_FRAGMENT]: 'UNKEYED_FRAGMENT',
-  [PatchFlags.NEED_PATCH]: 'NEED_PATCH',
-  [PatchFlags.DYNAMIC_SLOTS]: 'DYNAMIC_SLOTS',
-  [PatchFlags.HOISTED]: 'HOISTED',
-  [PatchFlags.BAIL]: 'BAIL',
-};
-
-
-/**
- * Checks if string is describing a directive
- * @param src string
- */
-const isDirective = (src) => src.startsWith('v-')
-  || (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
-
-/**
- * Transform JSXMemberExpression to MemberExpression
- * @param t
- * @param path JSXMemberExpression
- * @returns MemberExpression
- */
-const transformJSXMemberExpression = (t, path) => {
-  const objectPath = path.get('object');
-  const propertyPath = path.get('property');
-
-  const transformedObject = objectPath.isJSXMemberExpression()
-    ? transformJSXMemberExpression(t, objectPath)
-    : objectPath.isJSXIdentifier()
-      ? t.identifier(objectPath.node.name)
-      : t.nullLiteral();
-  const transformedProperty = t.identifier(propertyPath.get('name').node);
-  return t.memberExpression(transformedObject, transformedProperty);
-};
-
-/**
- * Get tag (first attribute for h) from JSXOpeningElement
- * @param t
- * @param path JSXOpeningElement
- * @returns Identifier | StringLiteral | MemberExpression
- */
-const getTag = (t, path) => {
-  const namePath = path.get('openingElement').get('name');
-  if (namePath.isJSXIdentifier()) {
-    const { name } = namePath.node;
-    if (path.scope.hasBinding(name) && !htmlTags.includes(name) && !svgTags.includes(name)) {
-      return t.identifier(name);
-    }
-
-    return t.stringLiteral(name);
-  }
-
-  if (namePath.isJSXMemberExpression()) {
-    return transformJSXMemberExpression(t, namePath);
-  }
-  throw new Error(`getTag: ${namePath.type} is not supported`);
-};
-
-const getJSXAttributeName = (t, path) => {
-  const nameNode = path.node.name;
-  if (t.isJSXIdentifier(nameNode)) {
-    return nameNode.name;
-  }
-
-  return `${nameNode.namespace.name}:${nameNode.name.name}`;
-};
-
-const getJSXAttributeValue = (t, path) => {
-  const valuePath = path.get('value');
-  if (valuePath.isJSXElement()) {
-    return transformJSXElement(t, valuePath);
-  }
-  if (valuePath.isStringLiteral()) {
-    return valuePath.node;
-  }
-  if (valuePath.isJSXExpressionContainer()) {
-    return transformJSXExpressionContainer(valuePath);
-  }
-
-  return null;
-};
 
 const transformJSXSpreadAttribute = (t, path, mergeArgs) => {
   const argument = path.get('argument').node;
@@ -141,23 +44,19 @@ const transformJSXSpreadAttribute = (t, path, mergeArgs) => {
 
 const needToMerge = (name) => rootAttributes.includes(name) || isOn(name);
 
-/**
- * Check if a JSXOpeningElement is a component
- *
- * @param t
- * @param path JSXOpeningElement
- * @returns boolean
- */
-const checkIsComponent = (t, path) => {
-  const name = path.get('openingElement.name');
-
-  if (t.isJSXMemberExpression(name)) {
-    return true;
+const getJSXAttributeValue = (t, path) => {
+  const valuePath = path.get('value');
+  if (valuePath.isJSXElement()) {
+    return transformJSXElement(t, valuePath);
+  }
+  if (valuePath.isStringLiteral()) {
+    return valuePath.node;
+  }
+  if (valuePath.isJSXExpressionContainer()) {
+    return transformJSXExpressionContainer(valuePath);
   }
 
-  const tag = name.get('name').node;
-
-  return !htmlTags.includes(tag) && !svgTags.includes(tag);
+  return null;
 };
 
 /**
@@ -183,7 +82,7 @@ const isConstant = (t, path) => {
 };
 
 const buildProps = (t, path, state) => {
-  const isComponent = checkIsComponent(t, path);
+  const isComponent = checkIsComponent(t, path.get('openingElement'));
   const props = path.get('openingElement').get('attributes');
   const directives = [];
   if (props.length === 0) {
@@ -266,12 +165,12 @@ const buildProps = (t, path, state) => {
               : name.replace(`v${name[1]}`, name[1].toLowerCase());
             if (directiveName === 'show') {
               directives.push(t.arrayExpression([
-                state.get('vShow'),
+                createIdentifier(t, state, 'vShow'),
                 attributeValue,
               ]));
             } else {
               directives.push(t.arrayExpression([
-                t.callExpression(state.get('resolveDirective'), [
+                t.callExpression(createIdentifier(t, state, 'resolveDirective'), [
                   t.stringLiteral(directiveName),
                 ]),
                 attributeValue,
@@ -333,7 +232,7 @@ const buildProps = (t, path, state) => {
 
   return {
     props: mergeArgs.length ? t.callExpression(
-      state.get('mergeProps'),
+      createIdentifier(t, state, 'mergeProps'),
       [
         ...mergeArgs,
         propsExpression.length && t.objectExpression(propsExpression),
@@ -344,73 +243,6 @@ const buildProps = (t, path, state) => {
     dynamicPropNames,
   };
 };
-
-/**
- * Transform JSXText to StringLiteral
- * @param t
- * @param path JSXText
- * @returns StringLiteral
- */
-const transformJSXText = (t, path) => {
-  const { node } = path;
-  const lines = node.value.split(/\r\n|\n|\r/);
-
-  let lastNonEmptyLine = 0;
-
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].match(/[^ \t]/)) {
-      lastNonEmptyLine = i;
-    }
-  }
-
-  let str = '';
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    const isFirstLine = i === 0;
-    const isLastLine = i === lines.length - 1;
-    const isLastNonEmptyLine = i === lastNonEmptyLine;
-
-    // replace rendered whitespace tabs with spaces
-    let trimmedLine = line.replace(/\t/g, ' ');
-
-    // trim whitespace touching a newline
-    if (!isFirstLine) {
-      trimmedLine = trimmedLine.replace(/^[ ]+/, '');
-    }
-
-    // trim whitespace touching an endline
-    if (!isLastLine) {
-      trimmedLine = trimmedLine.replace(/[ ]+$/, '');
-    }
-
-    if (trimmedLine) {
-      if (!isLastNonEmptyLine) {
-        trimmedLine += ' ';
-      }
-
-      str += trimmedLine;
-    }
-  }
-
-  return str !== '' ? t.stringLiteral(str) : null;
-};
-
-/**
- * Transform JSXExpressionContainer to Expression
- * @param path JSXExpressionContainer
- * @returns Expression
- */
-const transformJSXExpressionContainer = (path) => path.get('expression').node;
-
-/**
- * Transform JSXSpreadChild
- * @param t
- * @param path JSXSpreadChild
- * @returns SpreadElement
- */
-const transformJSXSpreadChild = (t, path) => t.spreadElement(path.get('expression').node);
 
 /**
  * Get children from Array of JSX children
@@ -459,8 +291,8 @@ const transformJSXElement = (t, path, state) => {
     .map((n) => PatchFlagNames[n])
     .join(', ');
 
-  const isComponent = checkIsComponent(t, path);
-  const createVNode = t.callExpression(state.get('createVNode'), [
+  const isComponent = checkIsComponent(t, path.get('openingElement'));
+  const createVNode = t.callExpression(createIdentifier(t, state, 'createVNode'), [
     tag,
     state.opts.compatibleProps ? t.callExpression(addDefault(
       path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
@@ -471,7 +303,7 @@ const transformJSXElement = (t, path, state) => {
           ? t.objectExpression([
             t.objectProperty(
               t.identifier('default'),
-              t.callExpression(state.get('withCtx'), [
+              t.callExpression(createIdentifier(t, state, 'withCtx'), [
                 t.arrowFunctionExpression(
                   [],
                   children,
@@ -490,23 +322,18 @@ const transformJSXElement = (t, path, state) => {
     return createVNode;
   }
 
-  return t.callExpression(state.get('withDirectives'), [
+  return t.callExpression(createIdentifier(t, state, 'withDirectives'), [
     createVNode,
     t.arrayExpression(directives),
   ]);
 };
 
-const imports = [
-  'createVNode', 'mergeProps', 'withDirectives',
-  'resolveDirective', 'vShow', 'withCtx',
-];
-
-module.exports = (t) => ({
+export default (t) => ({
   JSXElement: {
     exit(path, state) {
-      imports.forEach((m) => {
-        state.set(m, addNamed(path, m, 'vue'));
-      });
+      if (!state.get('vue')) {
+        state.set('vue', addNamespace(path, 'vue'));
+      }
       path.replaceWith(
         transformJSXElement(t, path, state),
       );

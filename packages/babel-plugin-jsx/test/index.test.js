@@ -55,24 +55,24 @@ describe('Transform JSX', () => {
     expect(wrapper.text()).toBe('1');
   });
 
-  // test('Fragment', () => {
-  //   const Child = () => <div>123</div>;
+  test('Fragment', () => {
+    const Child = () => <div>123</div>;
 
-  //   Child.inheritAttrs = false;
+    Child.inheritAttrs = false;
 
-  //   const wrapper = mount({
-  //     setup() {
-  //       return () => (
-  //         <>
-  //           <Child />
-  //           <div>456</div>
-  //         </>
-  //       );
-  //     },
-  //   });
+    const wrapper = mount({
+      setup() {
+        return () => (
+          <>
+            <Child />
+            <div>456</div>
+          </>
+        );
+      },
+    });
 
-  //   expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
-  // });
+    expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
+  });
 
   test('xlink:href', () => {
     const wrapper = shallowMount({
