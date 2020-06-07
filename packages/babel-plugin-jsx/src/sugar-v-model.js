@@ -1,8 +1,6 @@
-const htmlTags = require('html-tags');
-const svgTags = require('svg-tags');
-const camelCase = require('camelcase');
-const { addNamed } = require('@babel/helper-module-imports');
-
+import camelCase from 'camelcase';
+import { addNamespace } from '@babel/helper-module-imports';
+import { createIdentifier, checkIsComponent } from './utils';
 
 const cachedCamelCase = (() => {
   const cache = Object.create(null);
@@ -56,29 +54,10 @@ const getType = (t, path) => {
 };
 
 /**
- * Check if a JSXOpeningElement is a component
- *
- * @param t
- * @param path JSXOpeningElement
- * @returns boolean
- */
-const isComponent = (t, path) => {
-  const name = path.get('name');
-
-  if (t.isJSXMemberExpression(name)) {
-    return true;
-  }
-
-  const tag = name.get('name').node;
-
-  return !htmlTags.includes(tag) && !svgTags.includes(tag);
-};
-
-/**
  * @param t
  * Transform vModel
 */
-const getModelDirective = (t, path, value) => {
+const getModelDirective = (t, path, state, value) => {
   const tag = getTagName(path);
   const type = getType(t, path);
 
@@ -94,7 +73,7 @@ const getModelDirective = (t, path, value) => {
     ]),
   ));
 
-  if (isComponent(t, path)) {
+  if (checkIsComponent(t, path)) {
     addProp(path, t.jsxAttribute(t.jsxIdentifier('modelValue'), t.jsxExpressionContainer(value)));
     return null;
   }
@@ -102,35 +81,21 @@ const getModelDirective = (t, path, value) => {
   let modelToUse;
   switch (tag) {
     case 'select':
-      if (!path.vueVModelSelect) {
-        path.vueVModelSelect = addNamed(path, 'vModelSelect', 'vue');
-      }
-      modelToUse = path.vueVModelSelect;
+      modelToUse = createIdentifier(t, state, 'vModelSelect');
       break;
     case 'textarea':
-      if (!path.vueVModelText) {
-        path.vueVModelText = addNamed(path, 'vModelText', 'vue');
-      }
+      modelToUse = createIdentifier(t, state, 'vModelText');
       break;
     default:
       switch (type) {
         case 'checkbox':
-          if (!path.vueVModelCheckbox) {
-            path.vueVModelCheckbox = addNamed(path, 'vModelCheckbox', 'vue');
-          }
-          modelToUse = path.vueVModelCheckbox;
+          modelToUse = createIdentifier(t, state, 'vModelCheckbox');
           break;
         case 'radio':
-          if (!path.vueVModelRadio) {
-            path.vueVModelRadio = addNamed(path, 'vModelRadio', 'vue');
-          }
-          modelToUse = path.vueVModelRadio;
+          modelToUse = createIdentifier(t, state, 'vModelRadio');
           break;
         default:
-          if (!path.vueVModelText) {
-            path.vueVModelText = addNamed(path, 'vModelText', 'vue');
-          }
-          modelToUse = path.vueVModelText;
+          modelToUse = createIdentifier(t, state, 'vModelText');
       }
   }
 
@@ -155,6 +120,7 @@ const parseVModel = (t, path) => {
   }
 
   const modifiers = path.get('name.name').node.split('_');
+  modifiers.shift();
 
   return {
     modifiers: new Set(modifiers),
@@ -162,23 +128,27 @@ const parseVModel = (t, path) => {
   };
 };
 
-module.exports = (t) => ({
+export default (t) => ({
   JSXAttribute: {
-    exit(path) {
+    exit(path, state) {
       const parsed = parseVModel(t, path);
       if (!parsed) {
         return;
+      }
+
+      if (!state.get('vue')) {
+        state.set('vue', addNamespace(path, 'vue'));
       }
 
       const { modifiers, value } = parsed;
 
       const parent = path.parentPath;
       // v-model={xx} --> v-_model={[directive, xx, void 0, { a: true, b: true }]}
-      const directive = getModelDirective(t, parent, value);
+      const directive = getModelDirective(t, parent, state, value);
       if (directive) {
         path.replaceWith(
           t.jsxAttribute(
-            t.jsxIdentifier('v-_model'), // TODO
+            t.jsxIdentifier('_model'), // TODO
             t.jsxExpressionContainer(
               t.arrayExpression([
                 directive,
