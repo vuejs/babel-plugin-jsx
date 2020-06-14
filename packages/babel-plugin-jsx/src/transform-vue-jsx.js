@@ -358,7 +358,8 @@ const transformJSXElement = (t, path, state) => {
     .join(', ');
 
   const isComponent = checkIsComponent(t, path.get('openingElement'));
-  const child = children.elements.length === 1 ? children.elements[0] : children;
+  const child = children.elements.length === 1 && t.isStringLiteral(children.elements[0])
+    ? children.elements[0] : children;
   if (state.opts.compatibleProps && !state.get('compatibleProps')) {
     state.set('compatibleProps', addDefault(
       path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
