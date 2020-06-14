@@ -5,7 +5,7 @@
   "author": "Amour1688 <lcz_1996@foxmail.com>",
   "homepage": "https://github.com/vueComponent/jsx/tree/master/packages/babel-plugin-jsx#readme",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vueComponent/jsx.git"
@@ -39,7 +39,7 @@
     "jest": "^26.0.1",
     "regenerator-runtime": "^0.13.5",
     "rollup": "^2.13.1",
-    "vue": "^3.0.0-beta.14",
+    "vue": "3.0.0-beta.15",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
