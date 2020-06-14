@@ -44,6 +44,15 @@ const isDirective = (src) => src.startsWith('v-')
   || (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
 
 /**
+ * Check if a JSXOpeningElement is fragment
+ * @param {*} t
+ * @param {*} path
+ * @returns boolean
+ */
+const isFragment = (t, path) => t.isJSXMemberExpression(path)
+    && path.node.property.name;
+
+/**
  * Check if a JSXOpeningElement is a component
  *
  * @param t
@@ -54,7 +63,7 @@ const checkIsComponent = (t, path) => {
   const namePath = path.get('name');
 
   if (t.isJSXMemberExpression(namePath)) {
-    return namePath.node.property.name !== 'Fragment'; // For withCtx
+    return !isFragment(t, namePath); // For withCtx
   }
 
   const tag = namePath.get('name').node;
@@ -180,6 +189,102 @@ const transformJSXExpressionContainer = (path) => path.get('expression').node;
  */
 const transformJSXSpreadChild = (t, path) => t.spreadElement(path.get('expression').node);
 
+/**
+ * Get JSX element type
+ *
+ * @param t
+ * @param path Path<JSXOpeningElement>
+ */
+const getType = (t, path) => {
+  const typePath = path
+    .get('attributes')
+    .find(
+      (attributePath) => t.isJSXAttribute(attributePath)
+        && t.isJSXIdentifier(attributePath.get('name'))
+        && attributePath.get('name.name').node === 'type'
+        && t.isStringLiteral(attributePath.get('value')),
+    );
+
+  return typePath ? typePath.get('value.value').node : '';
+};
+
+const resolveDirective = (t, path, state, tag, directiveName) => {
+  if (directiveName === 'show') {
+    return createIdentifier(t, state, 'vShow');
+  } if (directiveName === 'model') {
+    let modelToUse;
+    const type = getType(t, path.parentPath);
+    switch (tag.value) {
+      case 'select':
+        modelToUse = createIdentifier(t, state, 'vModelSelect');
+        break;
+      case 'textarea':
+        modelToUse = createIdentifier(t, state, 'vModelText');
+        break;
+      default:
+        switch (type) {
+          case 'checkbox':
+            modelToUse = createIdentifier(t, state, 'vModelCheckbox');
+            break;
+          case 'radio':
+            modelToUse = createIdentifier(t, state, 'vModelRadio');
+            break;
+          default:
+            modelToUse = createIdentifier(t, state, 'vModelText');
+        }
+    }
+    return modelToUse;
+  }
+  return t.callExpression(
+    createIdentifier(t, state, 'resolveDirective'), [
+      t.stringLiteral(directiveName),
+    ],
+  );
+};
+
+/**
+ * Parse directives metadata
+ *
+ * @param t
+ * @param  path JSXAttribute
+ * @returns null | Object<{ modifiers: Set<string>, valuePath: Path<Expression>}>
+ */
+const parseDirectives = (t, {
+  name, path, value, state, tag, isComponent,
+}) => {
+  const modifiers = name.split('_');
+  const directiveName = modifiers.shift()
+    .replace(/^v/, '')
+    .replace(/^-/, '')
+    .replace(/^\S/, (s) => s.toLowerCase());
+
+  if (directiveName === 'model' && !t.isJSXExpressionContainer(path.get('value'))) {
+    throw new Error('You have to use JSX Expression inside your v-model');
+  }
+
+  const modifiersSet = new Set(modifiers);
+
+  const hasDirective = directiveName !== 'model' || (directiveName === 'model' && !isComponent);
+
+  return {
+    directiveName,
+    modifiers: new Set(modifiers),
+    directive: hasDirective ? [
+      resolveDirective(t, path, state, tag, directiveName),
+      value,
+      modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
+      modifiersSet.size && t.objectExpression(
+        [...modifiersSet].map(
+          (modifier) => t.objectProperty(
+            t.identifier(modifier),
+            t.booleanLiteral(true),
+          ),
+        ),
+      ),
+    ].filter(Boolean) : undefined,
+  };
+};
+
 
 export {
   createIdentifier,
@@ -193,4 +298,6 @@ export {
   transformJSXExpressionContainer,
   PatchFlags,
   PatchFlagNames,
+  parseDirectives,
+  isFragment,
 };

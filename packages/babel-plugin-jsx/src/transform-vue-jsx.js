@@ -10,11 +10,12 @@ import {
   transformJSXText,
   transformJSXExpressionContainer,
   transformJSXSpreadChild,
+  parseDirectives,
+  isFragment,
 } from './utils';
 
 const xlinkRE = /^xlink([A-Z])/;
-const onRE = /^on[A-Z][a-z]+$/;
-const rootAttributes = ['class', 'style'];
+const onRE = /^on[^a-z]/;
 
 const isOn = (key) => onRE.test(key);
 
@@ -22,27 +23,12 @@ const transformJSXSpreadAttribute = (t, path, mergeArgs) => {
   const argument = path.get('argument').node;
   const { properties } = argument;
   if (!properties) {
-    return t.spreadElement(argument);
+    // argument is an Identifier
+    mergeArgs.push(argument);
+  } else {
+    mergeArgs.push(t.objectExpression(properties));
   }
-  return t.spreadElement(t.objectExpression(properties.filter((property) => {
-    const { key, value } = property;
-    const name = key.value;
-    if (rootAttributes.includes(name)) {
-      mergeArgs.push(
-        t.objectExpression([
-          t.objectProperty(
-            t.stringLiteral(name),
-            value,
-          ),
-        ]),
-      );
-      return false;
-    }
-    return true;
-  })));
 };
-
-const needToMerge = (name) => rootAttributes.includes(name) || isOn(name);
 
 const getJSXAttributeValue = (t, path) => {
   const valuePath = path.get('value');
@@ -81,38 +67,74 @@ const isConstant = (t, path) => {
   return false;
 };
 
+const mergeAsArray = (t, existing, incoming) => {
+  if (t.isArrayExpression(existing.value)) {
+    existing.value.elements.push(incoming.value);
+  } else {
+    existing.value = t.arrayExpression([
+      existing.value,
+      incoming.value,
+    ]);
+  }
+};
+
+const dedupeProperties = (t, properties = []) => {
+  const knownProps = new Map();
+  const deduped = [];
+  properties.forEach((prop) => {
+    const { key: { value: name } = {} } = prop;
+    const existing = knownProps.get(name);
+    if (existing) {
+      if (name === 'style' || name === 'class' || name.startsWith('on')) {
+        mergeAsArray(t, existing, prop);
+      }
+    } else {
+      knownProps.set(name, prop);
+      deduped.push(prop);
+    }
+  });
+
+  return deduped;
+};
+
 const buildProps = (t, path, state) => {
+  const tag = getTag(t, path);
   const isComponent = checkIsComponent(t, path.get('openingElement'));
   const props = path.get('openingElement').get('attributes');
   const directives = [];
+  const dynamicPropNames = new Set();
+
+  let patchFlag = 0;
+
+  if (isFragment(t, path.get('openingElement.name'))) {
+    patchFlag |= PatchFlags.STABLE_FRAGMENT;
+  }
+
   if (props.length === 0) {
     return {
+      tag,
       props: t.nullLiteral(),
       directives,
+      patchFlag,
+      dynamicPropNames,
     };
   }
 
-  const propsExpression = [];
+  const properties = [];
 
   // patchFlag analysis
-  let patchFlag = 0;
   let hasRef = false;
   let hasClassBinding = false;
   let hasStyleBinding = false;
   let hasHydrationEventBinding = false;
   let hasDynamicKeys = false;
 
-  const dynamicPropNames = [];
   const mergeArgs = [];
 
   props
     .forEach((prop) => {
       if (prop.isJSXAttribute()) {
         let name = getJSXAttributeName(t, prop);
-
-        if (name === '_model') {
-          name = 'onUpdate:modelValue';
-        }
 
         const attributeValue = getJSXAttributeValue(t, prop);
 
@@ -139,69 +161,85 @@ const buildProps = (t, path, state) => {
             name !== 'key'
             && !isDirective(name)
             && name !== 'on'
-            && !dynamicPropNames.includes(name)
           ) {
-            dynamicPropNames.push(name);
+            dynamicPropNames.add(name);
           }
         }
         if (state.opts.transformOn && (name === 'on' || name === 'nativeOn')) {
-          const transformOn = addDefault(
-            path,
-            '@ant-design-vue/babel-helper-vue-transform-on',
-            { nameHint: '_transformOn' },
-          );
+          if (!state.get('transformOn')) {
+            state.set('transformOn', addDefault(
+              path,
+              '@ant-design-vue/babel-helper-vue-transform-on',
+              { nameHint: '_transformOn' },
+            ));
+          }
           mergeArgs.push(t.callExpression(
-            transformOn,
+            state.get('transformOn'),
             [attributeValue || t.booleanLiteral(true)],
           ));
           return;
         }
-        if (isDirective(name) || name === 'onUpdate:modelValue') {
-          if (name === 'onUpdate:modelValue') {
-            directives.push(attributeValue);
+        if (isDirective(name)) {
+          const { directive, modifiers, directiveName } = parseDirectives(
+            t, {
+              tag,
+              isComponent,
+              name,
+              path: prop,
+              state,
+              value: attributeValue,
+            },
+          );
+
+          if (directive) {
+            directives.push(t.arrayExpression(directive));
           } else {
-            const directiveName = name.startsWith('v-')
-              ? name.replace('v-', '')
-              : name.replace(`v${name[1]}`, name[1].toLowerCase());
-            if (directiveName === 'show') {
-              directives.push(t.arrayExpression([
-                createIdentifier(t, state, 'vShow'),
-                attributeValue,
-              ]));
-            } else {
-              directives.push(t.arrayExpression([
-                t.callExpression(createIdentifier(t, state, 'resolveDirective'), [
-                  t.stringLiteral(directiveName),
-                ]),
-                attributeValue,
-              ]));
+            // must be v-model and is a component
+            properties.push(t.objectProperty(
+              t.stringLiteral('modelValue'),
+              attributeValue,
+            ));
+
+            dynamicPropNames.add('modelValue');
+
+            if (modifiers.size) {
+              properties.push(t.objectProperty(
+                t.stringLiteral('modelModifiers'),
+                t.objectExpression(
+                  [...modifiers].map((modifier) => (
+                    t.objectProperty(
+                      t.stringLiteral(modifier),
+                      t.booleanLiteral(true),
+                    )
+                  )),
+                ),
+              ));
             }
           }
-          return;
-        }
-        if (needToMerge(name)) {
-          mergeArgs.push(
-            t.objectExpression([
-              t.objectProperty(
-                t.stringLiteral(
-                  name,
-                ),
-                attributeValue,
+
+          if (directiveName === 'model') {
+            properties.push(t.objectProperty(
+              t.stringLiteral('onUpdate:modelValue'),
+              t.arrowFunctionExpression(
+                [t.identifier('$event')],
+                t.assignmentExpression('=', attributeValue, t.identifier('$event')),
               ),
-            ]),
-          );
+            ));
+
+            dynamicPropNames.add('onUpdate:modelValue');
+          }
           return;
         }
         if (name.match(xlinkRE)) {
           name = name.replace(xlinkRE, (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`);
         }
-        propsExpression.push(t.objectProperty(
+        properties.push(t.objectProperty(
           t.stringLiteral(name),
           attributeValue || t.booleanLiteral(true),
         ));
       } else {
         hasDynamicKeys = true;
-        propsExpression.push(transformJSXSpreadAttribute(t, prop, mergeArgs));
+        transformJSXSpreadAttribute(t, prop, mergeArgs);
       }
     });
 
@@ -215,7 +253,7 @@ const buildProps = (t, path, state) => {
     if (hasStyleBinding) {
       patchFlag |= PatchFlags.STYLE;
     }
-    if (dynamicPropNames.length) {
+    if (dynamicPropNames.size) {
       patchFlag |= PatchFlags.PROPS;
     }
     if (hasHydrationEventBinding) {
@@ -230,14 +268,42 @@ const buildProps = (t, path, state) => {
     patchFlag |= PatchFlags.NEED_PATCH;
   }
 
+  let propsExpression;
+
+  if (mergeArgs.length) {
+    if (properties.length) {
+      mergeArgs.push(...dedupeProperties(t, properties));
+    }
+    if (mergeArgs.length > 1) {
+      const exps = [];
+      const objectProperties = [];
+      mergeArgs.forEach((arg) => {
+        if (t.isIdentifier(arg) || t.isExpression(arg)) {
+          exps.push(arg);
+        } else {
+          objectProperties.push(arg);
+        }
+      });
+      propsExpression = t.callExpression(
+        createIdentifier(t, state, 'mergeProps'),
+        [
+          ...exps,
+          objectProperties.length
+            && t.objectExpression(objectProperties),
+        ].filter(Boolean),
+      );
+    } else {
+      // single no need for a mergeProps call
+      // eslint-disable-next-line prefer-destructuring
+      propsExpression = mergeArgs[0];
+    }
+  } else if (properties.length) {
+    propsExpression = t.objectExpression(dedupeProperties(t, properties));
+  }
+
   return {
-    props: mergeArgs.length ? t.callExpression(
-      createIdentifier(t, state, 'mergeProps'),
-      [
-        ...mergeArgs,
-        propsExpression.length && t.objectExpression(propsExpression),
-      ].filter(Boolean),
-    ) : t.objectExpression(propsExpression),
+    tag,
+    props: propsExpression,
     directives,
     patchFlag,
     dynamicPropNames,
@@ -270,19 +336,19 @@ const getChildren = (t, paths) => paths
     throw new Error(`getChildren: ${path.type} is not supported`);
   }).filter((value) => (
     value !== undefined
-      && value !== null
-      && !t.isJSXEmptyExpression(value)
+    && value !== null
+    && !t.isJSXEmptyExpression(value)
   ));
 
 
 const transformJSXElement = (t, path, state) => {
-  const tag = getTag(t, path);
   const children = t.arrayExpression(getChildren(t, path.get('children')));
   const {
+    tag,
     props,
     directives,
     patchFlag,
-    dynamicPropNames = [],
+    dynamicPropNames,
   } = buildProps(t, path, state);
 
   const flagNames = Object.keys(PatchFlagNames)
@@ -292,12 +358,17 @@ const transformJSXElement = (t, path, state) => {
     .join(', ');
 
   const isComponent = checkIsComponent(t, path.get('openingElement'));
+  const child = children.elements.length === 1 ? children.elements[0] : children;
+  if (state.opts.compatibleProps && !state.get('compatibleProps')) {
+    state.set('compatibleProps', addDefault(
+      path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
+    ));
+  }
+
   const createVNode = t.callExpression(createIdentifier(t, state, 'createVNode'), [
     tag,
-    state.opts.compatibleProps ? t.callExpression(addDefault(
-      path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
-    ), [props]) : props,
-    children.elements.length
+    state.opts.compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
+    children.elements[0]
       ? (
         isComponent
           ? t.objectExpression([
@@ -306,16 +377,25 @@ const transformJSXElement = (t, path, state) => {
               t.callExpression(createIdentifier(t, state, 'withCtx'), [
                 t.arrowFunctionExpression(
                   [],
-                  children,
+                  t.isStringLiteral(child)
+                    ? t.callExpression(
+                      createIdentifier(t, state, 'createTextVNode'),
+                      [child],
+                    )
+                    : child,
                 ),
               ]),
             ),
+            t.objectProperty(
+              t.identifier('_'),
+              t.numericLiteral(1),
+            ),
           ])
-          : children
+          : child
       ) : t.nullLiteral(),
-    patchFlag && t.addComment(t.numericLiteral(patchFlag), 'leading', ` ${flagNames} `),
-    dynamicPropNames.length
-      && t.arrayExpression(dynamicPropNames.map((name) => t.stringLiteral(name))),
+    patchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
+    dynamicPropNames.size
+    && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name))),
   ].filter(Boolean));
 
   if (!directives.length) {
