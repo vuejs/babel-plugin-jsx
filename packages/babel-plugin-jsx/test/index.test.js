@@ -74,6 +74,16 @@ describe('Transform JSX', () => {
     expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
   });
 
+  test('nested component', () => {
+    const A = {};
+
+    A.B = () => <div>123</div>;
+
+    const wrapper = mount(() => <A.B />);
+
+    expect(wrapper.html()).toBe('<div>123</div>');
+  });
+
   test('xlink:href', () => {
     const wrapper = shallowMount({
       setup() {
@@ -89,7 +99,7 @@ describe('Transform JSX', () => {
         return () => <div class="a" {...{ class: 'b' } } />;
       },
     });
-    expect(wrapper.html()).toBe('<div class="a b"></div>');
+    expect(wrapper.classes().sort()).toEqual(['a', 'b'].sort());
   });
 
   test('Merge style', () => {
@@ -248,6 +258,7 @@ describe('Transform JSX', () => {
 describe('Patch Flags', () => {
   let renders = 0;
   const Child = {
+    props: ['text'],
     setup(props) {
       return () => {
         renders++;
