@@ -30,10 +30,10 @@ const transformJSXSpreadAttribute = (t, path, mergeArgs) => {
   }
 };
 
-const getJSXAttributeValue = (t, path) => {
+const getJSXAttributeValue = (t, path, state) => {
   const valuePath = path.get('value');
   if (valuePath.isJSXElement()) {
-    return transformJSXElement(t, valuePath);
+    return transformJSXElement(t, valuePath, state);
   }
   if (valuePath.isStringLiteral()) {
     return valuePath.node;
@@ -97,7 +97,7 @@ const dedupeProperties = (t, properties = []) => {
   return deduped;
 };
 
-const buildProps = (t, path, state) => {
+const buildProps = (t, path, state, hasContainer) => {
   const tag = getTag(t, path);
   const isComponent = checkIsComponent(t, path.get('openingElement'));
   const props = path.get('openingElement').get('attributes');
@@ -108,6 +108,8 @@ const buildProps = (t, path, state) => {
 
   if (isFragment(t, path.get('openingElement.name'))) {
     patchFlag |= PatchFlags.STABLE_FRAGMENT;
+  } else if (hasContainer) {
+    patchFlag |= PatchFlags.BAIL;
   }
 
   if (props.length === 0) {
@@ -316,40 +318,46 @@ const buildProps = (t, path, state) => {
  * @param paths Array<JSXText | JSXExpressionContainer | JSXSpreadChild | JSXElement>
  * @returns Array<Expression | SpreadElement>
  */
-const getChildren = (t, paths) => paths
-  .map((path) => {
-    if (path.isJSXText()) {
-      return transformJSXText(t, path);
-    }
-    if (path.isJSXExpressionContainer()) {
-      return transformJSXExpressionContainer(path);
-    }
-    if (path.isJSXSpreadChild()) {
-      return transformJSXSpreadChild(t, path);
-    }
-    if (path.isCallExpression()) {
-      return path.node;
-    }
-    if (path.isJSXElement()) {
-      return transformJSXElement(t, path);
-    }
-    throw new Error(`getChildren: ${path.type} is not supported`);
-  }).filter((value) => (
-    value !== undefined
-    && value !== null
-    && !t.isJSXEmptyExpression(value)
-  ));
-
+const getChildren = (t, paths, state) => {
+  let hasContainer = false;
+  return {
+    children: paths
+      .map((path) => {
+        if (path.isJSXText()) {
+          return transformJSXText(t, path);
+        }
+        if (path.isJSXExpressionContainer()) {
+          hasContainer = true;
+          return transformJSXExpressionContainer(path);
+        }
+        if (path.isJSXSpreadChild()) {
+          return transformJSXSpreadChild(t, path);
+        }
+        if (path.isCallExpression()) {
+          return path.node;
+        }
+        if (path.isJSXElement()) {
+          return transformJSXElement(t, path, state);
+        }
+        throw new Error(`getChildren: ${path.type} is not supported`);
+      }).filter((value) => (
+        value !== undefined
+      && value !== null
+      && !t.isJSXEmptyExpression(value)
+      )),
+    hasContainer,
+  };
+};
 
 const transformJSXElement = (t, path, state) => {
-  const children = t.arrayExpression(getChildren(t, path.get('children')));
+  const { children, hasContainer } = getChildren(t, path.get('children'), state);
   const {
     tag,
     props,
     directives,
     patchFlag,
     dynamicPropNames,
-  } = buildProps(t, path, state);
+  } = buildProps(t, path, state, hasContainer);
 
   const flagNames = Object.keys(PatchFlagNames)
     .map(Number)
@@ -358,8 +366,8 @@ const transformJSXElement = (t, path, state) => {
     .join(', ');
 
   const isComponent = checkIsComponent(t, path.get('openingElement'));
-  const child = children.elements.length === 1 && t.isStringLiteral(children.elements[0])
-    ? children.elements[0] : children;
+  const child = children.length === 1 && t.isStringLiteral(children[0])
+    ? children[0] : t.arrayExpression(children);
   if (state.opts.compatibleProps && !state.get('compatibleProps')) {
     state.set('compatibleProps', addDefault(
       path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
@@ -369,7 +377,7 @@ const transformJSXElement = (t, path, state) => {
   const createVNode = t.callExpression(createIdentifier(t, state, 'createVNode'), [
     tag,
     state.opts.compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
-    children.elements[0]
+    children[0]
       ? (
         isComponent
           ? t.objectExpression([

@@ -50,7 +50,7 @@ const isDirective = (src) => src.startsWith('v-')
  * @returns boolean
  */
 const isFragment = (t, path) => t.isJSXMemberExpression(path)
-    && path.node.property.name;
+    && path.node.property.name === 'Fragment';
 
 /**
  * Check if a JSXOpeningElement is a component
@@ -268,7 +268,7 @@ const parseDirectives = (t, {
 
   return {
     directiveName,
-    modifiers: new Set(modifiers),
+    modifiers: modifiersSet,
     directive: hasDirective ? [
       resolveDirective(t, path, state, tag, directiveName),
       value,
@@ -284,7 +284,6 @@ const parseDirectives = (t, {
     ].filter(Boolean) : undefined,
   };
 };
-
 
 export {
   createIdentifier,
