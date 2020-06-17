@@ -4,7 +4,9 @@
     "packages/*"
   ],
   "scripts": {
-    "publish": "lerna publish"
+    "publish": "lerna publish",
+    "dev": "node scripts/dev.js",
+    "site": "node scripts/site.js"
   },
   "license": "MIT",
   "keywords": [
