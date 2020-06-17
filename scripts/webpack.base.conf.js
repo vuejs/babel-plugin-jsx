@@ -1,13 +1,14 @@
 const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
   devtool: 'cheap-module-eval-source-map',
+  context: path.join(__dirname, '../packages/jsx-explorer'),
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
+    publicPath: './',
   },
   module: {
     rules: [
@@ -32,14 +33,12 @@ module.exports = {
       },
     ],
   },
-  devServer: {
-    inline: true,
-    open: true,
-    hot: true,
-    overlay: true,
-  },
   plugins: [
     new MonacoWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'index.html',
+      filename: 'index.html',
+    }),
   ],
   node: {
     fs: 'empty',
