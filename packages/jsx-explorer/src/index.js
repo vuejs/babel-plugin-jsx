@@ -40,7 +40,7 @@ monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 });
 
 const editor = monaco.editor.create(document.getElementById('source'), {
-  value: localStorage.getItem('state') || 'const App = () => <div>Hello World</div>',
+  value: decodeURIComponent(window.location.hash.slice(1)) || localStorage.getItem('state') || 'const App = () => <div>Hello World</div>',
   language: 'javascript',
   tabSize: 2,
   ...sharedEditorOptions,
@@ -57,6 +57,7 @@ const output = monaco.editor.create(document.getElementById('output'), {
 const compile = () => {
   const src = editor.getValue();
   localStorage.setItem('state', src);
+  window.location.hash = encodeURIComponent(src);
   console.clear();
   transform(src, {
     babelrc: false,
