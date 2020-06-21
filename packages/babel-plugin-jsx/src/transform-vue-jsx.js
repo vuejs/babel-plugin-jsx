@@ -369,14 +369,14 @@ const transformJSXElement = (t, path, state) => {
   const child = children.length === 1 && t.isStringLiteral(children[0])
     ? children[0] : t.arrayExpression(children);
 
-  const { compatibleProps } = state.opts;
+  const { compatibleProps, usePatchFlag } = state.opts;
   if (compatibleProps && !state.get('compatibleProps')) {
     state.set('compatibleProps', addDefault(
       path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
     ));
   }
 
-  const createVNode = t.callExpression(createIdentifier(t, state, 'createVNode'), [
+  const createVNode = t.callExpression(createIdentifier(t, state, usePatchFlag ? 'createVNode' : 'h'), [
     tag,
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
     children[0]
@@ -400,8 +400,8 @@ const transformJSXElement = (t, path, state) => {
           ])
           : child
       ) : t.nullLiteral(),
-    patchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
-    dynamicPropNames.size
+    patchFlag && usePatchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
+    dynamicPropNames.size && usePatchFlag
     && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name))),
   ].filter(Boolean));
 
