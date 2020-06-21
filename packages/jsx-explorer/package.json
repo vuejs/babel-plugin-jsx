@@ -1,12 +1,12 @@
 {
   "name": "@ant-design-vue/jsx-explorer",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha.6",
   "private": true,
   "dependencies": {
     "monaco-editor": "^0.20.0"
   },
   "devDependencies": {
-    "@ant-design-vue/babel-plugin-jsx": "^1.0.0-alpha.4",
+    "@ant-design-vue/babel-plugin-jsx": "^1.0.0-alpha.6",
     "@babel/core": "^7.0.0",
     "babel-loader": "^8.1.0",
     "css-loader": "^3.5.3",
