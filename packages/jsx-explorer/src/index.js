@@ -84,7 +84,6 @@ compile();
 // update compile output when input changes
 editor.onDidChangeModelContent(debounce(compile));
 
-
 function debounce(fn, delay = 300) {
   let prevTimer = null;
   return ((...args) => {
