@@ -1,5 +1,11 @@
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { shallowMount, mount } from '@vue/test-utils';
+
+const patchFlagExpect = (wrapper, flag, dynamic) => {
+  const { patchFlag, dynamicProps } = wrapper.vm.$.subTree;
+  expect(patchFlag).toBe(flag);
+  expect(dynamicProps).toEqual(dynamic);
+};
 
 describe('Transform JSX', () => {
   test('should render with render function', () => {
@@ -52,6 +58,7 @@ describe('Transform JSX', () => {
         );
       },
     });
+    expect(wrapper.classes()).toStrictEqual([]);
     expect(wrapper.text()).toBe('1');
   });
 
@@ -255,79 +262,49 @@ describe('Transform JSX', () => {
   });
 });
 
-describe('Patch Flags', () => {
-  let renders = 0;
-  const Child = {
-    props: ['text'],
-    setup(props) {
-      return () => {
-        renders++;
-        return <div>{props.text}</div>;
-      };
-    },
-  };
-  Child.inheritAttrs = false;
-
-  it('should render when props change', async () => {
-    const wrapper = mount({
+describe('PatchFlags', () => {
+  test('static', () => {
+    const wrapper = shallowMount({
       setup() {
-        const count = ref(0);
-        const inc = () => {
-          count.value++;
-        };
-        return () => (
-          <div onClick={inc}>
-            <Child text={count.value} />
-          </div>
-        );
+        return () => <div class="static">static</div>;
       },
     });
-
-    expect(renders).toBe(1);
-    await wrapper.trigger('click');
-    expect(renders).toBe(2);
+    patchFlagExpect(wrapper, 0, null);
   });
 
-  it('should not render with static props', async () => {
-    renders = 0;
+  test('props', async () => {
     const wrapper = mount({
       setup() {
-        const count = ref(0);
-        const inc = () => {
-          count.value++;
+        const visible = ref(true);
+        const onClick = () => {
+          visible.value = false;
         };
-        return () => (
-          <div onClick={inc}>
-            <Child text={1} />
-          </div>
-        );
+        return () => <div vShow={visible.value} onClick={onClick}>NEED_PATCH</div>;
       },
     });
 
-    expect(renders).toBe(1);
+    patchFlagExpect(wrapper, 8, ['onClick']);
     await wrapper.trigger('click');
-    expect(renders).toBe(1);
+    expect(wrapper.html()).toBe('<div style="display: none;">NEED_PATCH</div>');
   });
 
-  it('should not render when props does not change', async () => {
-    renders = 0;
+  test('full props', async () => {
     const wrapper = mount({
       setup() {
-        const count = ref(0);
-        const s = ref('a');
-        const inc = () => {
-          count.value++;
+        const bindProps = reactive({ class: 'a', style: { marginTop: 10 } });
+        const onClick = () => {
+          bindProps.class = 'b';
         };
+
         return () => (
-          <div onClick={inc}>
-            <Child text={s.value} />
-            {count.value}
-          </div>
+          <div {...bindProps} class="static" onClick={onClick}>full props</div>
         );
       },
     });
+    patchFlagExpect(wrapper, 16, ['onClick']);
 
     await wrapper.trigger('click');
-    expect(renders).toBe(1);
+
+    expect(wrapper.classes().sort()).toEqual(['b', 'static'].sort());
   });
 });
