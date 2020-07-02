@@ -53,7 +53,7 @@ const App = defineComponent(() => {
 })
 ```
 
-fragment
+Fragment
 
 ```jsx
 const App = () => (

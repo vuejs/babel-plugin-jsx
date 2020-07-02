@@ -34,6 +34,130 @@ npm install @ant-design-vue/babel-helper-vue-transform-on
 
 开启这个参数意味着对 { attrs, props, on } 做了兼容处理，但是所有的属性外层都会有 `compatibleProps` 方法
 
+## 表达式
+
+### 内容
+函数式组件
+
+```jsx
+const App = () => <div></div>
+```
+
+在 render 中使用
+
+```jsx
+const App = {
+  render() {
+    return <div>Vue 3.0</div>
+  }
+}
+```
+
+```jsx
+const App = defineComponent(() => {
+  const count = ref(0);
+
+  const inc = () => {
+    count.value++;
+  };
+
+  return () => (
+    <div onClick={inc}>
+      {count.value}
+    </div>
+  )
+})
+```
+
+Fragment
+
+```jsx
+const App = () => (
+  <>
+    <span>I'm</span>
+    <span>Fragment</span>
+  </>
+)
+```
+
+### Attributes/Props
+
+```jsx
+const App = () => <input type="email" />
+```
+
+with a dynamic binding:
+
+```jsx
+const placeholderText = 'email'
+const App = () => (
+  <input
+    type="email"
+    placeholder={placeholderText}
+  />
+)
+```
+
+### 指令
+
+> 建议在 JSX 中使用驼峰 (`vModel`)，但是 `v-model` 也能用
+
+v-show
+
+```jsx
+const App = {
+  data() {
+    return { visible: true };
+  },
+  render() {
+    return <input vShow={this.visible} />;
+  },
+};
+```
+
+v-model
+
+* 修饰符：使用 (`_`) 代替 (`.`) (`vModel_trim={this.test}`)
+
+```jsx
+export default {
+  data: () => ({
+    test: 'Hello World',
+  }),
+  render() {
+    return (
+      <>
+        <input type="text" vModel_trim={this.test} />
+        {this.test}
+      </>
+    )
+  },
+}
+```
+
+自定义指令
+
+```jsx
+const App = {
+  directives: { custom: customDirective },
+  setup() {
+    return () => (
+      <a
+        vCustom={{
+          value: 123,
+          modifiers: { modifier: true },
+          arg: 'arg',
+        }}
+      />
+    );
+  },
+}
+```
+
+### 插槽 
+
+目前功能没有想好怎么实现，欢迎在 issue 中讨论，可以先使用 `props` 来代替
+
 ## 兼容性
 
 要求：
