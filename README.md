@@ -2,6 +2,8 @@
 
 To add Vue JSX support.
 
+English | [简体中文](./README-zh_CN.md)
+
 ## Installation
 
 Install the plugin with:
@@ -16,7 +18,7 @@ Then add the plugin to .babelrc:
 
 ```
 {
-  "plugins": ["@ant-design-vue/babel-plugin-jsx", { "transformOn": true, "compatibleProps": true }]
+  "plugins": ["@ant-design-vue/babel-plugin-jsx"]
 }
 ```
 
@@ -30,6 +32,8 @@ transform `on: { click: xx }` to `onClick: xxx`
 * compatibleProps
 
 compatible with Vue 2.x
+
+`{ props, on = {}, attrs, ...rest }` will be transformed to `{ ...props, ...attrs, ...transformOn(on), ...rest }`
 
 ## Compatibility
 
