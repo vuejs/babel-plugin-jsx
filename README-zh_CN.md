@@ -1,12 +1,10 @@
-# Babel Plugin JSX for Vue 3.0
+# Vue 3 Babel JSX 插件
 
-To add Vue JSX support.
+以 JSX 的方式来编写 Vue 代码
 
-English | [简体中文](./README-zh_CN.md)
+## 安装
 
-## Installation
-
-Install the plugin with:
+安装插件
 
 ```
 npm install @ant-design-vue/babel-plugin-jsx -D
@@ -14,7 +12,7 @@ npm install @ant-design-vue/babel-plugin-jsx -D
 npm install @ant-design-vue/babel-helper-vue-transform-on
 ```
 
-Then add the plugin to .babelrc:
+配置 Babel 
 
 ```
 {
@@ -22,29 +20,30 @@ Then add the plugin to .babelrc:
 }
 ```
 
-## Usage
+## 使用
 
-### options
+### 参数
 
 * transformOn
 
-transform `on: { click: xx }` to `onClick: xxx`
+把 `on: { click: xx }` 转成 `onClick: xxx`
+
 * compatibleProps
 
-compatible with Vue 2.x
+兼容大多数 Vue 2 的写法，Vue 3 中，把所有属性都改成了顶级属性，意味这不需要再传递 props，attrs 这些属性。
 
-`{ props, on = {}, attrs, ...rest }` will be transformed to `{ ...props, ...attrs, ...transformOn(on), ...rest }`
+开启这个参数意味着对 { attrs, props, on } 做了兼容处理，但是所有的属性外层都会有 `compatibleProps` 方法
 
-## Syntax
+## 表达式
 
-### Content
-functional component
+### 内容
+函数式组件
 
 ```jsx
 const App = () => <div></div>
 ```
 
-with render
+在 render 中使用
 
 ```jsx
 const App = {
@@ -99,9 +98,9 @@ const App = () => (
 )
 ```
 
-### Directives
+### 指令
 
-> It is recommended to use camelCase version of it (`vModel`) in JSX, but you can use kebab-case too (`v-model`).
+> 建议在 JSX 中使用驼峰 (`vModel`)，但是 `v-model` 也能用
 
 v-show
 
@@ -118,7 +117,7 @@ const App = {
 
 v-model
 
-* You should use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
+* 修饰符：使用 (`_`) 代替 (`.`) (`vModel_trim={this.test}`)
 
 ```jsx
 export default {
@@ -136,7 +135,7 @@ export default {
 }
 ```
 
-custom directive
+自定义指令
 
 ```jsx
 const App = {
@@ -155,14 +154,13 @@ const App = {
 }
 ```
 
-### Slot 
+### 插槽 
 
-Why Not props ?
+目前功能没有想好怎么实现，欢迎在 issue 中讨论，可以先使用 `props` 来代替
 
+## 兼容性
 
-## Compatibility
-
-This repo is only compatible with:
+要求：
 
 - **Babel 7+**
 - **Vue 3+**

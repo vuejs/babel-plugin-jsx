@@ -265,12 +265,12 @@ const buildProps = (t, path, state, hasContainer) => {
 
   if (
     (patchFlag === 0 || patchFlag === PatchFlags.HYDRATE_EVENTS)
-    && hasRef
+    && (hasRef || directives.length > 0)
   ) {
     patchFlag |= PatchFlags.NEED_PATCH;
   }
 
-  let propsExpression;
+  let propsExpression = t.nullLiteral();
 
   if (mergeArgs.length) {
     if (properties.length) {
@@ -368,7 +368,9 @@ const transformJSXElement = (t, path, state) => {
   const isComponent = checkIsComponent(t, path.get('openingElement'));
   const child = children.length === 1 && t.isStringLiteral(children[0])
     ? children[0] : t.arrayExpression(children);
-  if (state.opts.compatibleProps && !state.get('compatibleProps')) {
+
+  const { compatibleProps } = state.opts;
+  if (compatibleProps && !state.get('compatibleProps')) {
     state.set('compatibleProps', addDefault(
       path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
     ));
@@ -376,7 +378,7 @@ const transformJSXElement = (t, path, state) => {
 
   const createVNode = t.callExpression(createIdentifier(t, state, 'createVNode'), [
     tag,
-    state.opts.compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
+    compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
     children[0]
       ? (
         isComponent
@@ -394,10 +396,6 @@ const transformJSXElement = (t, path, state) => {
                     : child,
                 ),
               ]),
-            ),
-            t.objectProperty(
-              t.identifier('_'),
-              t.numericLiteral(1),
             ),
           ])
           : child
