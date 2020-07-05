@@ -1,0 +1,21 @@
+{
+  "name": "vue-plugin-tsx",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node --project tsconfig.compile.json scripts/dev.ts",
+    "build": "rollup -c",
+    "lint": "eslint --ext .js src",
+    "test": "jest --coverage"
+  },
+  "dependencies": {
+    "typescript": "^3.9.6"
+  },
+  "devDependencies": {
+    "ts-loader": "^7.0.5",
+    "ts-node": "^8.10.2",
+    "webpack": "^4.43.0",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

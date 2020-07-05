@@ -1,0 +1,22 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "lib": ["dom", "es5", "es2015", "es2016", "es2017"],
+    "allowJs": false,
+    "jsx": "preserve",
+    "strict": true,
+    "importHelpers": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "outDir": "dist"
+  },
+  "include": ["example"],
+  "exclude": ["node_modules"]
+}
