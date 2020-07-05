@@ -13,19 +13,20 @@ import {
   parseDirectives,
   isFragment,
 } from './utils';
-import {  JSXPath, JSXChildrenPath, State, JSXAttriPath, T } from './types';
-import { NodePath} from "@babel/traverse";
-import { ArrayExpression, ObjectProperty, CallExpression, JSXSpreadAttribute, Expression, ObjectExpression, JSXIdentifier, JSXOpeningElement, jsxSpreadAttribute, NullLiteral, StringLiteral } from '@babel/types';
+import { JSXPath, JSXChildrenPath, State, JSXAttriPath, T } from './types';
+import { NodePath } from "@babel/traverse";
+import { ArrayExpression, ObjectProperty, CallExpression, JSXSpreadAttribute, Expression, ObjectExpression, NullLiteral } from '@babel/types';
+import * as t from '@babel/types'
 
 const xlinkRE = /^xlink([A-Z])/;
 const onRE = /^on[^a-z]/;
 
-const isOn = (key:string) => onRE.test(key);
+const isOn = (key: string) => onRE.test(key);
 
 
 
-const transformJSXSpreadAttribute = (t:T, path:NodePath<JSXSpreadAttribute>, mergeArgs:(NodePath<ObjectExpression>|Expression)[]) => {
-  const argument = path.get<'argument'>('argument') as NodePath<ObjectExpression> ;
+const transformJSXSpreadAttribute = (path: NodePath<JSXSpreadAttribute>, mergeArgs: (NodePath<ObjectExpression> | Expression)[]) => {
+  const argument = path.get<'argument'>('argument') as NodePath<ObjectExpression>;
   const { properties } = argument.node;
   if (!properties) {
     // argument is an Identifier
@@ -35,10 +36,10 @@ const transformJSXSpreadAttribute = (t:T, path:NodePath<JSXSpreadAttribute>, mer
   }
 };
 
-const getJSXAttributeValue = (t:T, path:JSXAttriPath, state:State) => {
+const getJSXAttributeValue = (path: JSXAttriPath, state: State) => {
   const valuePath = path.get<'value'>('value');
   if (valuePath.isJSXElement()) {
-    return transformJSXElement(t, valuePath, state);
+    return transformJSXElement(valuePath, state);
   }
   if (valuePath.isStringLiteral()) {
     return valuePath.node;
@@ -56,16 +57,16 @@ const getJSXAttributeValue = (t:T, path:JSXAttriPath, state:State) => {
  * @param path
  * @returns boolean
  */
-const isConstant = (t:T, node:object|null):boolean => {
+const isConstant = (node: object | null): boolean => {
   if (t.isIdentifier(node)) {
     return node.name === 'undefined';
   }
   if (t.isArrayExpression(node)) {
-    const elements  = node.elements
-    return elements.every((element) => element && isConstant(t, element));
+    const elements = node.elements
+    return elements.every((element) => element && isConstant(element));
   }
   if (t.isObjectExpression(node)) {
-    return node.properties.every((property) => isConstant(t, property.value));
+    return node.properties.every((property) => isConstant(property.value));
   }
   if (t.isLiteral(node)) {
     return true;
@@ -73,7 +74,7 @@ const isConstant = (t:T, node:object|null):boolean => {
   return false;
 };
 
-const mergeAsArray = (t:T, existing:object, incoming:object) => {
+const mergeAsArray = (existing: object, incoming: object) => {
   if (t.isArrayExpression(existing.value)) {
     existing.value.elements.push(incoming.value);
   } else {
@@ -84,15 +85,15 @@ const mergeAsArray = (t:T, existing:object, incoming:object) => {
   }
 };
 
-const dedupeProperties = (t:T, properties:ObjectProperty[] = []) => {
-  const knownProps = new Map<string,ObjectProperty>();
-  const deduped:ObjectProperty[] = [];
+const dedupeProperties = (properties: ObjectProperty[] = []) => {
+  const knownProps = new Map<string, ObjectProperty>();
+  const deduped: ObjectProperty[] = [];
   properties.forEach((prop) => {
     const { key: { value: name } = {} } = prop;
     const existing = knownProps.get(name);
     if (existing) {
       if (name === 'style' || name === 'class' || name.startsWith('on')) {
-        mergeAsArray(t, existing, prop);
+        mergeAsArray(existing, prop);
       }
     } else {
       knownProps.set(name, prop);
@@ -103,16 +104,16 @@ const dedupeProperties = (t:T, properties:ObjectProperty[] = []) => {
   return deduped;
 };
 
-const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
-  const tag = getTag(t, path);
-  const isComponent = checkIsComponent(t, path.get<'openingElement'>('openingElement'));
+const buildProps = (path: JSXPath, state: State, hasContainer: boolean) => {
+  const tag = getTag(path);
+  const isComponent = checkIsComponent(path.get<'openingElement'>('openingElement'));
   const props = path.get<'openingElement'>('openingElement').get<'attributes'>('attributes');
-  const directives:ArrayExpression[] = [];
+  const directives: ArrayExpression[] = [];
   const dynamicPropNames = new Set();
 
   let patchFlag = 0;
 
-  if (isFragment(t, path.get('openingElement').get<'name'>('name'))) {
+  if (isFragment(path.get('openingElement').get<'name'>('name'))) {
     patchFlag |= PatchFlags.STABLE_FRAGMENT;
   } else if (hasContainer) {
     patchFlag |= PatchFlags.BAIL;
@@ -128,7 +129,7 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
     };
   }
 
-  const properties:ObjectProperty[] = [];
+  const properties: ObjectProperty[] = [];
 
   // patchFlag analysis
   let hasRef = false;
@@ -137,42 +138,42 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
   let hasHydrationEventBinding = false;
   let hasDynamicKeys = false;
 
-  const mergeArgs :(CallExpression|ObjectProperty)[]= [];
+  const mergeArgs: (CallExpression | ObjectProperty)[] = [];
 
   props
-  .forEach((prop) => {
-    if (prop.isJSXAttribute()) {
-      let name = getJSXAttributeName(t, prop) as string;
+    .forEach((prop) => {
+      if (prop.isJSXAttribute()) {
+        let name = getJSXAttributeName(prop) as string;
 
-      const attributeValue = getJSXAttributeValue(t, prop,state);
+        const attributeValue = getJSXAttributeValue(prop, state);
 
-      if (!isConstant(t, attributeValue) || name === 'ref') {
-        if (
-          !isComponent
-          && isOn(name)
-          // omit the flag for click handlers becaues hydration gives click
-          // dedicated fast path.
-          && name.toLowerCase() !== 'onclick'
-          // omit v-model handlers
-          && name !== 'onUpdate:modelValue'
-        ) {
-          hasHydrationEventBinding = true;
+        if (!isConstant(attributeValue) || name === 'ref') {
+          if (
+            !isComponent
+            && isOn(name)
+            // omit the flag for click handlers becaues hydration gives click
+            // dedicated fast path.
+            && name.toLowerCase() !== 'onclick'
+            // omit v-model handlers
+            && name !== 'onUpdate:modelValue'
+          ) {
+            hasHydrationEventBinding = true;
+          }
+
+          if (name === 'ref') {
+            hasRef = true;
+          } else if (name === 'class' && !isComponent) {
+            hasClassBinding = true;
+          } else if (name === 'style' && !isComponent) {
+            hasStyleBinding = true;
+          } else if (
+            name !== 'key'
+            && !isDirective(name)
+            && name !== 'on'
+          ) {
+            dynamicPropNames.add(name);
+          }
         }
-
-        if (name === 'ref') {
-          hasRef = true;
-        } else if (name === 'class' && !isComponent) {
-          hasClassBinding = true;
-        } else if (name === 'style' && !isComponent) {
-          hasStyleBinding = true;
-        } else if (
-          name !== 'key'
-          && !isDirective(name)
-          && name !== 'on'
-        ) {
-          dynamicPropNames.add(name);
-        }
-      }
         if (state.opts.transformOn && (name === 'on' || name === 'nativeOn')) {
           if (!state.get('transformOn')) {
             state.set('transformOn', addDefault(
@@ -189,7 +190,7 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
         }
         if (isDirective(name)) {
           const { directive, modifiers, directiveName } = parseDirectives(
-            t, {
+            {
               tag,
               isComponent,
               name,
@@ -245,9 +246,9 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
           t.stringLiteral(name),
           attributeValue || t.booleanLiteral(true),
         ));
-      } else  {
+      } else {
         hasDynamicKeys = true;
-        transformJSXSpreadAttribute(t, prop, mergeArgs);
+        transformJSXSpreadAttribute(prop, mergeArgs);
       }
     });
 
@@ -276,15 +277,15 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
     patchFlag |= PatchFlags.NEED_PATCH;
   }
 
-  let propsExpression :CallExpression|NullLiteral|ObjectExpression|ObjectProperty= t.nullLiteral();
+  let propsExpression: CallExpression | NullLiteral | ObjectExpression | ObjectProperty = t.nullLiteral();
 
   if (mergeArgs.length) {
     if (properties.length) {
-      mergeArgs.push(...dedupeProperties(t, properties));
+      mergeArgs.push(...dedupeProperties(properties));
     }
     if (mergeArgs.length > 1) {
-      const exps :CallExpression[]= [];
-      const objectProperties :ObjectProperty[]= [];
+      const exps: CallExpression[] = [];
+      const objectProperties: ObjectProperty[] = [];
       mergeArgs.forEach((arg) => {
         if (t.isIdentifier(arg) || t.isExpression(arg)) {
           exps.push(arg);
@@ -292,12 +293,12 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
           objectProperties.push(arg);
         }
       });
-      if(objectProperties.length){
+      if (objectProperties.length) {
         propsExpression = t.callExpression(
-          createIdentifier(t, state, 'mergeProps'),
+          createIdentifier(state, 'mergeProps'),
           [
             ...exps,
-             t.objectExpression(objectProperties),
+            t.objectExpression(objectProperties),
           ].filter(Boolean),
         );
       }
@@ -307,7 +308,7 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
       propsExpression = mergeArgs[0];
     }
   } else if (properties.length) {
-    propsExpression = t.objectExpression(dedupeProperties(t, properties));
+    propsExpression = t.objectExpression(dedupeProperties(properties));
   }
 
   return {
@@ -325,46 +326,46 @@ const buildProps = (t:T, path:JSXPath, state:State, hasContainer:boolean) => {
  * @param paths Array<JSXText | JSXExpressionContainer | JSXSpreadChild | JSXElement>
  * @returns Array<Expression | SpreadElement>
  */
-const getChildren = (t:T, paths:JSXChildrenPath[], state:State) => {
+const getChildren = (paths: JSXChildrenPath[], state: State) => {
   let hasContainer = false;
   return {
     children: paths
       .map((path) => {
         if (path.isJSXText()) {
-          return transformJSXText(t, path);
+          return transformJSXText(path);
         }
         if (path.isJSXExpressionContainer()) {
           hasContainer = true;
           return transformJSXExpressionContainer(path);
         }
         if (path.isJSXSpreadChild()) {
-          return transformJSXSpreadChild(t, path);
+          return transformJSXSpreadChild(path);
         }
         if (path.isCallExpression()) {
           return path.node;
         }
         if (path.isJSXElement()) {
-          return transformJSXElement(t, path, state);
+          return transformJSXElement(path, state);
         }
         throw new Error(`getChildren: ${path.type} is not supported`);
       }).filter((value) => (
         value !== undefined
-      && value !== null
-      && !t.isJSXEmptyExpression(value)
+        && value !== null
+        && !t.isJSXEmptyExpression(value)
       )),
     hasContainer,
   };
 };
 
-const transformJSXElement = (t:T, path:JSXPath, state:State) => {
-  const { children, hasContainer } = getChildren(t, path.get('children'), state);
+const transformJSXElement = (path: JSXPath, state: State) => {
+  const { children, hasContainer } = getChildren(path.get('children'), state);
   const {
     tag,
     props,
     directives,
     patchFlag,
     dynamicPropNames,
-  } = buildProps(t, path, state, hasContainer);
+  } = buildProps(path, state, hasContainer);
 
   const flagNames = Object.keys(PatchFlagNames)
     .map(Number)
@@ -372,7 +373,7 @@ const transformJSXElement = (t:T, path:JSXPath, state:State) => {
     .map((n) => PatchFlagNames[n])
     .join(', ');
 
-  const isComponent = checkIsComponent(t, path.get('openingElement'));
+  const isComponent = checkIsComponent(path.get('openingElement'));
   const child = children.length === 1 && t.isStringLiteral(children[0])
     ? children[0] : t.arrayExpression(children);
 
@@ -383,7 +384,7 @@ const transformJSXElement = (t:T, path:JSXPath, state:State) => {
     ));
   }
 
-  const createVNode = t.callExpression(createIdentifier(t, state, 'createVNode'), [
+  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
     tag,
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
     children[0]
@@ -392,12 +393,12 @@ const transformJSXElement = (t:T, path:JSXPath, state:State) => {
           ? t.objectExpression([
             t.objectProperty(
               t.identifier('default'),
-              t.callExpression(createIdentifier(t, state, 'withCtx'), [
+              t.callExpression(createIdentifier(state, 'withCtx'), [
                 t.arrowFunctionExpression(
                   [],
                   t.isStringLiteral(child)
                     ? t.callExpression(
-                      createIdentifier(t, state, 'createTextVNode'),
+                      createIdentifier(state, 'createTextVNode'),
                       [child],
                     )
                     : child,
@@ -416,20 +417,20 @@ const transformJSXElement = (t:T, path:JSXPath, state:State) => {
     return createVNode;
   }
 
-  return t.callExpression(createIdentifier(t, state, 'withDirectives'), [
+  return t.callExpression(createIdentifier(state, 'withDirectives'), [
     createVNode,
     t.arrayExpression(directives),
   ]);
 };
 
-export default (t:T) => ({
+export default () => ({
   JSXElement: {
-    exit(path:JSXPath, state:State) {
+    exit(path: JSXPath, state: State) {
       if (!state.get('vue')) {
         state.set('vue', addNamespace(path, 'vue'));
       }
       path.replaceWith(
-        transformJSXElement(t, path, state),
+        transformJSXElement(path, state),
       );
     },
   },

@@ -2,7 +2,6 @@ import * as BabelTypes from "@babel/types";
 import { NodePath} from "@babel/traverse";
 
 
-export type T  = typeof BabelTypes
 export type State = any
 
 
