@@ -181,7 +181,7 @@ const transformJSXText = (t:Babel['types'], path:NodePath<JSXText>) => {
  * @param path JSXExpressionContainer
  * @returns Expression
  */
-const transformJSXExpressionContainer = (path:JSXExpressionContainerPath) => path.get('expression').node;
+const transformJSXExpressionContainer = (path:JSXExpressionContainerPath) => path.get<'expression'>('expression').node;
 
 /**
  * Transform JSXSpreadChild

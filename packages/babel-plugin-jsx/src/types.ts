@@ -1,11 +1,10 @@
 import * as BabelTypes from "@babel/types";
 import { NodePath} from "@babel/traverse";
 
-export interface Babel {
-  types: typeof BabelTypes;
-}
 
+export type T  = typeof BabelTypes
 export type State = any
+
 
 export type JSXPath  = NodePath<BabelTypes.JSXElement>
 export type JSXSpreadChildPath  = NodePath<BabelTypes.JSXSpreadChild>
