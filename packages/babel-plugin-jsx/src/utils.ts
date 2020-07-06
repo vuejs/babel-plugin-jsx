@@ -1,6 +1,6 @@
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
-import {  JSXSpreadChildPath, JSXExpressionContainerPath, State, JSXAttriPath, JSXOpengingElementPath } from './types';
+import { JSXSpreadChildPath, JSXExpressionContainerPath, State, JSXAttriPath, JSXOpengingElementPath } from './types';
 import { JSXIdentifier, JSXMemberExpression, JSXNamespacedName, JSXText } from '@babel/types';
 import { NodePath } from '@babel/traverse'
 import * as t from '@babel/types'
@@ -202,16 +202,16 @@ const getType = (path: JSXOpengingElementPath) => {
   const typePath = path
     .get('attributes')
     .find(
-      (attributePath) => t.isJSXAttribute(attributePath)
+      (attributePath: NodePath<t.JSXAttribute>) => t.isJSXAttribute(attributePath)
         && t.isJSXIdentifier(attributePath.get<'name'>('name'))
-        && attributePath.get<'name.name'>('name.name').node === 'type'
+        && attributePath.get<'name'>('name').get<'name'>('name').node === 'type'
         && t.isStringLiteral(attributePath.get('value')),
     );
 
   return typePath ? typePath.get('value.value').node : '';
 };
 
-const resolveDirective = (path, state: State, tag, directiveName: string) => {
+const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any, directiveName: string) => {
   if (directiveName === 'show') {
     return createIdentifier(state, 'vShow');
   } if (directiveName === 'model') {
@@ -252,9 +252,17 @@ const resolveDirective = (path, state: State, tag, directiveName: string) => {
  * @param  path JSXAttribute
  * @returns null | Object<{ modifiers: Set<string>, valuePath: Path<Expression>}>
  */
-const parseDirectives = ({
-  name, path, value, state, tag, isComponent,
+const parseDirectives = (args: {
+  name: string,
+  path: NodePath<t.JSXAttribute>
+  , value: any,
+  state: any,
+  tag: any,
+  isComponent: boolean
 }) => {
+  const {
+    name, path, value, state, tag, isComponent,
+  } = args
   const modifiers: string[] = name.split('_');
   const directiveName = modifiers.shift()
     .replace(/^v/, '')

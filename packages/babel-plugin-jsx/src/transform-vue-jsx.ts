@@ -13,10 +13,11 @@ import {
   parseDirectives,
   isFragment,
 } from './utils';
-import { JSXPath, JSXChildrenPath, State, JSXAttriPath, T } from './types';
 import { NodePath } from "@babel/traverse";
 import { ArrayExpression, ObjectProperty, CallExpression, JSXSpreadAttribute, Expression, ObjectExpression, NullLiteral } from '@babel/types';
 import * as t from '@babel/types'
+
+type State = any
 
 const xlinkRE = /^xlink([A-Z])/;
 const onRE = /^on[^a-z]/;
@@ -36,7 +37,7 @@ const transformJSXSpreadAttribute = (path: NodePath<JSXSpreadAttribute>, mergeAr
   }
 };
 
-const getJSXAttributeValue = (path: JSXAttriPath, state: State) => {
+const getJSXAttributeValue = (path: NodePath<t.JSXAttribute>, state: State) => {
   const valuePath = path.get<'value'>('value');
   if (valuePath.isJSXElement()) {
     return transformJSXElement(valuePath, state);
@@ -74,7 +75,7 @@ const isConstant = (node: object | null): boolean => {
   return false;
 };
 
-const mergeAsArray = (existing: object, incoming: object) => {
+const mergeAsArray = (existing: ObjectProperty, incoming: ObjectProperty) => {
   if (t.isArrayExpression(existing.value)) {
     existing.value.elements.push(incoming.value);
   } else {
@@ -104,7 +105,7 @@ const dedupeProperties = (properties: ObjectProperty[] = []) => {
   return deduped;
 };
 
-const buildProps = (path: JSXPath, state: State, hasContainer: boolean) => {
+const buildProps = (path: NodePath<t.JSXElement>, state: State, hasContainer: boolean) => {
   const tag = getTag(path);
   const isComponent = checkIsComponent(path.get<'openingElement'>('openingElement'));
   const props = path.get<'openingElement'>('openingElement').get<'attributes'>('attributes');
@@ -326,7 +327,7 @@ const buildProps = (path: JSXPath, state: State, hasContainer: boolean) => {
  * @param paths Array<JSXText | JSXExpressionContainer | JSXSpreadChild | JSXElement>
  * @returns Array<Expression | SpreadElement>
  */
-const getChildren = (paths: JSXChildrenPath[], state: State) => {
+const getChildren = (paths: NodePath<t.JSXText | t.JSXExpressionContainer | t.JSXSpreadChild | t.JSXElement>[], state: State) => {
   let hasContainer = false;
   return {
     children: paths
@@ -357,7 +358,7 @@ const getChildren = (paths: JSXChildrenPath[], state: State) => {
   };
 };
 
-const transformJSXElement = (path: JSXPath, state: State) => {
+const transformJSXElement = (path: NodePath<t.JSXElement>, state: State) => {
   const { children, hasContainer } = getChildren(path.get('children'), state);
   const {
     tag,
@@ -425,7 +426,7 @@ const transformJSXElement = (path: JSXPath, state: State) => {
 
 export default () => ({
   JSXElement: {
-    exit(path: JSXPath, state: State) {
+    exit(path: NodePath<t.JSXElement>, state: State) {
       if (!state.get('vue')) {
         state.set('vue', addNamespace(path, 'vue'));
       }
