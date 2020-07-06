@@ -14,7 +14,6 @@ import {
   isFragment,
 } from './utils';
 import { NodePath } from "@babel/traverse";
-import { ArrayExpression, ObjectProperty, CallExpression, JSXSpreadAttribute, Expression, ObjectExpression, NullLiteral } from '@babel/types';
 import * as t from '@babel/types'
 
 type State = any
@@ -26,8 +25,8 @@ const isOn = (key: string) => onRE.test(key);
 
 
 
-const transformJSXSpreadAttribute = (path: NodePath<JSXSpreadAttribute>, mergeArgs: (NodePath<ObjectExpression> | Expression)[]) => {
-  const argument = path.get<'argument'>('argument') as NodePath<ObjectExpression>;
+const transformJSXSpreadAttribute = (path: NodePath<t.JSXSpreadAttribute>, mergeArgs: (NodePath<t.ObjectExpression> | t.Expression)[]) => {
+  const argument = path.get('argument') as NodePath<t.ObjectExpression>;
   const { properties } = argument.node;
   if (!properties) {
     // argument is an Identifier
@@ -38,7 +37,7 @@ const transformJSXSpreadAttribute = (path: NodePath<JSXSpreadAttribute>, mergeAr
 };
 
 const getJSXAttributeValue = (path: NodePath<t.JSXAttribute>, state: State) => {
-  const valuePath = path.get<'value'>('value');
+  const valuePath = path.get('value');
   if (valuePath.isJSXElement()) {
     return transformJSXElement(valuePath, state);
   }
@@ -75,7 +74,7 @@ const isConstant = (node: object | null): boolean => {
   return false;
 };
 
-const mergeAsArray = (existing: ObjectProperty, incoming: ObjectProperty) => {
+const mergeAsArray = (existing: t.ObjectProperty, incoming: t.ObjectProperty) => {
   if (t.isArrayExpression(existing.value)) {
     existing.value.elements.push(incoming.value);
   } else {
@@ -86,9 +85,9 @@ const mergeAsArray = (existing: ObjectProperty, incoming: ObjectProperty) => {
   }
 };
 
-const dedupeProperties = (properties: ObjectProperty[] = []) => {
-  const knownProps = new Map<string, ObjectProperty>();
-  const deduped: ObjectProperty[] = [];
+const dedupeProperties = (properties: t.ObjectProperty[] = []) => {
+  const knownProps = new Map<string, t.ObjectProperty>();
+  const deduped: t.ObjectProperty[] = [];
   properties.forEach((prop) => {
     const { key: { value: name } = {} } = prop;
     const existing = knownProps.get(name);
@@ -107,14 +106,14 @@ const dedupeProperties = (properties: ObjectProperty[] = []) => {
 
 const buildProps = (path: NodePath<t.JSXElement>, state: State, hasContainer: boolean) => {
   const tag = getTag(path);
-  const isComponent = checkIsComponent(path.get<'openingElement'>('openingElement'));
-  const props = path.get<'openingElement'>('openingElement').get<'attributes'>('attributes');
-  const directives: ArrayExpression[] = [];
+  const isComponent = checkIsComponent(path.get('openingElement'));
+  const props = path.get('openingElement').get('attributes');
+  const directives: t.ArrayExpression[] = [];
   const dynamicPropNames = new Set();
 
   let patchFlag = 0;
 
-  if (isFragment(path.get('openingElement').get<'name'>('name'))) {
+  if (isFragment(path.get('openingElement').get('name'))) {
     patchFlag |= PatchFlags.STABLE_FRAGMENT;
   } else if (hasContainer) {
     patchFlag |= PatchFlags.BAIL;
@@ -130,7 +129,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State, hasContainer: bo
     };
   }
 
-  const properties: ObjectProperty[] = [];
+  const properties: t.ObjectProperty[] = [];
 
   // patchFlag analysis
   let hasRef = false;
@@ -139,7 +138,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State, hasContainer: bo
   let hasHydrationEventBinding = false;
   let hasDynamicKeys = false;
 
-  const mergeArgs: (CallExpression | ObjectProperty)[] = [];
+  const mergeArgs: (t.CallExpression | t.ObjectProperty)[] = [];
 
   props
     .forEach((prop) => {
@@ -278,15 +277,15 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State, hasContainer: bo
     patchFlag |= PatchFlags.NEED_PATCH;
   }
 
-  let propsExpression: CallExpression | NullLiteral | ObjectExpression | ObjectProperty = t.nullLiteral();
+  let propsExpression: t.CallExpression | t.NullLiteral | t.ObjectExpression | t.ObjectProperty = t.nullLiteral();
 
   if (mergeArgs.length) {
     if (properties.length) {
       mergeArgs.push(...dedupeProperties(properties));
     }
     if (mergeArgs.length > 1) {
-      const exps: CallExpression[] = [];
-      const objectProperties: ObjectProperty[] = [];
+      const exps: t.CallExpression[] = [];
+      const objectProperties: t.ObjectProperty[] = [];
       mergeArgs.forEach((arg) => {
         if (t.isIdentifier(arg) || t.isExpression(arg)) {
           exps.push(arg);

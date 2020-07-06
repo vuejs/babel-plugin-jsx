@@ -1,7 +1,6 @@
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { JSXSpreadChildPath, JSXExpressionContainerPath, State, JSXAttriPath, JSXOpengingElementPath } from './types';
-import { JSXIdentifier, JSXMemberExpression, JSXNamespacedName, JSXText } from '@babel/types';
 import { NodePath } from '@babel/traverse'
 import * as t from '@babel/types'
 
@@ -53,8 +52,8 @@ const isDirective = (src: string) => src.startsWith('v-')
  * @param {*} path
  * @returns boolean
  */
-const isFragment = (path: NodePath<JSXIdentifier | JSXMemberExpression | JSXNamespacedName>) => t.isJSXMemberExpression(path)
-  && (path.node as JSXMemberExpression).property.name === 'Fragment';
+const isFragment = (path: NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>) => t.isJSXMemberExpression(path)
+  && (path.node as t.JSXMemberExpression).property.name === 'Fragment';
 
 /**
  * Check if a JSXOpeningElement is a component
@@ -64,13 +63,13 @@ const isFragment = (path: NodePath<JSXIdentifier | JSXMemberExpression | JSXName
  * @returns boolean
  */
 const checkIsComponent = (path: JSXOpengingElementPath) => {
-  const namePath = path.get<'name'>('name');
+  const namePath = path.get('name');
 
   if (t.isJSXMemberExpression(namePath)) {
     return !isFragment(namePath); // For withCtx
   }
 
-  const tag: string = namePath.get<'name'>('name').node;
+  const tag: string = namePath.get('name').node;
 
   return !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
@@ -81,7 +80,7 @@ const checkIsComponent = (path: JSXOpengingElementPath) => {
  * @param path JSXMemberExpression
  * @returns MemberExpression
  */
-const transformJSXMemberExpression = (path: NodePath<JSXMemberExpression>) => {
+const transformJSXMemberExpression = (path: NodePath<t.JSXMemberExpression>) => {
   const objectPath = path.get('object');
   const propertyPath = path.get('property');
   const transformedObject = objectPath.isJSXMemberExpression()
@@ -100,7 +99,7 @@ const transformJSXMemberExpression = (path: NodePath<JSXMemberExpression>) => {
  * @returns Identifier | StringLiteral | MemberExpression
  */
 const getTag = (path: JSXOpengingElementPath) => {
-  const namePath = path.get<'openingElement'>('openingElement').get<'name'>('name');
+  const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
     if (path.scope.hasBinding(name) && !htmlTags.includes(name) && !svgTags.includes(name)) {
@@ -131,7 +130,7 @@ const getJSXAttributeName = (path: JSXAttriPath) => {
  * @param path JSXText
  * @returns StringLiteral
  */
-const transformJSXText = (path: NodePath<JSXText>) => {
+const transformJSXText = (path: NodePath<t.JSXText>) => {
   const { node } = path;
   const lines = node.value.split(/\r\n|\n|\r/);
 
@@ -182,7 +181,7 @@ const transformJSXText = (path: NodePath<JSXText>) => {
  * @param path JSXExpressionContainer
  * @returns Expression
  */
-const transformJSXExpressionContainer = (path: JSXExpressionContainerPath) => path.get<'expression'>('expression').node;
+const transformJSXExpressionContainer = (path: JSXExpressionContainerPath) => path.get('expression').node;
 
 /**
  * Transform JSXSpreadChild
@@ -190,7 +189,7 @@ const transformJSXExpressionContainer = (path: JSXExpressionContainerPath) => pa
  * @param path JSXSpreadChild
  * @returns SpreadElement
  */
-const transformJSXSpreadChild = (path: JSXSpreadChildPath) => t.spreadElement(path.get<'expression'>('expression').node);
+const transformJSXSpreadChild = (path: JSXSpreadChildPath) => t.spreadElement(path.get('expression').node);
 
 /**
  * Get JSX element type
@@ -203,8 +202,8 @@ const getType = (path: JSXOpengingElementPath) => {
     .get('attributes')
     .find(
       (attributePath: NodePath<t.JSXAttribute>) => t.isJSXAttribute(attributePath)
-        && t.isJSXIdentifier(attributePath.get<'name'>('name'))
-        && attributePath.get<'name'>('name').get<'name'>('name').node === 'type'
+        && t.isJSXIdentifier(attributePath.get('name'))
+        && attributePath.get('name').get('name').node === 'type'
         && t.isStringLiteral(attributePath.get('value')),
     );
 
