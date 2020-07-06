@@ -293,15 +293,13 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State, hasContainer: bo
           objectProperties.push(arg);
         }
       });
-      if (objectProperties.length) {
         propsExpression = t.callExpression(
           createIdentifier(state, 'mergeProps'),
           [
             ...exps,
-            t.objectExpression(objectProperties),
+           objectProperties.length && t.objectExpression(objectProperties),
           ].filter(Boolean),
         );
-      }
     } else {
       // single no need for a mergeProps call
       // eslint-disable-next-line prefer-destructuring
