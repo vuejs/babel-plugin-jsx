@@ -1,8 +1,8 @@
+import * as t from '@babel/types';
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
-import { JSXSpreadChildPath, JSXExpressionContainerPath, State, JSXAttriPath, JSXOpengingElementPath } from './types';
-import { NodePath } from '@babel/traverse'
-import * as t from '@babel/types'
+import { NodePath } from '@babel/traverse';
+import { State } from './';
 
 const PatchFlags = {
   TEXT: 1,
@@ -37,68 +37,74 @@ const PatchFlagNames = {
   [PatchFlags.BAIL]: 'BAIL',
 };
 
-const createIdentifier = (state: State, id: string) => t.memberExpression(state.get('vue'), t.identifier(id));
+/**
+ * create Identifier
+ * @param state
+ * @param id string 
+ * @returns MemberExpression 
+ */
+const createIdentifier = (
+  state: State, id: string
+): t.MemberExpression => t.memberExpression(state.get('vue'), t.identifier(id));
 
 /**
  * Checks if string is describing a directive
  * @param src string
  */
-const isDirective = (src: string) => src.startsWith('v-')
+const isDirective = (src: string): boolean => src.startsWith('v-')
   || (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
 
 /**
- * Check if a JSXOpeningElement is fragment
- * @param {*} t
- * @param {*} path
+ * Check if a Node is fragment
+ * @param {*} path JSXIdentifier | JSXMemberExpression | JSXNamespacedName
  * @returns boolean
  */
-const isFragment = (path: NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>) => t.isJSXMemberExpression(path)
-  && (path.node as t.JSXMemberExpression).property.name === 'Fragment';
+const isFragment = (path: NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>) =>
+  t.isJSXMemberExpression(path)
+    && (path.node as t.JSXMemberExpression).property.name === 'Fragment';
 
 /**
- * Check if a JSXOpeningElement is a component
+ * Check if a Node is a component
  *
  * @param t
  * @param path JSXOpeningElement
  * @returns boolean
  */
-const checkIsComponent = (path: JSXOpengingElementPath) => {
+const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
   const namePath = path.get('name');
 
   if (t.isJSXMemberExpression(namePath)) {
     return !isFragment(namePath); // For withCtx
   }
 
-  const tag: string = namePath.get('name').node;
+  const tag = (namePath as NodePath<t.JSXIdentifier>).get('name');
 
   return !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
 
 /**
  * Transform JSXMemberExpression to MemberExpression
- * @param t
  * @param path JSXMemberExpression
  * @returns MemberExpression
  */
-const transformJSXMemberExpression = (path: NodePath<t.JSXMemberExpression>) => {
-  const objectPath = path.get('object');
-  const propertyPath = path.get('property');
-  const transformedObject = objectPath.isJSXMemberExpression()
-    ? transformJSXMemberExpression(objectPath)
-    : objectPath.isJSXIdentifier()
-      ? t.identifier(objectPath.node.name)
+const transformJSXMemberExpression = (path: NodePath<t.JSXMemberExpression>): t.MemberExpression => {
+  const objectPath = path.node.object;
+  const propertyPath = path.node.property;
+  const transformedObject = t.isJSXMemberExpression(objectPath)
+    ? transformJSXMemberExpression(path.get('object') as NodePath<t.JSXMemberExpression>)
+    : t.isJSXIdentifier(objectPath)
+      ? t.identifier(objectPath.name)
       : t.nullLiteral();
-  const transformedProperty = t.identifier(propertyPath.get('name').node);
+  const transformedProperty = t.identifier(propertyPath.name);
   return t.memberExpression(transformedObject, transformedProperty);
 };
 
 /**
  * Get tag (first attribute for h) from JSXOpeningElement
- * @param t
- * @param path JSXOpeningElement
+ * @param path JSXElement
  * @returns Identifier | StringLiteral | MemberExpression
  */
-const getTag = (path: JSXOpengingElementPath) => {
+const getTag = (path: NodePath<t.JSXElement>) => {
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
@@ -115,7 +121,7 @@ const getTag = (path: JSXOpengingElementPath) => {
   throw new Error(`getTag: ${namePath.type} is not supported`);
 };
 
-const getJSXAttributeName = (path: JSXAttriPath) => {
+const getJSXAttributeName = (path: NodePath<t.JSXAttribute>): string => {
   const nameNode = path.node.name;
   if (t.isJSXIdentifier(nameNode)) {
     return nameNode.name;
@@ -126,11 +132,10 @@ const getJSXAttributeName = (path: JSXAttriPath) => {
 
 /**
  * Transform JSXText to StringLiteral
- * @param t
  * @param path JSXText
- * @returns StringLiteral
+ * @returns StringLiteral | null
  */
-const transformJSXText = (path: NodePath<t.JSXText>) => {
+const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | null => {
   const { node } = path;
   const lines = node.value.split(/\r\n|\n|\r/);
 
@@ -181,33 +186,38 @@ const transformJSXText = (path: NodePath<t.JSXText>) => {
  * @param path JSXExpressionContainer
  * @returns Expression
  */
-const transformJSXExpressionContainer = (path: JSXExpressionContainerPath) => path.get('expression').node;
+const transformJSXExpressionContainer = (
+  path: NodePath<t.JSXExpressionContainer>
+): (t.Expression) => path.get('expression').node as t.Expression;
 
 /**
  * Transform JSXSpreadChild
- * @param t
  * @param path JSXSpreadChild
  * @returns SpreadElement
  */
-const transformJSXSpreadChild = (path: JSXSpreadChildPath) => t.spreadElement(path.get('expression').node);
+const transformJSXSpreadChild = (
+  path: NodePath<t.JSXSpreadChild>
+): t.SpreadElement => t.spreadElement(path.get('expression').node);
 
 /**
  * Get JSX element type
  *
- * @param t
  * @param path Path<JSXOpeningElement>
  */
-const getType = (path: JSXOpengingElementPath) => {
+const getType = (path: NodePath<t.JSXOpeningElement>) => {
   const typePath = path
     .get('attributes')
-    .find(
-      (attributePath: NodePath<t.JSXAttribute>) => t.isJSXAttribute(attributePath)
-        && t.isJSXIdentifier(attributePath.get('name'))
-        && attributePath.get('name').get('name').node === 'type'
-        && t.isStringLiteral(attributePath.get('value')),
+    .find((attribute) => {
+        if (!t.isJSXAttribute(attribute)) {
+          return false;
+        }
+        return t.isJSXIdentifier(attribute.get('name'))
+        && (attribute.get('name') as NodePath<t.JSXIdentifier>).get('name') === 'type'
+        && t.isStringLiteral(attribute.get('value'))
+      },
     );
 
-  return typePath ? typePath.get('value.value').node : '';
+  return typePath ? typePath.get('value.value') : '';
 };
 
 const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any, directiveName: string) => {
@@ -215,7 +225,7 @@ const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any
     return createIdentifier(state, 'vShow');
   } if (directiveName === 'model') {
     let modelToUse;
-    const type = getType(path.parentPath);
+    const type = getType(path.parentPath as NodePath<t.JSXOpeningElement>);
     switch (tag.value) {
       case 'select':
         modelToUse = createIdentifier(state, 'vModelSelect');
@@ -247,7 +257,6 @@ const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any
 /**
  * Parse directives metadata
  *
- * @param t
  * @param  path JSXAttribute
  * @returns null | Object<{ modifiers: Set<string>, valuePath: Path<Expression>}>
  */
@@ -263,10 +272,10 @@ const parseDirectives = (args: {
     name, path, value, state, tag, isComponent,
   } = args
   const modifiers: string[] = name.split('_');
-  const directiveName = modifiers.shift()
-    .replace(/^v/, '')
+  const directiveName: string = modifiers.shift()
+    ?.replace(/^v/, '')
     .replace(/^-/, '')
-    .replace(/^\S/, (s: string) => s.toLowerCase());
+    .replace(/^\S/, (s: string) => s.toLowerCase()) || '';
 
   if (directiveName === 'model' && !t.isJSXExpressionContainer(path.get('value'))) {
     throw new Error('You have to use JSX Expression inside your v-model');

@@ -1,7 +1,7 @@
-import { addNamespace } from '@babel/helper-module-imports';
 import * as t from '@babel/types'
-import { NodePath } from '@babel/traverse'
-type State = any
+import { addNamespace } from '@babel/helper-module-imports';
+import { NodePath } from '@babel/traverse';
+import { State } from './';
 
 const transformFragment = (path: NodePath<t.JSXElement>, Fragment: t.JSXMemberExpression) => {
   const children = path.get('children') || [];

@@ -3,7 +3,7 @@
 import * as monaco from 'monaco-editor';
 import { h, createApp } from 'vue';
 import { transform } from '@babel/core';
-import babelPluginJSx from '../../babel-plugin-jsx/src';
+import babelPluginJSx from '../../babel-plugin-jsx/dist';
 import './index.css';
 // or import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 // if shipping only a subset of the features & languages is desired
@@ -13,7 +13,7 @@ createApp(
 ).mount('#header');
 
 if (module.hot) {
-  module.hot.accept('../../babel-plugin-jsx/src', () => {
+  module.hot.accept('../../babel-plugin-jsx/dist', () => {
     compile();
   });
 }

@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "npm run build && webpack-dev-server",
-    "build": "rollup -c",
+    "build": "tsc",
     "lint": "eslint --ext .js src",
     "test": "jest --coverage"
   },
@@ -44,6 +44,7 @@
     "regenerator-runtime": "^0.13.5",
     "rollup": "^2.13.1",
     "vue": "3.0.0-beta.20",
+    "typescript": "^3.9.6",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
