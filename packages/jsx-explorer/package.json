@@ -7,6 +7,7 @@
   },
   "devDependencies": {
     "@ant-design-vue/babel-plugin-jsx": "^1.0.0-alpha.6",
+    "@babel/core": "^7.0.0",
     "css-loader": "^3.5.3",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
