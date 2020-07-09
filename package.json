@@ -5,6 +5,7 @@
   ],
   "scripts": {
     "publish": "lerna publish",
+    "test": "lerna run test",
     "dev": "node scripts/dev.js",
     "site": "node scripts/site.js"
   },

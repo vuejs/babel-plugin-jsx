@@ -14,7 +14,7 @@
     "dev": "npm run build && webpack-dev-server",
     "build": "tsc",
     "lint": "eslint --ext .js src",
-    "test": "jest --coverage"
+    "test": "npm run build && jest --coverage"
   },
   "bugs": {
     "url": "https://github.com/vueComponent/jsx/issues"

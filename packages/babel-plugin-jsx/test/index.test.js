@@ -3,6 +3,7 @@ import { shallowMount, mount } from '@vue/test-utils';
 
 const patchFlagExpect = (wrapper, flag, dynamic) => {
   const { patchFlag, dynamicProps } = wrapper.vm.$.subTree;
+
   expect(patchFlag).toBe(flag);
   expect(dynamicProps).toEqual(dynamic);
 };
