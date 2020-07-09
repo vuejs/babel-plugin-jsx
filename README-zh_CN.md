@@ -158,6 +158,36 @@ const App = {
 
 目前功能没有想好怎么实现，欢迎在 issue 中讨论，可以先使用 `props` 来代替
 
+## 谁在用
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a target="_blank" href="https://www.antdv.com/">
+          <img
+            width="32"
+            src="https://qn.antdv.com/logo.png"
+          />
+          <br>
+          <strong>Ant Design Vue</strong>
+        </a>
+      </td>
+      <td align="center">
+        <a target="_blank" href="https://youzan.github.io/">
+          <img
+            width="32"
+            style="vertical-align: -0.32em; margin-right: 8px;"
+            src="https://img.yzcdn.cn/vant/logo.png"
+          />
+          <br>
+          <strong>Vant</strong>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 ## 兼容性
 
 要求：
