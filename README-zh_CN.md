@@ -174,7 +174,7 @@ const App = {
         </a>
       </td>
       <td align="center">
-        <a target="_blank" href="https://youzan.github.io/">
+        <a target="_blank" href="https://youzan.github.io/vant/#/zh-CN/">
           <img
             width="32"
             style="vertical-align: -0.32em; margin-right: 8px;"
