@@ -3,8 +3,6 @@ import { NodePath } from '@babel/traverse';
 import { addDefault, addNamespace } from '@babel/helper-module-imports';
 import {
   createIdentifier,
-  PatchFlags,
-  PatchFlagNames,
   isDirective,
   checkIsComponent,
   transformJSXSpreadChild,
@@ -15,6 +13,7 @@ import {
   parseDirectives,
   isFragment,
 } from './utils';
+import { PatchFlags, PatchFlagNames } from './patchFlags';
 import { State, ExcludesFalse } from './';
 
 const xlinkRE = /^xlink([A-Z])/;
@@ -95,8 +94,7 @@ const dedupeProperties = (properties: t.ObjectProperty[] = []) => {
   const knownProps = new Map<string, t.ObjectProperty>();
   const deduped: t.ObjectProperty[] = [];
   properties.forEach((prop) => {
-    // @ts-ignore
-    const { key: { value: name } = {} } = prop;
+    const { value: name } = prop.key as t.StringLiteral;
     const existing = knownProps.get(name);
     if (existing) {
       if (name === 'style' || name === 'class' || name.startsWith('on')) {
@@ -112,7 +110,7 @@ const dedupeProperties = (properties: t.ObjectProperty[] = []) => {
 };
 
 const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
-  const tag = getTag(path);
+  const tag = getTag(path, state);
   const isComponent = checkIsComponent(path.get('openingElement'));
   const props = path.get('openingElement').get('attributes');
   const directives: t.ArrayExpression[] = [];
@@ -193,20 +191,18 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           return;
         }
         if (isDirective(name)) {
-          const { directive, modifiers, directiveName } = parseDirectives(
-            {
-              tag,
-              isComponent,
-              name,
-              path: prop,
-              state,
-              value: attributeValue,
-            },
-          );
+          const { directive, modifiers, directiveName } = parseDirectives({
+            tag,
+            isComponent,
+            name,
+            path: prop,
+            state,
+            value: attributeValue,
+          });
 
           if (directive) {
             directives.push(t.arrayExpression(directive));
-          } {
+          } else {
             // must be v-model and is a component
             properties.push(t.objectProperty(
               t.stringLiteral('modelValue'),
@@ -250,7 +246,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         }
         properties.push(t.objectProperty(
           t.stringLiteral(name),
-          // @ts-ignore
           attributeValue || t.booleanLiteral(true),
         ));
       } else {
@@ -399,7 +394,7 @@ const transformJSXElement = (
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
-    children.length ? t.arrayExpression(children) : t.nullLiteral(),
+    !!children.length ? t.arrayExpression(children) : t.nullLiteral(),
     !!patchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
     !!dynamicPropNames.size
     && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string))),

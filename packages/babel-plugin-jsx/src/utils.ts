@@ -2,40 +2,7 @@ import * as t from '@babel/types';
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { NodePath } from '@babel/traverse';
-import { State } from './';
-
-const PatchFlags = {
-  TEXT: 1,
-  CLASS: 1 << 1,
-  STYLE: 1 << 2,
-  PROPS: 1 << 3,
-  FULL_PROPS: 1 << 4,
-  HYDRATE_EVENTS: 1 << 5,
-  STABLE_FRAGMENT: 1 << 6,
-  KEYED_FRAGMENT: 1 << 7,
-  UNKEYED_FRAGMENT: 1 << 8,
-  NEED_PATCH: 1 << 9,
-  DYNAMIC_SLOTS: 1 << 10,
-  HOISTED: -1,
-  BAIL: -2,
-};
-
-// dev only flag -> name mapping
-const PatchFlagNames = {
-  [PatchFlags.TEXT]: 'TEXT',
-  [PatchFlags.CLASS]: 'CLASS',
-  [PatchFlags.STYLE]: 'STYLE',
-  [PatchFlags.PROPS]: 'PROPS',
-  [PatchFlags.FULL_PROPS]: 'FULL_PROPS',
-  [PatchFlags.HYDRATE_EVENTS]: 'HYDRATE_EVENTS',
-  [PatchFlags.STABLE_FRAGMENT]: 'STABLE_FRAGMENT',
-  [PatchFlags.KEYED_FRAGMENT]: 'KEYED_FRAGMENT',
-  [PatchFlags.UNKEYED_FRAGMENT]: 'UNKEYED_FRAGMENT',
-  [PatchFlags.NEED_PATCH]: 'NEED_PATCH',
-  [PatchFlags.DYNAMIC_SLOTS]: 'DYNAMIC_SLOTS',
-  [PatchFlags.HOISTED]: 'HOISTED',
-  [PatchFlags.BAIL]: 'BAIL',
-};
+import { State, ExcludesFalse } from './';
 
 /**
  * create Identifier
@@ -102,14 +69,17 @@ const transformJSXMemberExpression = (path: NodePath<t.JSXMemberExpression>): t.
 /**
  * Get tag (first attribute for h) from JSXOpeningElement
  * @param path JSXElement
+ * @param state State
  * @returns Identifier | StringLiteral | MemberExpression
  */
-const getTag = (path: NodePath<t.JSXElement>) => {
+const getTag = (path: NodePath<t.JSXElement>, state: State) => {
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
-    if (path.scope.hasBinding(name) && !htmlTags.includes(name) && !svgTags.includes(name)) {
-      return t.identifier(name);
+    if (!htmlTags.includes(name) && !svgTags.includes(name)) {
+      return path.scope.hasBinding(name)
+        ? t.identifier(name)
+        : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)]);
     }
 
     return t.stringLiteral(name);
@@ -249,8 +219,8 @@ const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any
   }
   return t.callExpression(
     createIdentifier(state, 'resolveDirective'), [
-    t.stringLiteral(directiveName),
-  ],
+      t.stringLiteral(directiveName),
+    ],
   );
 };
 
@@ -262,10 +232,10 @@ const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any
  */
 const parseDirectives = (args: {
   name: string,
-  path: NodePath<t.JSXAttribute>
-  , value: any,
-  state: any,
-  tag: any,
+  path: NodePath<t.JSXAttribute>,
+  value: t.StringLiteral | t.Expression | null,
+  state: State,
+  tag: t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression,
   isComponent: boolean
 }) => {
   const {
@@ -291,8 +261,8 @@ const parseDirectives = (args: {
     directive: hasDirective ? [
       resolveDirective(path, state, tag, directiveName),
       value,
-      modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
-      modifiersSet.size && t.objectExpression(
+      !!modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
+      !!modifiersSet.size && t.objectExpression(
         [...modifiersSet].map(
           (modifier) => t.objectProperty(
             t.identifier(modifier),
@@ -300,7 +270,7 @@ const parseDirectives = (args: {
           ),
         ),
       ),
-    ].filter(Boolean) : undefined,
+    ].filter(Boolean as any as ExcludesFalse) : undefined,
   };
 };
 
@@ -314,8 +284,6 @@ export {
   transformJSXText,
   transformJSXSpreadChild,
   transformJSXExpressionContainer,
-  PatchFlags,
-  PatchFlagNames,
   parseDirectives,
   isFragment,
 };
