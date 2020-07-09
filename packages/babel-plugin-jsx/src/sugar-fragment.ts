@@ -1,6 +1,9 @@
+import * as t from '@babel/types'
 import { addNamespace } from '@babel/helper-module-imports';
+import { NodePath } from '@babel/traverse';
+import { State } from './';
 
-const transformFragment = (t, path, Fragment) => {
+const transformFragment = (path: NodePath<t.JSXElement>, Fragment: t.JSXMemberExpression) => {
   const children = path.get('children') || [];
   return t.jsxElement(
     t.jsxOpeningElement(Fragment, []),
@@ -10,15 +13,15 @@ const transformFragment = (t, path, Fragment) => {
   );
 };
 
-export default (t) => ({
+export default () => ({
   JSXFragment: {
-    enter(path, state) {
+    enter(path: NodePath<t.JSXElement>, state: State) {
       if (!state.get('vue')) {
         state.set('vue', addNamespace(path, 'vue'));
       }
       path.replaceWith(
         transformFragment(
-          t, path,
+          path,
           t.jsxMemberExpression(
             t.jsxIdentifier(state.get('vue').name),
             t.jsxIdentifier('Fragment'),
