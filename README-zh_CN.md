@@ -156,7 +156,17 @@ const App = {
 
 ### 插槽 
 
-目前功能没有想好怎么实现，欢迎在 issue 中讨论，可以先使用 `props` 来代替
+```jsx
+const App = {
+  setup() {
+    const slots = {
+      a: () => <div>A</div>,
+      b: () => <span>B</span>
+    }
+    return () => <A vSlots={slots} />
+  }
+}
+```
 
 ## 谁在用
 

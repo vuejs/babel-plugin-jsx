@@ -14,7 +14,7 @@ import {
   isFragment,
 } from './utils';
 import { PatchFlags, PatchFlagNames } from './patchFlags';
-import { State, ExcludesFalse } from './';
+import { State, ExcludesBoolean } from './';
 
 const xlinkRE = /^xlink([A-Z])/;
 const onRE = /^on[^a-z]/;
@@ -116,6 +116,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   const directives: t.ArrayExpression[] = [];
   const dynamicPropNames = new Set();
 
+  let slots: t.Identifier | t.Expression | null = null;
   let patchFlag = 0;
 
   if (isFragment(path.get('openingElement').get('name'))) {
@@ -126,6 +127,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
     return {
       tag,
       isComponent,
+      slots,
       props: t.nullLiteral(),
       directives,
       patchFlag,
@@ -201,7 +203,10 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             value: attributeValue,
           });
 
-          if (directive) {
+          if (directiveName === 'slots') {
+            slots = attributeValue;
+            return;
+          } else if (directive) {
             directives.push(t.arrayExpression(directive));
           } else {
             // must be v-model and is a component
@@ -302,7 +307,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         [
           ...exps,
           !!objectProperties.length && t.objectExpression(objectProperties),
-        ].filter(Boolean as any as ExcludesFalse),
+        ].filter(Boolean as any as ExcludesBoolean),
       );
     } else {
       // single no need for a mergeProps call
@@ -316,6 +321,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
     tag,
     props: propsExpression,
     isComponent,
+    slots,
     directives,
     patchFlag,
     dynamicPropNames,
@@ -377,6 +383,7 @@ const transformJSXElement = (
     directives,
     patchFlag,
     dynamicPropNames,
+    slots
   } = buildProps(path, state);
 
   const { scope: { bindings } } = path;
@@ -403,18 +410,25 @@ const transformJSXElement = (
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
-    !!children.length ? (
-      isComponent ? t.objectExpression([
-        t.objectProperty(
-          t.identifier('default'),
-          t.arrowFunctionExpression([], t.arrayExpression(children))
-        )
-      ]) : t.arrayExpression(children)
+    (children.length || slots) ? (
+      isComponent && (children.length || slots)
+        ? t.objectExpression([
+            !!children.length && t.objectProperty(
+              t.identifier('default'),
+              t.arrowFunctionExpression([], t.arrayExpression(children))
+            ),
+            ...(slots ? (
+              t.isObjectExpression(slots)
+                ? (slots as any as t.ObjectExpression).properties
+                : [t.spreadElement(slots as any)]
+            ) : [])
+          ].filter(Boolean as any as ExcludesBoolean))
+        : t.arrayExpression(children)
     ) : t.nullLiteral(),
     !!patchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
     !!dynamicPropNames.size
     && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string))),
-  ].filter(Boolean as any as ExcludesFalse));
+  ].filter(Boolean as any as ExcludesBoolean));
 
   if (!directives.length) {
     return createVNode;

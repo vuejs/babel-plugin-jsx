@@ -13,7 +13,7 @@ interface Opts {
   compatibleProps?: boolean;
 }
 
-export type ExcludesFalse = <T>(x: T | false) => x is T;
+export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
 
 export default () => ({
   name: 'babel-plugin-jsx',

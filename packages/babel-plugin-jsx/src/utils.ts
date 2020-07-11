@@ -2,7 +2,7 @@ import * as t from '@babel/types';
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { NodePath } from '@babel/traverse';
-import { State, ExcludesFalse } from './';
+import { State, ExcludesBoolean } from './';
 
 /**
  * create Identifier
@@ -270,7 +270,7 @@ const parseDirectives = (args: {
           ),
         ),
       ),
-    ].filter(Boolean as any as ExcludesFalse) : undefined,
+    ].filter(Boolean as any as ExcludesBoolean) : undefined,
   };
 };
 

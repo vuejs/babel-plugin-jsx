@@ -263,6 +263,47 @@ describe('Transform JSX', () => {
   });
 });
 
+describe('slots', () => {
+  test('with default', () => {
+    const A = (_, { slots }) => (
+      <>
+        {slots.default()}
+        {slots.foo('val')}
+      </>
+    );
+
+    const wrapper = mount({
+      setup() {
+        const slots = {
+          foo: (val) => <div>{val}</div>,
+        };
+        return () => <A vSlots={slots}><span>default</span></A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>default</span><div>val</div>');
+  });
+
+  test('without default', () => {
+    const A = (_, { slots }) => (
+      <>
+        {slots.foo('foo')}
+      </>
+    );
+
+    const wrapper = mount({
+      setup() {
+        const slots = {
+          foo: (val) => <div>{val}</div>,
+        };
+        return () => <A vSlots={slots} />;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<div>foo</div>');
+  });
+});
+
 describe('PatchFlags', () => {
   test('static', () => {
     const wrapper = shallowMount({

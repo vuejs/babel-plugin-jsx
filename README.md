@@ -157,7 +157,17 @@ const App = {
 
 ### Slot 
 
-Why Not props ?
+```jsx
+const App = {
+  setup() {
+    const slots = {
+      a: () => <div>A</div>,
+      b: () => <span>B</span>
+    }
+    return () => <A vSlots={slots} />
+  }
+}
+```
 
 ## Who is using
 
