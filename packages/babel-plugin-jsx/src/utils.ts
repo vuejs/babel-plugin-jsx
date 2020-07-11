@@ -44,7 +44,7 @@ const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
     return !isFragment(namePath); // For withCtx
   }
 
-  const tag = (namePath as NodePath<t.JSXIdentifier>).get('name');
+  const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
 
   return !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
