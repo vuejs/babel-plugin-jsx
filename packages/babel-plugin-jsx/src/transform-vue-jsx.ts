@@ -125,6 +125,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   if (props.length === 0) {
     return {
       tag,
+      isComponent,
       props: t.nullLiteral(),
       directives,
       patchFlag,
@@ -314,6 +315,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   return {
     tag,
     props: propsExpression,
+    isComponent,
     directives,
     patchFlag,
     dynamicPropNames,
@@ -371,10 +373,17 @@ const transformJSXElement = (
   const {
     tag,
     props,
+    isComponent,
     directives,
     patchFlag,
     dynamicPropNames,
   } = buildProps(path, state);
+
+  const { scope: { bindings } } = path;
+
+  const bindingsReferenced = Object.keys(bindings).some(key => bindings[key].referenced);
+
+  const useOptimate = !(bindingsReferenced && t.isReturnStatement(path.container));
 
   const flagNames = Object.keys(PatchFlagNames)
     .map(Number)
@@ -390,11 +399,18 @@ const transformJSXElement = (
   }
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
+  const createVNode = t.callExpression(createIdentifier(state, useOptimate ? 'createVNode' : 'h'), [
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
-    !!children.length ? t.arrayExpression(children) : t.nullLiteral(),
+    !!children.length ? (
+      isComponent ? t.objectExpression([
+        t.objectProperty(
+          t.identifier('default'),
+          t.arrowFunctionExpression([], t.arrayExpression(children))
+        )
+      ]) : t.arrayExpression(children)
+    ) : t.nullLiteral(),
     !!patchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
     !!dynamicPropNames.size
     && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string))),
