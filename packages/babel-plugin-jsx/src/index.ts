@@ -11,6 +11,7 @@ export type State = {
 interface Opts {
   transformOn?: boolean;
   compatibleProps?: boolean;
+  usePatchFlag?: boolean;
 }
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;

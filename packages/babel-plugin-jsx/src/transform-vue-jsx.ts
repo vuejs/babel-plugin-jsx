@@ -398,7 +398,7 @@ const transformJSXElement = (
     .map((n) => PatchFlagNames[n])
     .join(', ');
 
-  const { compatibleProps } = state.opts;
+  const { compatibleProps = false, usePatchFlag = true } = state.opts;
   if (compatibleProps && !state.get('compatibleProps')) {
     state.set('compatibleProps', addDefault(
       path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
@@ -406,7 +406,7 @@ const transformJSXElement = (
   }
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
+  const createVNode = t.callExpression(createIdentifier(state, usePatchFlag ? 'createVNode' : 'h'), [
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
@@ -425,12 +425,12 @@ const transformJSXElement = (
           ].filter(Boolean as any as ExcludesBoolean))
         : t.arrayExpression(children)
     ) : t.nullLiteral(),
-    !!patchFlag && (
+    !!patchFlag && usePatchFlag && (
       useOptimate
         ? t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false)
         : t.numericLiteral(PatchFlags.BAIL)
     ),
-    !!dynamicPropNames.size
+    !!dynamicPropNames.size && usePatchFlag
     && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string))),
   ].filter(Boolean as any as ExcludesBoolean));
 
