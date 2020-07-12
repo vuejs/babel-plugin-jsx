@@ -12,6 +12,7 @@ import {
   transformJSXExpressionContainer,
   parseDirectives,
   isFragment,
+  walksScope,
 } from './utils';
 import { PatchFlags, PatchFlagNames } from './patchFlags';
 import { State, ExcludesBoolean } from './';
@@ -22,13 +23,17 @@ const onRE = /^on[^a-z]/;
 const isOn = (key: string) => onRE.test(key);
 
 const transformJSXSpreadAttribute = (
+  nodePath: NodePath,
   path: NodePath<t.JSXSpreadAttribute>,
   mergeArgs: (t.ObjectProperty | t.Expression)[]
 ) => {
   const argument = path.get('argument') as NodePath<t.ObjectExpression>;
   const { properties } = argument.node;
   if (!properties) {
-    // argument is an Identifier
+    if (argument.isIdentifier()) {
+      console.log(isConstant(argument.node), argument.node)
+      walksScope(nodePath, (argument.node as t.Identifier).name);
+    }
     mergeArgs.push(argument.node);
   } else {
     mergeArgs.push(t.objectExpression(properties));
@@ -257,7 +262,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       } else {
         // JSXSpreadAttribute
         hasDynamicKeys = true;
-        transformJSXSpreadAttribute(prop as NodePath<t.JSXSpreadAttribute>, mergeArgs);
+        transformJSXSpreadAttribute(path as NodePath, prop as NodePath<t.JSXSpreadAttribute>, mergeArgs);
       }
     });
 
@@ -386,11 +391,7 @@ const transformJSXElement = (
     slots
   } = buildProps(path, state);
 
-  const { scope: { bindings } } = path;
-
-  const bindingsReferenced = Object.keys(bindings).some(key => bindings[key].referenced);
-
-  const useOptimate = !(bindingsReferenced && t.isReturnStatement(path.container));
+  const useOptimate = path.getData('optimize') !== false;
 
   const flagNames = Object.keys(PatchFlagNames)
     .map(Number)
@@ -411,7 +412,7 @@ const transformJSXElement = (
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
     (children.length || slots) ? (
-      isComponent && (children.length || slots)
+      isComponent
         ? t.objectExpression([
             !!children.length && t.objectProperty(
               t.identifier('default'),

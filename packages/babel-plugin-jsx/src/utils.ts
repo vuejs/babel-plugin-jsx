@@ -274,6 +274,13 @@ const parseDirectives = (args: {
   };
 };
 
+const walksScope = (path: NodePath, name: string) => {
+  if (path.scope.hasBinding(name)) {
+    path.parentPath.setData('optimize', false);
+    walksScope(path.parentPath, name);
+  }
+}
+
 export {
   createIdentifier,
   isDirective,
@@ -286,4 +293,5 @@ export {
   transformJSXExpressionContainer,
   parseDirectives,
   isFragment,
+  walksScope,
 };
