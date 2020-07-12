@@ -1,5 +1,7 @@
 # Babel Plugin JSX for Vue 3.0
 
+![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg)[![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
+
 To add Vue JSX support.
 
 English | [简体中文](./README-zh_CN.md)

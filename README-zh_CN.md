@@ -1,5 +1,7 @@
 # Vue 3 Babel JSX 插件
 
+![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg)[![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
+
 以 JSX 的方式来编写 Vue 代码
 
 ## 安装
