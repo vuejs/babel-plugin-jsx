@@ -31,7 +31,6 @@ const transformJSXSpreadAttribute = (
   const { properties } = argument.node;
   if (!properties) {
     if (argument.isIdentifier()) {
-      console.log(isConstant(argument.node), argument.node)
       walksScope(nodePath, (argument.node as t.Identifier).name);
     }
     mergeArgs.push(argument.node);
@@ -62,7 +61,7 @@ const getJSXAttributeValue = (
 
 /**
  *  Check if an attribute value is constant
- * @param path
+ * @param node
  * @returns boolean
  */
 const isConstant = (
@@ -407,7 +406,7 @@ const transformJSXElement = (
   }
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(state, useOptimate ? 'createVNode' : 'h'), [
+  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
@@ -426,7 +425,11 @@ const transformJSXElement = (
           ].filter(Boolean as any as ExcludesBoolean))
         : t.arrayExpression(children)
     ) : t.nullLiteral(),
-    !!patchFlag && t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false),
+    !!patchFlag && (
+      useOptimate
+        ? t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false)
+        : t.numericLiteral(PatchFlags.BAIL)
+    ),
     !!dynamicPropNames.size
     && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string))),
   ].filter(Boolean as any as ExcludesBoolean));
