@@ -281,6 +281,37 @@ const walksScope = (path: NodePath, name: string) => {
   }
 }
 
+const isSingleFunctionChild = (paths: NodePath<
+  t.JSXText
+    | t.JSXExpressionContainer
+    | t.JSXSpreadChild
+    | t.JSXElement
+    | t.JSXFragment
+  >[],) => {
+    if (paths.length !== 1) return false
+    if (t.isJSXExpressionContainer(paths[0])) {
+      let p = paths[0].get('expression')
+      if (t.isArrowFunctionExpression(p) || t.isFunctionExpression(p)) return true
+      if (t.isIdentifier(p)) {
+        const ip = p as NodePath<t.Identifier>
+        const node = ip.node
+        if (ip.scope.hasBinding(node.name)) {
+          const binding = ip.scope.getBinding(node.name)
+          if (binding) {
+            // TODO: if binding still a variableDeclarator
+            const bp = binding.path
+            const dt = bp.get('declarations').find((xp) => t.isVariableDeclarator(xp) && ((xp.node as t.VariableDeclarator).id as t.Identifier).name === node.name)
+            const init = dt && dt.get('init')
+            console.log(t.isFunctionExpression(init), t.isArrowFunctionExpression(init))
+            return t.isFunctionExpression(init) || t.isArrowFunctionExpression(init)
+          }
+        }
+        return ip.scope.hasBinding(node.name) && (t.isFunctionExpression(ip.scope.bindings[0]) || t.isArrowFunctionExpression(ip.scope.bindings[0]))
+      }
+    }
+    return false
+  }
+
 export {
   createIdentifier,
   isDirective,
@@ -294,4 +325,5 @@ export {
   parseDirectives,
   isFragment,
   walksScope,
+  isSingleFunctionChild
 };

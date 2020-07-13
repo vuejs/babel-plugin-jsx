@@ -13,6 +13,7 @@ import {
   parseDirectives,
   isFragment,
   walksScope,
+  isSingleFunctionChild
 } from './utils';
 import { PatchFlags, PatchFlagNames } from './patchFlags';
 import { State, ExcludesBoolean } from './';
@@ -405,26 +406,32 @@ const transformJSXElement = (
     ));
   }
 
+  const isSingleFunctionChildren: Boolean = isSingleFunctionChild(path.get('children'))
+
   // @ts-ignore
   const createVNode = t.callExpression(createIdentifier(state, usePatchFlag ? 'createVNode' : 'h'), [
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
-    (children.length || slots) ? (
-      isComponent
-        ? t.objectExpression([
-            !!children.length && t.objectProperty(
-              t.identifier('default'),
-              t.arrowFunctionExpression([], t.arrayExpression(children))
-            ),
-            ...(slots ? (
-              t.isObjectExpression(slots)
-                ? (slots as any as t.ObjectExpression).properties
-                : [t.spreadElement(slots as any)]
-            ) : [])
-          ].filter(Boolean as any as ExcludesBoolean))
-        : t.arrayExpression(children)
-    ) : t.nullLiteral(),
+    isSingleFunctionChildren
+      ?
+      children[0]
+      :
+      (children.length || slots) ? (
+        isComponent
+          ? t.objectExpression([
+              !!children.length && t.objectProperty(
+                t.identifier('default'),
+                t.arrowFunctionExpression([], t.arrayExpression(children))
+              ),
+              ...(slots ? (
+                t.isObjectExpression(slots)
+                  ? (slots as any as t.ObjectExpression).properties
+                  : [t.spreadElement(slots as any)]
+              ) : [])
+            ].filter(Boolean as any as ExcludesBoolean))
+          : t.arrayExpression(children)
+      ) : t.nullLiteral(),
     !!patchFlag && usePatchFlag && (
       useOptimate
         ? t.addComment(t.numericLiteral(patchFlag), 'trailing', ` ${flagNames} `, false)

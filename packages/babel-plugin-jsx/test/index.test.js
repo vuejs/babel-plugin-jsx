@@ -306,6 +306,40 @@ describe('slots', () => {
 
     expect(wrapper.html()).toBe('<div>foo</div>');
   });
+
+  test('pass only single function as children should keep it', () => {
+    const A = (_, { slots }) => (
+      <div>
+        {slots.default()}
+      </div>
+    );
+
+    const wrapper = mount({
+      setup() {
+        return () => <A>{() => 'foo'}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<div>foo</div>');
+  });
+
+  test('pass only single variable of function should keep it', () => {
+    const A = (_, { slots }) => (
+      <div>
+        {slots.default()}
+      </div>
+    );
+
+    const renderA = () => 'foo';
+
+    const wrapper = mount({
+      setup() {
+        return () => <A>{renderA}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<div>foo</div>');
+  });
 });
 
 describe('PatchFlags', () => {
