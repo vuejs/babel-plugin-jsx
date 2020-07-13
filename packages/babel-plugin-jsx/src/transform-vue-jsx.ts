@@ -10,10 +10,10 @@ import {
   getJSXAttributeName,
   transformJSXText,
   transformJSXExpressionContainer,
-  parseDirectives,
   isFragment,
   walksScope,
 } from './utils';
+import parseDirectives from './parseDirectives';
 import { PatchFlags, PatchFlagNames } from './patchFlags';
 import { State, ExcludesBoolean } from './';
 
@@ -198,7 +198,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           return;
         }
         if (isDirective(name)) {
-          const { directive, modifiers, directiveName } = parseDirectives({
+          const { directive, modifiers, value, arg, directiveName } = parseDirectives({
             tag,
             isComponent,
             name,
@@ -206,6 +206,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             state,
             value: attributeValue,
           });
+          const argVal = (arg as t.StringLiteral)?.value;
+          const propName = argVal || 'modelValue';
 
           if (directiveName === 'slots') {
             slots = attributeValue;
@@ -215,16 +217,16 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           } else {
             // must be v-model and is a component
             properties.push(t.objectProperty(
-              t.stringLiteral('modelValue'),
+              arg || t.stringLiteral('modelValue'),
               // @ts-ignore
-              attributeValue,
+              value,
             ));
 
-            dynamicPropNames.add('modelValue');
+            dynamicPropNames.add(propName);
 
             if (modifiers.size) {
               properties.push(t.objectProperty(
-                t.stringLiteral('modelModifiers'),
+                t.stringLiteral(`${argVal || 'model'}Modifiers`),
                 t.objectExpression(
                   [...modifiers].map((modifier) => (
                     t.objectProperty(
@@ -237,17 +239,19 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             }
           }
 
-          if (directiveName === 'model' && attributeValue) {
+          console.log(value)
+
+          if (directiveName === 'model' && value) {
             properties.push(t.objectProperty(
-              t.stringLiteral('onUpdate:modelValue'),
+              t.stringLiteral(`onUpdate:${propName}`),
               t.arrowFunctionExpression(
                 [t.identifier('$event')],
                 // @ts-ignore
-                t.assignmentExpression('=', attributeValue, t.identifier('$event')),
+                t.assignmentExpression('=', value, t.identifier('$event')),
               ),
             ));
 
-            dynamicPropNames.add('onUpdate:modelValue');
+            dynamicPropNames.add(`onUpdate:${propName}`);
           }
           return;
         }

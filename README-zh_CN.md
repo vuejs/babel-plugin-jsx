@@ -137,6 +137,28 @@ export default {
 }
 ```
 
+* 或者使用这种实现
+
+```jsx
+<input vModel={[val, ['trim']]} />
+```
+
+```jsx
+<A vModel={[val, 'foo', ['bar']]} />
+```
+
+会变编译成：
+
+```js
+h(A, {
+  'foo': val,
+  "fooModifiers": {
+    "bar": true
+  },
+  "onUpdate:foo": $event => val = $event
+})
+```
+
 自定义指令
 
 ```jsx
@@ -145,16 +167,14 @@ const App = {
   setup() {
     return () => (
       <a
-        vCustom={{
-          value: 123,
-          modifiers: { modifier: true },
-          arg: 'arg',
-        }}
+        vCustom={[val, 'arg', ['a', 'b']]}
       />
     );
   },
 }
 ```
+
+> 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
 ### 插槽 
 

@@ -120,7 +120,7 @@ const App = {
 
 v-model
 
-* You should use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
+* You can use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
 
 ```jsx
 export default {
@@ -138,6 +138,28 @@ export default {
 }
 ```
 
+* Or you can use this proposal.
+
+```jsx
+<input vModel={[val, ['trim']]} />
+```
+
+```jsx
+<A vModel={[val, 'foo', ['bar']]} />
+```
+
+Will compile to:
+
+```js
+h(A, {
+  'foo': val,
+  "fooModifiers": {
+    "bar": true
+  },
+  "onUpdate:foo": $event => val = $event
+})
+```
+
 custom directive
 
 ```jsx
@@ -146,16 +168,14 @@ const App = {
   setup() {
     return () => (
       <a
-        vCustom={{
-          value: 123,
-          modifiers: { modifier: true },
-          arg: 'arg',
-        }}
+        vCustom={[val, 'arg', ['a', 'b']]}
       />
     );
   },
 }
 ```
+
+> Note: You should pass the second param as string for using `arg`.
 
 ### Slot 
 

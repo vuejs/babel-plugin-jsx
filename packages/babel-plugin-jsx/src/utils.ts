@@ -2,7 +2,7 @@ import * as t from '@babel/types';
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { NodePath } from '@babel/traverse';
-import { State, ExcludesBoolean } from './';
+import { State } from './';
 
 /**
  * create Identifier
@@ -169,111 +169,6 @@ const transformJSXSpreadChild = (
   path: NodePath<t.JSXSpreadChild>
 ): t.SpreadElement => t.spreadElement(path.get('expression').node);
 
-/**
- * Get JSX element type
- *
- * @param path Path<JSXOpeningElement>
- */
-const getType = (path: NodePath<t.JSXOpeningElement>) => {
-  const typePath = path
-    .get('attributes')
-    .find((attribute) => {
-        if (!t.isJSXAttribute(attribute)) {
-          return false;
-        }
-        return t.isJSXIdentifier(attribute.get('name'))
-        && (attribute.get('name') as NodePath<t.JSXIdentifier>).get('name') === 'type'
-        && t.isStringLiteral(attribute.get('value'))
-      },
-    );
-
-  return typePath ? typePath.get('value.value') : '';
-};
-
-const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any, directiveName: string) => {
-  if (directiveName === 'show') {
-    return createIdentifier(state, 'vShow');
-  } if (directiveName === 'model') {
-    let modelToUse;
-    const type = getType(path.parentPath as NodePath<t.JSXOpeningElement>);
-    switch (tag.value) {
-      case 'select':
-        modelToUse = createIdentifier(state, 'vModelSelect');
-        break;
-      case 'textarea':
-        modelToUse = createIdentifier(state, 'vModelText');
-        break;
-      default:
-        switch (type) {
-          case 'checkbox':
-            modelToUse = createIdentifier(state, 'vModelCheckbox');
-            break;
-          case 'radio':
-            modelToUse = createIdentifier(state, 'vModelRadio');
-            break;
-          default:
-            modelToUse = createIdentifier(state, 'vModelText');
-        }
-    }
-    return modelToUse;
-  }
-  return t.callExpression(
-    createIdentifier(state, 'resolveDirective'), [
-      t.stringLiteral(directiveName),
-    ],
-  );
-};
-
-/**
- * Parse directives metadata
- *
- * @param  path JSXAttribute
- * @returns null | Object<{ modifiers: Set<string>, valuePath: Path<Expression>}>
- */
-const parseDirectives = (args: {
-  name: string,
-  path: NodePath<t.JSXAttribute>,
-  value: t.StringLiteral | t.Expression | null,
-  state: State,
-  tag: t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression,
-  isComponent: boolean
-}) => {
-  const {
-    name, path, value, state, tag, isComponent,
-  } = args
-  const modifiers: string[] = name.split('_');
-  const directiveName: string = modifiers.shift()
-    ?.replace(/^v/, '')
-    .replace(/^-/, '')
-    .replace(/^\S/, (s: string) => s.toLowerCase()) || '';
-
-  if (directiveName === 'model' && !t.isJSXExpressionContainer(path.get('value'))) {
-    throw new Error('You have to use JSX Expression inside your v-model');
-  }
-
-  const modifiersSet = new Set(modifiers);
-
-  const hasDirective = directiveName !== 'model' || (directiveName === 'model' && !isComponent);
-
-  return {
-    directiveName,
-    modifiers: modifiersSet,
-    directive: hasDirective ? [
-      resolveDirective(path, state, tag, directiveName),
-      value,
-      !!modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
-      !!modifiersSet.size && t.objectExpression(
-        [...modifiersSet].map(
-          (modifier) => t.objectProperty(
-            t.identifier(modifier),
-            t.booleanLiteral(true),
-          ),
-        ),
-      ),
-    ].filter(Boolean as any as ExcludesBoolean) : undefined,
-  };
-};
-
 const walksScope = (path: NodePath, name: string) => {
   if (path.scope.hasBinding(name) && path.parentPath) {
     path.parentPath.setData('optimize', false);
@@ -291,7 +186,6 @@ export {
   transformJSXText,
   transformJSXSpreadChild,
   transformJSXExpressionContainer,
-  parseDirectives,
   isFragment,
   walksScope,
 };
