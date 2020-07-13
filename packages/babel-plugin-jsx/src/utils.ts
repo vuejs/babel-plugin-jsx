@@ -275,7 +275,7 @@ const parseDirectives = (args: {
 };
 
 const walksScope = (path: NodePath, name: string) => {
-  if (path.scope.hasBinding(name)) {
+  if (path.scope.hasBinding(name) && path.parentPath) {
     path.parentPath.setData('optimize', false);
     walksScope(path.parentPath, name);
   }
