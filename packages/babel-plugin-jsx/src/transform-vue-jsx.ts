@@ -10,7 +10,6 @@ import {
   getJSXAttributeName,
   transformJSXText,
   transformJSXExpressionContainer,
-  isFragment,
   walksScope,
 } from './utils';
 import parseDirectives from './parseDirectives';
@@ -123,10 +122,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   let slots: t.Identifier | t.Expression | null = null;
   let patchFlag = 0;
 
-  if (isFragment(path.get('openingElement').get('name'))) {
-    patchFlag |= PatchFlags.STABLE_FRAGMENT;
-  }
-
   if (props.length === 0) {
     return {
       tag,
@@ -238,8 +233,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
               ));
             }
           }
-
-          console.log(value)
 
           if (directiveName === 'model' && value) {
             properties.push(t.objectProperty(
