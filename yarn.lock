@@ -252,7 +252,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.10.4", "@babel/parser@^7.8.6":
+"@babel/parser@^7.1.0", "@babel/parser@^7.10.4":
   version "7.10.4"
   resolved "https://r.cnpmjs.org/@babel/parser/download/@babel/parser-7.10.4.tgz#9eedf27e1998d87739fb5028a5120557c06a1a64"
   integrity sha1-nu3yfhmY2Hc5+1AopRIFV8BqGmQ=
@@ -816,7 +816,7 @@
     globals "^11.1.0"
     lodash "^4.17.13"
 
-"@babel/types@^7.0.0", "@babel/types@^7.10.4", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4", "@babel/types@^7.8.6":
+"@babel/types@^7.0.0", "@babel/types@^7.10.4", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
   version "7.10.4"
   resolved "https://r.cnpmjs.org/@babel/types/download/@babel/types-7.10.4.tgz#369517188352e18219981efd156bfdb199fff1ee"
   integrity sha1-NpUXGINS4YIZmB79FWv9sZn/8e4=
@@ -2115,53 +2115,53 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@vue/compiler-core@3.0.0-beta.20":
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/@vue/compiler-core/download/@vue/compiler-core-3.0.0-beta.20.tgz#66c085e23d5420088074bec73291fbd8151caff3"
-  integrity sha1-ZsCF4j1UIAiAdL7HMpH72BUcr/M=
+"@vue/compiler-core@3.0.0-beta.21":
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.0.0-beta.21.tgz#818b1a27d640663de01fef3a12ba53cd90cbd946"
+  integrity sha512-+V3KymdckkMmcVFOY+JKUM4q/4WteJndjQgFtQztboKCeMc4ZGdiOmkwS1ZMtqfGhoE7wf7BPQRJ47bZGneS/g==
   dependencies:
-    "@babel/parser" "^7.8.6"
-    "@babel/types" "^7.8.6"
-    "@vue/shared" "3.0.0-beta.20"
-    estree-walker "^0.8.1"
+    "@babel/parser" "^7.10.4"
+    "@babel/types" "^7.10.4"
+    "@vue/shared" "3.0.0-beta.21"
+    estree-walker "^2.0.1"
     source-map "^0.6.1"
 
-"@vue/compiler-dom@3.0.0-beta.20":
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/@vue/compiler-dom/download/@vue/compiler-dom-3.0.0-beta.20.tgz#9d305d566da28222db4a0f7cd349e3e603a42872"
-  integrity sha1-nTBdVm2igiLbSg9800nj5gOkKHI=
+"@vue/compiler-dom@3.0.0-beta.21":
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@vue/compiler-dom/-/compiler-dom-3.0.0-beta.21.tgz#16140b976a083481a7f58577dbb5d7f70f487798"
+  integrity sha512-NOw6uxAHXlSkVW8NkSplnOrNusVF9YRXuaS0DJW2++dtYw0kP6kYgOZmQ1liywl3Kf78BHXNLQqEdI7JDWkJ9g==
   dependencies:
-    "@vue/compiler-core" "3.0.0-beta.20"
-    "@vue/shared" "3.0.0-beta.20"
+    "@vue/compiler-core" "3.0.0-beta.21"
+    "@vue/shared" "3.0.0-beta.21"
 
-"@vue/reactivity@3.0.0-beta.20":
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/@vue/reactivity/download/@vue/reactivity-3.0.0-beta.20.tgz#8a16f089394a29a8509e4c8e515f5ec84b26cc13"
-  integrity sha1-ihbwiTlKKahQnkyOUV9eyEsmzBM=
+"@vue/reactivity@3.0.0-beta.21":
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@vue/reactivity/-/reactivity-3.0.0-beta.21.tgz#b974040b50799f36c5b75941e7b13dc074db1827"
+  integrity sha512-G43QUrs2TkIMeBnOfewot/k9C4K116BluoQTYGnukninESb+Th2psijDPsqAu9W8Ja+XAE7zQpawIkwwY0hYfQ==
   dependencies:
-    "@vue/shared" "3.0.0-beta.20"
+    "@vue/shared" "3.0.0-beta.21"
 
-"@vue/runtime-core@3.0.0-beta.20":
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/@vue/runtime-core/download/@vue/runtime-core-3.0.0-beta.20.tgz#33d090a18ae86899ffdc571e19cfa8a5523b4a4f"
-  integrity sha1-M9CQoYroaJn/3FceGc+opVI7Sk8=
+"@vue/runtime-core@3.0.0-beta.21":
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@vue/runtime-core/-/runtime-core-3.0.0-beta.21.tgz#7c8e351d8376bc8076d7685a7ac0a1caf8a9d3cb"
+  integrity sha512-xAlyIo8N1dBG+nA9JTQHPrMnG71RKm4oV6d19OAwxrPHsHJmyrpiqWbglrDvA8TaHSA/hniqscti6nxxMgEN8w==
   dependencies:
-    "@vue/reactivity" "3.0.0-beta.20"
-    "@vue/shared" "3.0.0-beta.20"
+    "@vue/reactivity" "3.0.0-beta.21"
+    "@vue/shared" "3.0.0-beta.21"
 
-"@vue/runtime-dom@3.0.0-beta.20":
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/@vue/runtime-dom/download/@vue/runtime-dom-3.0.0-beta.20.tgz#7588341e7304ae5a695ea1dd86bbe86c8df96e55"
-  integrity sha1-dYg0HnMErlppXqHdhrvobI35blU=
+"@vue/runtime-dom@3.0.0-beta.21":
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@vue/runtime-dom/-/runtime-dom-3.0.0-beta.21.tgz#ec84f1f775494a28a4f2375224c7d9d2c54a5a68"
+  integrity sha512-GyRqkJ6XkGgDkFJZokR8VLlaiTisdVzNxwLtOYEyxWAKF2q8FOxrjNwBLAXCUyza8Zb6j/Nj9NlClthXp6RZbw==
   dependencies:
-    "@vue/runtime-core" "3.0.0-beta.20"
-    "@vue/shared" "3.0.0-beta.20"
+    "@vue/runtime-core" "3.0.0-beta.21"
+    "@vue/shared" "3.0.0-beta.21"
     csstype "^2.6.8"
 
-"@vue/shared@3.0.0-beta.20":
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/@vue/shared/download/@vue/shared-3.0.0-beta.20.tgz#022b7aac09669d6ca79ff2cd38418853b2ffc8be"
-  integrity sha1-Ait6rAlmnWynn/LNOEGIU7L/yL4=
+"@vue/shared@3.0.0-beta.21":
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.0.0-beta.21.tgz#f4fd53501f40aaaead1448de20beb831283a6e08"
+  integrity sha512-mCktqmNuFNI1x5DtCmx/90Qx/gH60fxEo7TEq119Q4qr0PNyU+mHU875J8WjCvXiFENsEsIjkJvS2KUQqzn4BA==
 
 "@vue/test-utils@^2.0.0-alpha.8":
   version "2.0.0-alpha.8"
@@ -4557,15 +4557,15 @@ estraverse@^5.1.0:
   resolved "https://r.cnpmjs.org/estraverse/download/estraverse-5.1.0.tgz#374309d39fd935ae500e7b92e8a6b4c720e59642"
   integrity sha1-N0MJ05/ZNa5QDnuS6Ka0xyDllkI=
 
-estree-walker@^0.8.1:
-  version "0.8.1"
-  resolved "https://r.cnpmjs.org/estree-walker/download/estree-walker-0.8.1.tgz#6230ce2ec9a5cb03888afcaf295f97d90aa52b79"
-  integrity sha1-YjDOLsmlywOIivyvKV+X2QqlK3k=
-
 estree-walker@^1.0.1:
   version "1.0.1"
   resolved "https://r.cnpmjs.org/estree-walker/download/estree-walker-1.0.1.tgz#31bc5d612c96b704106b477e6dd5d8aa138cb700"
   integrity sha1-MbxdYSyWtwQQa0d+bdXYqhOMtwA=
+
+estree-walker@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-2.0.1.tgz#f8e030fb21cefa183b44b7ad516b747434e7a3e0"
+  integrity sha512-tF0hv+Yi2Ot1cwj9eYHtxC0jB9bmjacjQs6ZBTj82H8JwUywFuc+7E83NWfNMwHXZc11mjfFcVXPe9gEP4B8dg==
 
 esutils@^2.0.2:
   version "2.0.3"
@@ -10330,14 +10330,14 @@ vm-browserify@^1.0.1:
   resolved "https://r.cnpmjs.org/vm-browserify/download/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha1-eGQcSIuObKkadfUR56OzKobl3aA=
 
-vue@3.0.0-beta.20:
-  version "3.0.0-beta.20"
-  resolved "https://r.cnpmjs.org/vue/download/vue-3.0.0-beta.20.tgz#34a7907cfbdc65b6b8c61fb4d7656f4aa6bf1fff"
-  integrity sha1-NKeQfPvcZba4xh+012VvSqa/H/8=
+vue@3.0.0-beta.21:
+  version "3.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-3.0.0-beta.21.tgz#71b8ba89cf5e2321371344492caa854e8087848c"
+  integrity sha512-ABzY8deVybug0IXuC08rUaNwMysJaRTiiRUqidQZ9BjkIKrDLIAaN59OY37vGofmAu88+zMQ7kUfhTrbTtlcNQ==
   dependencies:
-    "@vue/compiler-dom" "3.0.0-beta.20"
-    "@vue/runtime-dom" "3.0.0-beta.20"
-    "@vue/shared" "3.0.0-beta.20"
+    "@vue/compiler-dom" "3.0.0-beta.21"
+    "@vue/runtime-dom" "3.0.0-beta.21"
+    "@vue/shared" "3.0.0-beta.21"
 
 w3c-hr-time@^1.0.2:
   version "1.0.2"
