@@ -10,8 +10,6 @@
 
 ```
 npm install @ant-design-vue/babel-plugin-jsx -D
-
-npm install @ant-design-vue/babel-helper-vue-transform-on
 ```
 
 配置 Babel 

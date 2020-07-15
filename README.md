@@ -12,8 +12,6 @@ Install the plugin with:
 
 ```
 npm install @ant-design-vue/babel-plugin-jsx -D
-
-npm install @ant-design-vue/babel-helper-vue-transform-on
 ```
 
 Then add the plugin to .babelrc:
