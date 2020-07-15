@@ -79,7 +79,7 @@ const parseDirectives = (args: {
     arg,
     directive: hasDirective ? [
       resolveDirective(path, state, tag, directiveName),
-      val as t.Identifier,
+      val || value,
       !!modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
       !!modifiersSet.size && t.objectExpression(
         [...modifiersSet].map(
