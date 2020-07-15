@@ -1,3 +1,12 @@
+## 1.0.0-beta.2
+
+`2020-07-15`
+
+- 🐞 Fix walksScope throw error when path.parentPath is null [#25](https://github.com/vueComponent/jsx/pull/25)
+- 🐞 Fix fragment with condition fails with undefined vnode [#28](https://github.com/vueComponent/jsx/pull/28)
+- 🌟 New Directive API
+
+
 ## 1.0.0-beta.1
 
 `2020-07-12`
