@@ -119,25 +119,11 @@ const App = {
 
 v-model
 
-* 修饰符：使用 (`_`) 代替 (`.`) (`vModel_trim={this.test}`)
+> 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
 ```jsx
-export default {
-  data: () => ({
-    test: 'Hello World',
-  }),
-  render() {
-    return (
-      <>
-        <input type="text" vModel_trim={this.test} />
-        {this.test}
-      </>
-    )
-  },
-}
+<input vModel={val} />
 ```
-
-* 或者使用这种实现
 
 ```jsx
 <input vModel={[val, ['trim']]} />
@@ -173,8 +159,6 @@ const App = {
   },
 }
 ```
-
-> 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
 ### 插槽 
 

@@ -120,25 +120,11 @@ const App = {
 
 v-model
 
-* You can use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
+> Note: You should pass the second param as string for using `arg`.
 
 ```jsx
-export default {
-  data: () => ({
-    test: 'Hello World',
-  }),
-  render() {
-    return (
-      <>
-        <input type="text" vModel_trim={this.test} />
-        {this.test}
-      </>
-    )
-  },
-}
+<input vModel={val} />
 ```
-
-* Or you can use this proposal.
 
 ```jsx
 <input vModel={[val, ['trim']]} />
@@ -174,8 +160,6 @@ const App = {
   },
 }
 ```
-
-> Note: You should pass the second param as string for using `arg`.
 
 ### Slot 
 
