@@ -1,3 +1,10 @@
+## 1.0.0-beta.3
+
+`2020-07-15`
+
+- 🐞 Fix directive with single param did not work
+
+
 ## 1.0.0-beta.2
 
 `2020-07-15`
