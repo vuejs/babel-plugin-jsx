@@ -171,7 +171,9 @@ const transformJSXSpreadChild = (
 
 const walksScope = (path: NodePath, name: string) => {
   if (path.scope.hasBinding(name) && path.parentPath) {
-    path.parentPath.setData('optimize', false);
+    if (t.isJSXElement(path.parentPath.node)) {
+      path.parentPath.setData('optimize', false);
+    }
     walksScope(path.parentPath, name);
   }
 }
