@@ -354,7 +354,17 @@ const getChildren = (
         return transformedText;
       }
       if (path.isJSXExpressionContainer()) {
-        return transformJSXExpressionContainer(path);
+        const expression = transformJSXExpressionContainer(path);
+
+        if (t.isIdentifier(expression)) {
+          const { name } = expression as t.Identifier;
+          const { referencePaths } = path.scope.getBinding(name) || {};
+          referencePaths?.forEach(referencePath => {
+            walksScope(referencePath, name);
+          })
+        }
+        
+        return expression;
       }
       if (t.isJSXSpreadChild(path)) {
         return transformJSXSpreadChild(path as NodePath<t.JSXSpreadChild>);

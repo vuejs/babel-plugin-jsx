@@ -353,16 +353,18 @@ describe('PatchFlags', () => {
 
     expect(wrapper.classes().sort()).toEqual(['b', 'static'].sort());
   });
+});
 
-  test('variables outside slot', async () => {
-    const A = {
-      render() {
-        return this.$slots.default();
-      },
-    };
+describe('variables outside slots', async () => {
+  const A = {
+    render() {
+      return this.$slots.default();
+    },
+  };
 
-    A.inheritAttrs = false;
+  A.inheritAttrs = false;
 
+  test('internal', async () => {
     const wrapper = mount({
       data() {
         return {
@@ -390,7 +392,39 @@ describe('PatchFlags', () => {
     });
 
     expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
+    await wrapper.get('#button').trigger('click');
+    expect(wrapper.get('#textarea').element.innerHTML).toBe('1');
+  });
 
+  test('forwarded', async () => {
+    const wrapper = mount({
+      data() {
+        return {
+          val: 0,
+        };
+      },
+      methods: {
+        inc() {
+          this.val += 1;
+        },
+      },
+      render() {
+        const attrs = {
+          innerHTML: this.val,
+        };
+        const textarea = <textarea id="textarea" {...attrs} />;
+        return (
+          <A inc={this.inc}>
+            <div>
+              {textarea}
+            </div>
+            <button id="button" onClick={this.inc}>+1</button>
+          </A>
+        );
+      },
+    });
+
+    expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
     await wrapper.get('#button').trigger('click');
     expect(wrapper.get('#textarea').element.innerHTML).toBe('1');
   });
