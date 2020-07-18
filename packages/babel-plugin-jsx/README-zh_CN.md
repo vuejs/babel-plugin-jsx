@@ -4,7 +4,7 @@
 
 以 JSX 的方式来编写 Vue 代码
 
-[English](./README.md) | 简体中文
+[English](https://github.com/vueComponent/jsx/blob/dev/packages/babel-plugin-jsx/README.md) | 简体中文
 
 ## 安装
 

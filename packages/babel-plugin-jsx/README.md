@@ -4,7 +4,7 @@
 
 To add Vue JSX support.
 
-English | [简体中文](./README-zh_CN.md)
+English | [简体中文](https://github.com/vueComponent/jsx/blob/dev/packages/babel-plugin-jsx/README-zh_CN.md)
 
 ## Installation
 
