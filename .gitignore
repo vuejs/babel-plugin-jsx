@@ -104,3 +104,4 @@ dist
 .tern-port
 
 dist
+.DS_Store
