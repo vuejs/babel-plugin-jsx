@@ -1,9 +1,3 @@
-# @ant-design-vue/babel-plugin-jsx
-
-添加 Vue JSX 插件。
-
-[English](./README.md) | 简体中文
-
 ## 安装
 
 安装插件

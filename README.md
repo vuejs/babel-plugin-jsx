@@ -6,9 +6,7 @@ To add Vue JSX support.
 
 English | [简体中文](./README-zh_CN.md)
 
-## How to use
-
-- [The steps for usage](./packages/babel-plugin-jsx/README.md)
+/packages/babel-plugin-jsx/README.md
 
 ## Who is using
 

@@ -6,9 +6,7 @@
 
 [English](./README.md) | 简体中文
 
-## 怎样使用
-
-- [使用步骤](./packages/babel-plugin-jsx/README-zh_CN.md)
+/packages/babel-plugin-jsx/README-zh_CN.md
 
 ## 谁在用
 
