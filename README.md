@@ -8,7 +8,7 @@ English | [简体中文](./README-zh_CN.md)
 
 ## How to use
 
-- [The steps of using](./packages/babel-plugin-jsx/README.md)
+- [The steps for usage](./packages/babel-plugin-jsx/README.md)
 
 ## Who is using
 
