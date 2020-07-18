@@ -2,6 +2,8 @@
 
 To add Vue JSX support.
 
+English | [简体中文](./README-zh_CN.md)
+
 ## Installation
 
 Install the plugin with:
