@@ -1,22 +1,39 @@
-# @ant-design-vue/babel-plugin-jsx
+# Babel Plugin JSX for Vue 3.0
+
+![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg) [![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
 
 To add Vue JSX support.
+
+English | [简体中文](/packages/babel-plugin-jsx/README-zh_CN.md)
 
 ## Installation
 
 Install the plugin with:
 
-```
-npm install @ant-design-vue/babel-plugin-jsx
+```bash
+npm install @ant-design-vue/babel-plugin-jsx -D
 ```
 
 Then add the plugin to .babelrc:
 
-```
+```js
 {
   "plugins": ["@ant-design-vue/babel-plugin-jsx"]
 }
 ```
+
+## Usage
+
+### options
+
+* transformOn
+
+transform `on: { click: xx }` to `onClick: xxx`
+* compatibleProps
+
+compatible with Vue 2.x
+
+`{ props, on = {}, attrs, ...rest }` will be transformed to `{ ...props, ...attrs, ...transformOn(on), ...rest }`
 
 ## Syntax
 
@@ -24,7 +41,7 @@ Then add the plugin to .babelrc:
 functional component
 
 ```jsx
-const App = () => <div></div>
+const App = () => <div></div>;
 ```
 
 with render
@@ -32,9 +49,9 @@ with render
 ```jsx
 const App = {
   render() {
-    return <div>Vue 3.0</div>
+    return <div>Vue 3.0</div>;
   }
-}
+};
 ```
 
 ```jsx
@@ -49,8 +66,8 @@ const App = defineComponent(() => {
     <div onClick={inc}>
       {count.value}
     </div>
-  )
-})
+  );
+});
 ```
 
 Fragment
@@ -61,25 +78,25 @@ const App = () => (
     <span>I'm</span>
     <span>Fragment</span>
   </>
-)
+);
 ```
 
-### Attributes/Props
+### Attributes / Props
 
 ```jsx
-const App = () => <input type="email" />
+const App = () => <input type="email" />;
 ```
 
 with a dynamic binding:
 
 ```jsx
-const placeholderText = 'email'
+const placeholderText = 'email';
 const App = () => (
   <input
     type="email"
     placeholder={placeholderText}
   />
-)
+);
 ```
 
 ### Directives
@@ -101,20 +118,94 @@ const App = {
 
 v-model
 
-* You should use underscore (`_`) instead of dot (`.`) for modifiers (`vModel_trim={this.test}`)
+> Note: You should pass the second param as string for using `arg`.
 
 ```jsx
-export default {
-  data: () => ({
-    test: 'Hello World',
-  }),
-  render() {
-    return (
-      <>
-        <input type="text" vModel_trim={this.test} />
-        {this.test}
-      </>
-    )
-  },
-}
+<input vModel={val} />
 ```
+
+```jsx
+<input vModel={[val, ['trim']]} />
+```
+
+```jsx
+<A vModel={[val, 'foo', ['bar']]} />
+```
+
+Will compile to:
+
+```js
+h(A, {
+  'foo': val,
+  "fooModifiers": {
+    "bar": true
+  },
+  "onUpdate:foo": $event => val = $event
+})
+```
+
+custom directive
+
+```jsx
+const App = {
+  directives: { custom: customDirective },
+  setup() {
+    return () => (
+      <a
+        vCustom={[val, 'arg', ['a', 'b']]}
+      />
+    );
+  },
+};
+```
+
+### Slot 
+
+```jsx
+const App = {
+  setup() {
+    const slots = {
+      a: () => <div>A</div>,
+      b: () => <span>B</span>
+    };
+    return () => <A vSlots={slots} />;
+  }
+};
+```
+
+## Who is using
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a target="_blank" href="https://www.antdv.com/">
+          <img
+            width="32"
+            src="https://qn.antdv.com/logo.png"
+          />
+          <br>
+          <strong>Ant Design Vue</strong>
+        </a>
+      </td>
+      <td align="center">
+        <a target="_blank" href="https://youzan.github.io/vant/#/zh-CN/">
+          <img
+            width="32"
+            style="vertical-align: -0.32em; margin-right: 8px;"
+            src="https://img.yzcdn.cn/vant/logo.png"
+          />
+          <br>
+          <strong>Vant</strong>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## Compatibility
+
+This repo is only compatible with:
+
+- **Babel 7+**
+- **Vue 3+**

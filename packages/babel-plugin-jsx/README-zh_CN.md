@@ -1,20 +1,22 @@
 # Vue 3 Babel JSX 插件
 
-![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg)[![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
+![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg) [![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
 
 以 JSX 的方式来编写 Vue 代码
+
+[English](/packages/babel-plugin-jsx/README.md) | 简体中文
 
 ## 安装
 
 安装插件
 
-```
+```bash
 npm install @ant-design-vue/babel-plugin-jsx -D
 ```
 
 配置 Babel 
 
-```
+```js
 {
   "plugins": ["@ant-design-vue/babel-plugin-jsx"]
 }
@@ -40,7 +42,7 @@ npm install @ant-design-vue/babel-plugin-jsx -D
 函数式组件
 
 ```jsx
-const App = () => <div></div>
+const App = () => <div></div>;
 ```
 
 在 render 中使用
@@ -48,9 +50,9 @@ const App = () => <div></div>
 ```jsx
 const App = {
   render() {
-    return <div>Vue 3.0</div>
+    return <div>Vue 3.0</div>;
   }
-}
+};
 ```
 
 ```jsx
@@ -65,8 +67,8 @@ const App = defineComponent(() => {
     <div onClick={inc}>
       {count.value}
     </div>
-  )
-})
+  );
+});
 ```
 
 Fragment
@@ -77,25 +79,25 @@ const App = () => (
     <span>I'm</span>
     <span>Fragment</span>
   </>
-)
+);
 ```
 
-### Attributes/Props
+### Attributes / Props
 
 ```jsx
-const App = () => <input type="email" />
+const App = () => <input type="email" />;
 ```
 
 with a dynamic binding:
 
 ```jsx
-const placeholderText = 'email'
+const placeholderText = 'email';
 const App = () => (
   <input
     type="email"
     placeholder={placeholderText}
   />
-)
+);
 ```
 
 ### 指令
@@ -155,7 +157,7 @@ const App = {
       />
     );
   },
-}
+};
 ```
 
 ### 插槽 
@@ -166,10 +168,10 @@ const App = {
     const slots = {
       a: () => <div>A</div>,
       b: () => <span>B</span>
-    }
-    return () => <A vSlots={slots} />
+    };
+    return () => <A vSlots={slots} />;
   }
-}
+};
 ```
 
 ## 谁在用
