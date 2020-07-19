@@ -1,7 +1,9 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
-import { State, ExcludesBoolean } from './';
+import { State, ExcludesBoolean } from '.';
+
+type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
 
 /**
  * Get JSX element type
@@ -17,9 +19,8 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
       }
       return t.isJSXIdentifier(attribute.get('name'))
         && (attribute.get('name') as NodePath<t.JSXIdentifier>).get('name') === 'type'
-        && t.isStringLiteral(attribute.get('value'))
-      },
-    );
+        && t.isStringLiteral(attribute.get('value'));
+    });
 
   return typePath ? typePath.get('value.value') : '';
 };
@@ -27,22 +28,22 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
 const parseModifiers = (value: t.Expression) => {
   let modifiers: string[] = [];
   if (t.isArrayExpression(value)) {
-    modifiers = (value as t.ArrayExpression).elements.map(el => t.isStringLiteral(el) ? el.value : '').filter(Boolean)
+    modifiers = (value as t.ArrayExpression).elements.map((el) => (t.isStringLiteral(el) ? el.value : '')).filter(Boolean);
   }
   return modifiers;
-}
+};
 
 const parseDirectives = (args: {
   name: string,
   path: NodePath<t.JSXAttribute>,
   value: t.StringLiteral | t.Expression | null,
   state: State,
-  tag: t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression,
+  tag: Tag,
   isComponent: boolean
 }) => {
   const {
     name, path, value, state, tag, isComponent,
-  } = args
+  } = args;
   let modifiers: string[] = name.split('_');
   let arg;
   let val;
@@ -93,14 +94,19 @@ const parseDirectives = (args: {
   };
 };
 
-const resolveDirective = (path: NodePath<t.JSXAttribute>, state: State, tag: any, directiveName: string) => {
+const resolveDirective = (
+  path: NodePath<t.JSXAttribute>,
+  state: State,
+  tag: Tag,
+  directiveName: string,
+) => {
   if (directiveName === 'show') {
     return createIdentifier(state, 'vShow');
   }
   if (directiveName === 'model') {
     let modelToUse;
     const type = getType(path.parentPath as NodePath<t.JSXOpeningElement>);
-    switch (tag.value) {
+    switch ((tag as t.StringLiteral).value) {
       case 'select':
         modelToUse = createIdentifier(state, 'vModelSelect');
         break;
