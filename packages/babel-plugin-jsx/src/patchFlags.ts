@@ -1,4 +1,5 @@
 // https://github.com/vuejs/vue-next/blob/master/packages/shared/src/patchFlags.ts
+// tslint:disable: no-bitwise
 export const enum PatchFlags {
   TEXT = 1,
   CLASS = 1 << 1,
@@ -17,17 +18,17 @@ export const enum PatchFlags {
 
 // dev only flag -> name mapping
 export const PatchFlagNames = {
-  [PatchFlags.TEXT]: `TEXT`,
-  [PatchFlags.CLASS]: `CLASS`,
-  [PatchFlags.STYLE]: `STYLE`,
-  [PatchFlags.PROPS]: `PROPS`,
-  [PatchFlags.FULL_PROPS]: `FULL_PROPS`,
-  [PatchFlags.HYDRATE_EVENTS]: `HYDRATE_EVENTS`,
-  [PatchFlags.STABLE_FRAGMENT]: `STABLE_FRAGMENT`,
-  [PatchFlags.KEYED_FRAGMENT]: `KEYED_FRAGMENT`,
-  [PatchFlags.UNKEYED_FRAGMENT]: `UNKEYED_FRAGMENT`,
-  [PatchFlags.DYNAMIC_SLOTS]: `DYNAMIC_SLOTS`,
-  [PatchFlags.NEED_PATCH]: `NEED_PATCH`,
-  [PatchFlags.HOISTED]: `HOISTED`,
-  [PatchFlags.BAIL]: `BAIL`
-}
+  [PatchFlags.TEXT]: 'TEXT',
+  [PatchFlags.CLASS]: 'CLASS',
+  [PatchFlags.STYLE]: 'STYLE',
+  [PatchFlags.PROPS]: 'PROPS',
+  [PatchFlags.FULL_PROPS]: 'FULL_PROPS',
+  [PatchFlags.HYDRATE_EVENTS]: 'HYDRATE_EVENTS',
+  [PatchFlags.STABLE_FRAGMENT]: 'STABLE_FRAGMENT',
+  [PatchFlags.KEYED_FRAGMENT]: 'KEYED_FRAGMENT',
+  [PatchFlags.UNKEYED_FRAGMENT]: 'UNKEYED_FRAGMENT',
+  [PatchFlags.DYNAMIC_SLOTS]: 'DYNAMIC_SLOTS',
+  [PatchFlags.NEED_PATCH]: 'NEED_PATCH',
+  [PatchFlags.HOISTED]: 'HOISTED',
+  [PatchFlags.BAIL]: 'BAIL',
+};

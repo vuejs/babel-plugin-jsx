@@ -14,7 +14,7 @@ import {
 } from './utils';
 import parseDirectives from './parseDirectives';
 import { PatchFlags, PatchFlagNames } from './patchFlags';
-import { State, ExcludesBoolean } from './';
+import { State, ExcludesBoolean } from '.';
 
 const xlinkRE = /^xlink([A-Z])/;
 const onRE = /^on[^a-z]/;
@@ -24,7 +24,7 @@ const isOn = (key: string) => onRE.test(key);
 const transformJSXSpreadAttribute = (
   nodePath: NodePath,
   path: NodePath<t.JSXSpreadAttribute>,
-  mergeArgs: (t.ObjectProperty | t.Expression)[]
+  mergeArgs: (t.ObjectProperty | t.Expression)[],
 ) => {
   const argument = path.get('argument') as NodePath<t.ObjectExpression>;
   const { properties } = argument.node;
@@ -40,7 +40,7 @@ const transformJSXSpreadAttribute = (
 
 const getJSXAttributeValue = (
   path: NodePath<t.JSXAttribute>,
-  state: State
+  state: State,
 ): (
   t.StringLiteral | t.Expression | null
 ) => {
@@ -64,13 +64,13 @@ const getJSXAttributeValue = (
  * @returns boolean
  */
 const isConstant = (
-  node: t.Expression | t.Identifier | t.Literal | t.SpreadElement | null
+  node: t.Expression | t.Identifier | t.Literal | t.SpreadElement | null,
 ): boolean => {
   if (t.isIdentifier(node)) {
     return node.name === 'undefined';
   }
   if (t.isArrayExpression(node)) {
-    const elements = node.elements;
+    const { elements } = node;
     return elements.every((element) => element && isConstant(element));
   }
   if (t.isObjectExpression(node)) {
@@ -193,7 +193,9 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           return;
         }
         if (isDirective(name)) {
-          const { directive, modifiers, value, arg, directiveName } = parseDirectives({
+          const {
+            directive, modifiers, value, arg, directiveName,
+          } = parseDirectives({
             tag,
             isComponent,
             name,
@@ -207,7 +209,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           if (directiveName === 'slots') {
             slots = attributeValue;
             return;
-          } else if (directive) {
+          } if (directive) {
             directives.push(t.arrayExpression(directive));
           } else {
             // must be v-model and is a component
@@ -258,11 +260,16 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       } else {
         // JSXSpreadAttribute
         hasDynamicKeys = true;
-        transformJSXSpreadAttribute(path as NodePath, prop as NodePath<t.JSXSpreadAttribute>, mergeArgs);
+        transformJSXSpreadAttribute(
+          path as NodePath,
+          prop as NodePath<t.JSXSpreadAttribute>,
+          mergeArgs,
+        );
       }
     });
 
   // patchFlag analysis
+  // tslint:disable: no-bitwise
   if (hasDynamicKeys) {
     patchFlag |= PatchFlags.FULL_PROPS;
   } else {
@@ -342,49 +349,48 @@ const getChildren = (
       | t.JSXElement
       | t.JSXFragment
     >[],
-  state: State
-): t.Expression[] =>
-  paths
-    .map((path) => {
-      if (path.isJSXText()) {
-        const transformedText = transformJSXText(path);
-        if (transformedText) {
-          return t.callExpression(createIdentifier(state, 'createTextVNode'), [transformedText]);
-        }
-        return transformedText;
+  state: State,
+): t.Expression[] => paths
+  .map((path) => {
+    if (path.isJSXText()) {
+      const transformedText = transformJSXText(path);
+      if (transformedText) {
+        return t.callExpression(createIdentifier(state, 'createTextVNode'), [transformedText]);
       }
-      if (path.isJSXExpressionContainer()) {
-        const expression = transformJSXExpressionContainer(path);
+      return transformedText;
+    }
+    if (path.isJSXExpressionContainer()) {
+      const expression = transformJSXExpressionContainer(path);
 
-        if (t.isIdentifier(expression)) {
-          const { name } = expression as t.Identifier;
-          const { referencePaths } = path.scope.getBinding(name) || {};
-          referencePaths?.forEach(referencePath => {
-            walksScope(referencePath, name);
-          })
-        }
-        
-        return expression;
+      if (t.isIdentifier(expression)) {
+        const { name } = expression as t.Identifier;
+        const { referencePaths = [] } = path.scope.getBinding(name) || {};
+        referencePaths.forEach((referencePath) => {
+          walksScope(referencePath, name);
+        });
       }
-      if (t.isJSXSpreadChild(path)) {
-        return transformJSXSpreadChild(path as NodePath<t.JSXSpreadChild>);
-      }
-      if (path.isCallExpression()) {
-        return path.node;
-      }
-      if (path.isJSXElement()) {
-        return transformJSXElement(path, state);
-      }
-      throw new Error(`getChildren: ${path.type} is not supported`);
-    }).filter(((value: any) => (
-      value !== undefined
+
+      return expression;
+    }
+    if (t.isJSXSpreadChild(path)) {
+      return transformJSXSpreadChild(path as NodePath<t.JSXSpreadChild>);
+    }
+    if (path.isCallExpression()) {
+      return path.node;
+    }
+    if (path.isJSXElement()) {
+      return transformJSXElement(path, state);
+    }
+    throw new Error(`getChildren: ${path.type} is not supported`);
+  }).filter(((value: any) => (
+    value !== undefined
       && value !== null
       && !t.isJSXEmptyExpression(value)
-    )) as any);
+  )) as any);
 
 const transformJSXElement = (
   path: NodePath<t.JSXElement>,
-  state: State
+  state: State,
 ): t.CallExpression => {
   const children = getChildren(path.get('children'), state);
   const {
@@ -394,7 +400,7 @@ const transformJSXElement = (
     directives,
     patchFlag,
     dynamicPropNames,
-    slots
+    slots,
   } = buildProps(path, state);
 
   const useOptimate = path.getData('optimize') !== false;
@@ -420,16 +426,16 @@ const transformJSXElement = (
     (children.length || slots) ? (
       isComponent
         ? t.objectExpression([
-            !!children.length && t.objectProperty(
-              t.identifier('default'),
-              t.arrowFunctionExpression([], t.arrayExpression(children))
-            ),
-            ...(slots ? (
-              t.isObjectExpression(slots)
-                ? (slots as any as t.ObjectExpression).properties
-                : [t.spreadElement(slots as any)]
-            ) : [])
-          ].filter(Boolean as any as ExcludesBoolean))
+          !!children.length && t.objectProperty(
+            t.identifier('default'),
+            t.arrowFunctionExpression([], t.arrayExpression(children)),
+          ),
+          ...(slots ? (
+            t.isObjectExpression(slots)
+              ? (slots as any as t.ObjectExpression).properties
+              : [t.spreadElement(slots as any)]
+          ) : []),
+        ].filter(Boolean as any as ExcludesBoolean))
         : t.arrayExpression(children)
     ) : t.nullLiteral(),
     !!patchFlag && usePatchFlag && (
@@ -438,7 +444,9 @@ const transformJSXElement = (
         : t.numericLiteral(PatchFlags.BAIL)
     ),
     !!dynamicPropNames.size && usePatchFlag
-    && t.arrayExpression([...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string))),
+    && t.arrayExpression(
+      [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string)),
+    ),
   ].filter(Boolean as any as ExcludesBoolean));
 
   if (!directives.length) {
