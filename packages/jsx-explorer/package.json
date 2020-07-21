@@ -16,7 +16,7 @@
     "ts-loader": "^8.0.0",
     "typescript": "^3.9.6",
     "url-loader": "^4.1.0",
-    "vue": "3.0.0-rc.2",
+    "vue": "3.0.0-rc.4",
     "webpack": "^4.43.0",
     "webpack-dev-server": "^3.11.0",
     "worker-plugin": "^4.0.3"
