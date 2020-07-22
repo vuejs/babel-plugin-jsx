@@ -1,6 +1,6 @@
 {
   "name": "@ant-design-vue/babel-plugin-jsx",
-  "version": "1.0.0-beta.3",
+  "version": "1.0.0-beta.4",
   "description": "Babel plugin for Vue 3.0 JSX",
   "author": "Amour1688 <lcz_1996@foxmail.com>",
   "homepage": "https://github.com/vueComponent/jsx/tree/master/packages/babel-plugin-jsx#readme",
