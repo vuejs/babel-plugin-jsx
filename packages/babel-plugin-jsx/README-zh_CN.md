@@ -102,8 +102,6 @@ const App = () => (
 
 ### 指令
 
-> 建议在 JSX 中使用驼峰 (`vModel`)，但是 `v-model` 也能用
-
 v-show
 
 ```jsx
@@ -112,7 +110,7 @@ const App = {
     return { visible: true };
   },
   render() {
-    return <input vShow={this.visible} />;
+    return <input v-show={this.visible} />;
   },
 };
 ```
@@ -122,15 +120,15 @@ v-model
 > 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
 ```jsx
-<input vModel={val} />
+<input v-model={val} />
 ```
 
 ```jsx
-<input vModel={[val, ['trim']]} />
+<input v-model={[val, ['trim']]} />
 ```
 
 ```jsx
-<A vModel={[val, 'foo', ['bar']]} />
+<A v-model={[val, 'foo', ['bar']]} />
 ```
 
 会变编译成：
@@ -153,7 +151,7 @@ const App = {
   setup() {
     return () => (
       <a
-        vCustom={[val, 'arg', ['a', 'b']]}
+        v-custom={[val, 'arg', ['a', 'b']]}
       />
     );
   },
@@ -169,7 +167,7 @@ const App = {
       a: () => <div>A</div>,
       b: () => <span>B</span>
     };
-    return () => <A vSlots={slots} />;
+    return () => <A v-slots={slots} />;
   }
 };
 ```

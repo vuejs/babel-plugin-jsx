@@ -101,8 +101,6 @@ const App = () => (
 
 ### Directives
 
-> It is recommended to use camelCase version of it (`vModel`) in JSX, but you can use kebab-case too (`v-model`).
-
 v-show
 
 ```jsx
@@ -111,7 +109,7 @@ const App = {
     return { visible: true };
   },
   render() {
-    return <input vShow={this.visible} />;
+    return <input v-show={this.visible} />;
   },
 };
 ```
@@ -121,15 +119,15 @@ v-model
 > Note: You should pass the second param as string for using `arg`.
 
 ```jsx
-<input vModel={val} />
+<input v-model={val} />
 ```
 
 ```jsx
-<input vModel={[val, ['trim']]} />
+<input v-model={[val, ['trim']]} />
 ```
 
 ```jsx
-<A vModel={[val, 'foo', ['bar']]} />
+<A v-model={[val, 'foo', ['bar']]} />
 ```
 
 Will compile to:
@@ -152,7 +150,7 @@ const App = {
   setup() {
     return () => (
       <a
-        vCustom={[val, 'arg', ['a', 'b']]}
+        v-custom={[val, 'arg', ['a', 'b']]}
       />
     );
   },
@@ -168,7 +166,7 @@ const App = {
       a: () => <div>A</div>,
       b: () => <span>B</span>
     };
-    return () => <A vSlots={slots} />;
+    return () => <A v-slots={slots} />;
   }
 };
 ```

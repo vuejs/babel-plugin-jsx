@@ -1,3 +1,9 @@
+## 1.0.0-beta.4
+
+`2020-07-22`
+
+- 🐞Properly force update on forwarded slots [#33](https://github.com/vueComponent/jsx/pull/33)
+
 ## 1.0.0-beta.3
 
 `2020-07-15`
