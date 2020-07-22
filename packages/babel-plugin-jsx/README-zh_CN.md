@@ -71,6 +71,24 @@ const App = defineComponent(() => {
 });
 ```
 
+```jsx
+import { withModifiers } from 'vue';
+
+const App = () => {
+  const count = ref(0);
+
+  const inc = () => {
+    count.value++;
+  };
+
+  return () => (
+    <div onClick={withModifiers(inc, ['self'])}>
+      {count.value}
+    </div>
+  );
+}
+```
+
 Fragment
 
 ```jsx
@@ -164,8 +182,8 @@ const App = {
 const App = {
   setup() {
     const slots = {
-      a: () => <div>A</div>,
-      b: () => <span>B</span>
+      default: () => <div>A</div>,
+      foo: () => <span>B</span>
     };
     return () => <A v-slots={slots} />;
   }
