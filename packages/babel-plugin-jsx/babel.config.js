@@ -5,6 +5,6 @@ module.exports = {
   ],
   plugins: [
     /* eslint-disable-next-line global-require */
-    [require('./dist/index.js'), { optimize: true }],
+    [require('./dist/index.js'), { optimize: true, isCustomElement: (tag) => /^x-/.test(tag) }],
   ],
 };

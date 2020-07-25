@@ -12,6 +12,7 @@ interface Opts {
   transformOn?: boolean;
   compatibleProps?: boolean;
   optimize?: boolean;
+  isCustomElement?: (tag: string) => boolean;
 }
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
