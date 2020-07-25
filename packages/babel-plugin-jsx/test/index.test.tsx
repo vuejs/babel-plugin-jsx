@@ -1,7 +1,13 @@
-import { reactive, ref } from 'vue';
-import { shallowMount, mount } from '@vue/test-utils';
+import {
+  reactive, ref, defineComponent, CSSProperties, ComponentPublicInstance,
+} from 'vue';
+import { shallowMount, mount, VueWrapper } from '@vue/test-utils';
 
-const patchFlagExpect = (wrapper, flag, dynamic) => {
+const patchFlagExpect = (
+  wrapper: VueWrapper<ComponentPublicInstance>,
+  flag: number,
+  dynamic: string[] | null,
+) => {
   const { patchFlag, dynamicProps } = wrapper.vm.$.subTree;
 
   expect(patchFlag).toBe(flag);
@@ -30,11 +36,10 @@ describe('Transform JSX', () => {
   test('Extracts attrs', () => {
     const wrapper = shallowMount({
       setup() {
-        return () => <div id="hi" dir="ltr" />;
+        return () => <div id="hi" />;
       },
     });
     expect(wrapper.element.id).toBe('hi');
-    expect(wrapper.element.dir).toBe('ltr');
   });
 
   test('Binds attrs', () => {
@@ -48,13 +53,20 @@ describe('Transform JSX', () => {
   });
 
   test('should not fallthrough with inheritAttrs: false', () => {
-    const Child = (props) => <div>{props.foo}</div>;
+    const Child = defineComponent({
+      props: {
+        foo: Number,
+      },
+      setup(props) {
+        return () => <div>{props.foo}</div>;
+      },
+    });
 
     Child.inheritAttrs = false;
 
     const wrapper = mount({
-      setup() {
-        return () => (
+      render() {
+        return (
           <Child class="parent" foo={1} />
         );
       },
@@ -83,9 +95,15 @@ describe('Transform JSX', () => {
   });
 
   test('nested component', () => {
-    const A = {};
+    const A = {
+      B: defineComponent({
+        setup() {
+          return () => <div>123</div>;
+        },
+      }),
+    };
 
-    A.B = () => <div>123</div>;
+    A.B.inheritAttrs = false;
 
     const wrapper = mount(() => <A.B />);
 
@@ -104,6 +122,7 @@ describe('Transform JSX', () => {
   test('Merge class', () => {
     const wrapper = shallowMount({
       setup() {
+        // @ts-ignore
         return () => <div class="a" {...{ class: 'b' } } />;
       },
     });
@@ -114,22 +133,18 @@ describe('Transform JSX', () => {
     const propsA = {
       style: {
         color: 'red',
-      },
+      } as CSSProperties,
     };
     const propsB = {
-      style: [
-        {
-          color: 'blue',
-          width: '200px',
-        },
-        {
-          width: '300px',
-          height: '300px',
-        },
-      ],
+      style: {
+        color: 'blue',
+        width: '300px',
+        height: '300px',
+      } as CSSProperties,
     };
     const wrapper = shallowMount({
       setup() {
+        // @ts-ignore
         return () => <div { ...propsA } { ...propsB } />;
       },
     });
@@ -157,52 +172,51 @@ describe('Transform JSX', () => {
   });
 
   test('domProps input[checked]', () => {
-    const val = 'foo';
+    const val = true;
     const wrapper = shallowMount({
       setup() {
         return () => <input checked={val} />;
       },
     });
 
-    expect(wrapper.vm.$.subTree.props.checked).toBe(val);
+    expect(wrapper.vm.$.subTree?.props?.checked).toBe(val);
   });
 
   test('domProps option[selected]', () => {
-    const val = 'foo';
+    const val = true;
     const wrapper = shallowMount({
       render() {
         return <option selected={val} />;
       },
     });
-    expect(wrapper.vm.$.subTree.props.selected).toBe(val);
+    expect(wrapper.vm.$.subTree?.props?.selected).toBe(val);
   });
 
   test('domProps video[muted]', () => {
-    const val = 'foo';
+    const val = true;
     const wrapper = shallowMount({
       render() {
         return <video muted={val} />;
       },
     });
 
-    expect(wrapper.vm.$.subTree.props.muted).toBe(val);
+    expect(wrapper.vm.$.subTree?.props?.muted).toBe(val);
   });
 
   test('Spread (single object expression)', () => {
     const props = {
-      innerHTML: 123,
-      other: '1',
+      id: '1',
     };
     const wrapper = shallowMount({
       render() {
-        return <div {...props}></div>;
+        return <div {...props}>123</div>;
       },
     });
-    expect(wrapper.html()).toBe('<div other="1">123</div>');
+    expect(wrapper.html()).toBe('<div id="1">123</div>');
   });
 
   test('Spread (mixed)', async () => {
-    const calls = [];
+    const calls: number[] = [];
     const data = {
       id: 'hehe',
       onClick() {
@@ -215,7 +229,7 @@ describe('Transform JSX', () => {
     const wrapper = shallowMount({
       setup() {
         return () => (
-          <div
+          <a
             href="huhu"
             {...data}
             class={{ c: true }}
@@ -235,9 +249,11 @@ describe('Transform JSX', () => {
 
     expect(calls).toEqual(expect.arrayContaining([3, 4]));
   });
+});
 
-  test('directive', () => {
-    const calls = [];
+describe('directive', () => {
+  test('custom', () => {
+    const calls: number[] = [];
     const customDirective = {
       mounted() {
         calls.push(1);
@@ -261,25 +277,45 @@ describe('Transform JSX', () => {
     expect(calls).toEqual(expect.arrayContaining([1]));
     expect(node.dirs).toHaveLength(1);
   });
+
+  test('vHtml', () => {
+    const wrapper = shallowMount(({
+      setup() {
+        return () => <h1 v-html="<div>foo</div>"></h1>;
+      },
+    }));
+    expect(wrapper.html()).toBe('<h1><div>foo</div></h1>');
+  });
+
+  test('vText', () => {
+    const text = 'foo';
+    const wrapper = shallowMount(({
+      setup() {
+        return () => <div v-text={text}></div>;
+      },
+    }));
+    expect(wrapper.html()).toBe('<div>foo</div>');
+  });
 });
 
 describe('slots', () => {
   test('with default', () => {
-    const A = (_, { slots }) => (
-      <div>
-        {slots.default()}
-        {slots.foo('val')}
-      </div>
-    );
+    const A = defineComponent({
+      setup(_, { slots }) {
+        return () => (
+          <div>
+            {slots.default?.()}
+            {slots.foo?.('val')}
+          </div>
+        );
+      },
+    });
 
     A.inheritAttrs = false;
 
     const wrapper = mount({
       setup() {
-        const slots = {
-          foo: (val) => val,
-        };
-        return () => <A vSlots={slots}><span>default</span></A>;
+        return () => <A v-slots={{ foo: (val: string) => val }}><span>default</span></A>;
       },
     });
 
@@ -287,20 +323,21 @@ describe('slots', () => {
   });
 
   test('without default', () => {
-    const A = (_, { slots }) => (
-      <div>
-        {slots.foo('foo')}
-      </div>
-    );
+    const A = defineComponent({
+      setup(_, { slots }) {
+        return () => (
+          <div>
+            {slots.foo?.('foo')}
+          </div>
+        );
+      },
+    });
 
     A.inheritAttrs = false;
 
     const wrapper = mount({
       setup() {
-        const slots = {
-          foo: (val) => val,
-        };
-        return () => <A vSlots={slots} />;
+        return () => <A v-slots={{ foo: (val: string) => val }} />;
       },
     });
 
@@ -325,7 +362,7 @@ describe('PatchFlags', () => {
         const onClick = () => {
           visible.value = false;
         };
-        return () => <div vShow={visible.value} onClick={onClick}>NEED_PATCH</div>;
+        return () => <div v-show={visible.value} onClick={onClick}>NEED_PATCH</div>;
       },
     });
 
@@ -355,12 +392,15 @@ describe('PatchFlags', () => {
   });
 });
 
-describe('variables outside slots', async () => {
-  const A = {
+describe('variables outside slots', () => {
+  interface AProps {
+    inc: () => void
+  }
+  const A = defineComponent<AProps>({
     render() {
-      return this.$slots.default();
+      return this.$slots.default?.();
     },
-  };
+  });
 
   A.inheritAttrs = false;
 

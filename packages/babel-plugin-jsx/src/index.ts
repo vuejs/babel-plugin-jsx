@@ -11,7 +11,8 @@ export type State = {
 interface Opts {
   transformOn?: boolean;
   compatibleProps?: boolean;
-  usePatchFlag?: boolean;
+  optimize?: boolean;
+  isCustomElement?: (tag: string) => boolean;
 }
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;

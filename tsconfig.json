@@ -4,7 +4,7 @@
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    "allowJs": false,
+    "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,
     "experimentalDecorators": true,

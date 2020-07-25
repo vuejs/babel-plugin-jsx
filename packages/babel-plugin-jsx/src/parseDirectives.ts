@@ -3,7 +3,7 @@ import { NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
 import { State, ExcludesBoolean } from '.';
 
-type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
+export type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
 
 /**
  * Get JSX element type
@@ -18,17 +18,17 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
         return false;
       }
       return t.isJSXIdentifier(attribute.get('name'))
-        && (attribute.get('name') as NodePath<t.JSXIdentifier>).get('name') === 'type'
-        && t.isStringLiteral(attribute.get('value'));
-    });
+        && (attribute.get('name') as NodePath<t.JSXIdentifier>).node.name === 'type';
+    }) as NodePath<t.JSXAttribute> | undefined;
 
-  return typePath ? typePath.get('value.value') : '';
+  return typePath ? typePath.get('value').node : null;
 };
 
 const parseModifiers = (value: t.Expression) => {
   let modifiers: string[] = [];
   if (t.isArrayExpression(value)) {
-    modifiers = (value as t.ArrayExpression).elements.map((el) => (t.isStringLiteral(el) ? el.value : '')).filter(Boolean);
+    modifiers = (value as t.ArrayExpression).elements
+      .map((el) => (t.isStringLiteral(el) ? el.value : '')).filter(Boolean);
   }
   return modifiers;
 };
@@ -57,7 +57,8 @@ const parseDirectives = (args: {
     throw new Error('You have to use JSX Expression inside your v-model');
   }
 
-  const hasDirective = directiveName !== 'model' || (directiveName === 'model' && !isComponent);
+  const shouldResolve = !['html', 'text', 'model'].includes(directiveName)
+    || (directiveName === 'model' && !isComponent);
 
   if (t.isArrayExpression(value)) {
     const { elements } = value as t.ArrayExpression;
@@ -78,7 +79,7 @@ const parseDirectives = (args: {
     modifiers: modifiersSet,
     value: val || value,
     arg,
-    directive: hasDirective ? [
+    directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
       val || value,
       !!modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
@@ -114,15 +115,19 @@ const resolveDirective = (
         modelToUse = createIdentifier(state, 'vModelText');
         break;
       default:
-        switch (type) {
-          case 'checkbox':
-            modelToUse = createIdentifier(state, 'vModelCheckbox');
-            break;
-          case 'radio':
-            modelToUse = createIdentifier(state, 'vModelRadio');
-            break;
-          default:
-            modelToUse = createIdentifier(state, 'vModelText');
+        if (t.isStringLiteral(type) || !type) {
+          switch ((type as t.StringLiteral)?.value) {
+            case 'checkbox':
+              modelToUse = createIdentifier(state, 'vModelCheckbox');
+              break;
+            case 'radio':
+              modelToUse = createIdentifier(state, 'vModelRadio');
+              break;
+            default:
+              modelToUse = createIdentifier(state, 'vModelText');
+          }
+        } else {
+          modelToUse = createIdentifier(state, 'vModelDynamic');
         }
     }
     return modelToUse;

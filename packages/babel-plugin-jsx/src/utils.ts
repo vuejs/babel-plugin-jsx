@@ -86,7 +86,11 @@ const getTag = (
     if (!htmlTags.includes(name) && !svgTags.includes(name)) {
       return path.scope.hasBinding(name)
         ? t.identifier(name)
-        : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)]);
+        : (
+          state.opts.isCustomElement?.(name)
+            ? t.stringLiteral(name)
+            : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)])
+        );
     }
 
     return t.stringLiteral(name);
