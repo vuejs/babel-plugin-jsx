@@ -30,7 +30,8 @@ module.exports = {
     'import/extensions': [2, 'ignorePackages', { ts: 'never' }],
     '@typescript-eslint/ban-ts-comment': [0],
     '@typescript-eslint/explicit-module-boundary-types': [0],
-    '@typescript-eslint/no-explicit-any': [0]
+    '@typescript-eslint/no-explicit-any': [0],
+    '@typescript-eslint/no-non-null-assertion': [0]
   },
   settings: {
     'import/resolver': {
