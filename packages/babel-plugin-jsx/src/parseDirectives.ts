@@ -115,8 +115,8 @@ const resolveDirective = (
         modelToUse = createIdentifier(state, 'vModelText');
         break;
       default:
-        if (t.isStringLiteral(type)) {
-          switch ((type as t.StringLiteral).value) {
+        if (t.isStringLiteral(type) || !type) {
+          switch ((type as t.StringLiteral)?.value) {
             case 'checkbox':
               modelToUse = createIdentifier(state, 'vModelCheckbox');
               break;
