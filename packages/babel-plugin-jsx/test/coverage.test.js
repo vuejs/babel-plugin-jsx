@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { transformSync } from '@babel/core';
-import preset from '../babel.config';
+import preset from '../babel.config.js';
 
 test('coverage', () => {
   const mainTest = fs.readFileSync(path.resolve(__dirname, './index.test.js'));
