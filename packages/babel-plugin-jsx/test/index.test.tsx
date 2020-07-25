@@ -299,42 +299,50 @@ describe('directive', () => {
 });
 
 describe('slots', () => {
-  // test('with default', () => {
-  //   const A = defineComponent((_, { slots }) => (
-  //     <div>
-  //       {slots.default?.()}
-  //       {slots.foo?.('val')}
-  //     </div>
-  //   ));
+  test('with default', () => {
+    const A = defineComponent({
+      setup(_, { slots }) {
+        return () => (
+          <div>
+            {slots.default?.()}
+            {slots.foo?.('val')}
+          </div>
+        );
+      },
+    });
 
-  //   A.inheritAttrs = false;
+    A.inheritAttrs = false;
 
-  //   const wrapper = mount({
-  //     setup() {
-  //       return () => <A v-slots={{ foo: (val: string) => val }}><span>default</span></A>;
-  //     },
-  //   });
+    const wrapper = mount({
+      setup() {
+        return () => <A v-slots={{ foo: (val: string) => val }}><span>default</span></A>;
+      },
+    });
 
-  //   expect(wrapper.html()).toBe('<div><span>default</span>val</div>');
-  // });
+    expect(wrapper.html()).toBe('<div><span>default</span>val</div>');
+  });
 
-  // test('without default', () => {
-  //   const A = defineComponent((_, { slots }) => (
-  //     <div>
-  //       {slots.foo?.('foo')}
-  //     </div>
-  //   ));
+  test('without default', () => {
+    const A = defineComponent({
+      setup(_, { slots }) {
+        return () => (
+          <div>
+            {slots.foo?.('foo')}
+          </div>
+        );
+      },
+    });
 
-  //   A.inheritAttrs = false;
+    A.inheritAttrs = false;
 
-  //   const wrapper = mount({
-  //     setup() {
-  //       return () => <A v-slots={{ foo: (val: string) => val }} />;
-  //     },
-  //   });
+    const wrapper = mount({
+      setup() {
+        return () => <A v-slots={{ foo: (val: string) => val }} />;
+      },
+    });
 
-  //   expect(wrapper.html()).toBe('<div>foo</div>');
-  // });
+    expect(wrapper.html()).toBe('<div>foo</div>');
+  });
 });
 
 describe('PatchFlags', () => {
