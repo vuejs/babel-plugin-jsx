@@ -235,8 +235,10 @@ describe('Transform JSX', () => {
 
     expect(calls).toEqual(expect.arrayContaining([3, 4]));
   });
+});
 
-  test('directive', () => {
+describe('directive', () => {
+  test('custom', () => {
     const calls = [];
     const customDirective = {
       mounted() {
@@ -260,6 +262,25 @@ describe('Transform JSX', () => {
     const node = wrapper.vm.$.subTree;
     expect(calls).toEqual(expect.arrayContaining([1]));
     expect(node.dirs).toHaveLength(1);
+  });
+
+  test('vHtml', () => {
+    const wrapper = shallowMount(({
+      setup() {
+        return () => <h1 v-html="<div>foo</div>"></h1>;
+      },
+    }));
+    expect(wrapper.html()).toBe('<h1><div>foo</div></h1>');
+  });
+
+  test('vText', () => {
+    const text = 'foo';
+    const wrapper = shallowMount(({
+      setup() {
+        return () => <div v-text={text}></div>;
+      },
+    }));
+    expect(wrapper.html()).toBe('<div>foo</div>');
   });
 });
 
@@ -355,7 +376,7 @@ describe('PatchFlags', () => {
   });
 });
 
-describe('variables outside slots', async () => {
+describe('variables outside slots', () => {
   const A = {
     render() {
       return this.$slots.default();
