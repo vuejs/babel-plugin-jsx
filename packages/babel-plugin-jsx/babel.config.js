@@ -9,6 +9,6 @@ module.exports = {
   ],
   plugins: [
     /* eslint-disable-next-line global-require */
-    [require('./dist/index.js'), { transformOn: true }],
+    [require('./dist/index.js'), { optimize: true }],
   ],
 };
