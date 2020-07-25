@@ -1,11 +1,7 @@
 module.exports = {
   presets: [
-    [
-      '@babel/env',
-      {
-        // modules: 'cjs',
-      },
-    ],
+    '@babel/preset-env',
+    '@babel/preset-typescript',
   ],
   plugins: [
     /* eslint-disable-next-line global-require */

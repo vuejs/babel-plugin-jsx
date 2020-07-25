@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDirs": ["./src"],
     "outDir": "dist",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "types": ["node", "jest"]
   },
   "include": [
     "src/**/*",
