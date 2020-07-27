@@ -1,20 +1,20 @@
-# Babel Plugin JSX for Vue 3.0
+# Vue 3 Babel JSX 插件
 
 ![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg) [![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
 
-To add Vue JSX support.
+以 JSX 的方式来编写 Vue 代码
 
-English | [简体中文](/packages/babel-plugin-jsx/README-zh_CN.md)
+[English](/packages/babel-plugin-jsx/README.md) | 简体中文
 
-## Installation
+## 安装
 
-Install the plugin with:
+安装插件
 
 ```bash
 npm install @ant-design-vue/babel-plugin-jsx -D
 ```
 
-Then add the plugin to .babelrc:
+配置 Babel 
 
 ```js
 {
@@ -22,29 +22,30 @@ Then add the plugin to .babelrc:
 }
 ```
 
-## Usage
+## 使用
 
-### options
+### 参数
 
 * transformOn
 
-transform `on: { click: xx }` to `onClick: xxx`
+把 `on: { click: xx }` 转成 `onClick: xxx`
+
 * compatibleProps
 
-compatible with Vue 2.x
+兼容大多数 Vue 2 的写法，Vue 3 中，把所有属性都改成了顶级属性，意味这不需要再传递 props，attrs 这些属性。
 
-`{ props, on = {}, attrs, ...rest }` will be transformed to `{ ...props, ...attrs, ...transformOn(on), ...rest }`
+开启这个参数意味着对 { attrs, props, on } 做了兼容处理，但是所有的属性外层都会有 `compatibleProps` 方法
 
-## Syntax
+## 表达式
 
-### Content
-functional component
+### 内容
+函数式组件
 
 ```jsx
 const App = () => <div></div>;
 ```
 
-with render
+在 render 中使用
 
 ```jsx
 const App = {
@@ -117,7 +118,7 @@ const App = () => (
 );
 ```
 
-### Directives
+### 指令
 
 v-show
 
@@ -134,7 +135,7 @@ const App = {
 
 v-model
 
-> Note: You should pass the second param as string for using `arg`.
+> 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
 ```jsx
 <input v-model={val} />
@@ -148,7 +149,7 @@ v-model
 <A v-model={[val, 'foo', ['bar']]} />
 ```
 
-Will compile to:
+会变编译成：
 
 ```js
 h(A, {
@@ -160,7 +161,7 @@ h(A, {
 })
 ```
 
-custom directive
+自定义指令
 
 ```jsx
 const App = {
@@ -175,7 +176,7 @@ const App = {
 };
 ```
 
-### Slot 
+### 插槽 
 
 ```jsx
 const App = {
@@ -189,7 +190,7 @@ const App = {
 };
 ```
 
-## Who is using
+## 谁在用
 
 <table>
   <tbody>
@@ -219,9 +220,9 @@ const App = {
   </tbody>
 </table>
 
-## Compatibility
+## 兼容性
 
-This repo is only compatible with:
+要求：
 
 - **Babel 7+**
 - **Vue 3+**

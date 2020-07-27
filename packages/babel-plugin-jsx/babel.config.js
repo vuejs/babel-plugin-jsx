@@ -1,14 +1,10 @@
 module.exports = {
   presets: [
-    [
-      '@babel/env',
-      {
-        // modules: 'cjs',
-      },
-    ],
+    '@babel/preset-env',
+    '@babel/preset-typescript',
   ],
   plugins: [
     /* eslint-disable-next-line global-require */
-    [require('./dist/index.js'), { transformOn: true }],
+    [require('./dist/index.js'), { optimize: true, isCustomElement: (tag) => /^x-/.test(tag) }],
   ],
 };

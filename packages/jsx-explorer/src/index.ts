@@ -12,13 +12,15 @@ createApp(
   () => h('h1', null, 'Vue JSX Explorer'),
 ).mount('#header');
 
+// @ts-ignore
 if (module.hot) {
+  // @ts-ignore
   module.hot.accept('../../babel-plugin-jsx/src', () => {
     compile();
   });
 }
 
-const sharedEditorOptions = {
+const sharedEditorOptions: monaco.editor.IStandaloneEditorConstructionOptions = {
   theme: 'vs-dark',
   fontSize: 14,
   wordWrap: 'on',
@@ -39,14 +41,14 @@ monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
   typeRoots: ['node_modules/@types'],
 });
 
-const editor = monaco.editor.create(document.getElementById('source'), {
+const editor = monaco.editor.create(document.getElementById('source')!, {
   value: decodeURIComponent(window.location.hash.slice(1)) || localStorage.getItem('state') || 'const App = () => <div>Hello World</div>',
   language: 'javascript',
   tabSize: 2,
   ...sharedEditorOptions,
 });
 
-const output = monaco.editor.create(document.getElementById('output'), {
+const output = monaco.editor.create(document.getElementById('output')!, {
   value: '',
   language: 'javascript',
   readOnly: true,
@@ -63,12 +65,13 @@ const compile = () => {
     babelrc: false,
     plugins: [[babelPluginJSx, { transformOn: true }]],
     ast: true,
-  }, (err, result) => {
+  }, (err, result = {}) => {
+    const res = result!;
     if (!err) {
-      console.log('AST', result.ast);
-      output.setValue(result.code);
+      console.log('AST', res.ast!);
+      output.setValue(res.code!);
     } else {
-      output.setValue(err.message);
+      output.setValue(err.message!);
     }
   });
 };
@@ -84,15 +87,18 @@ compile();
 // update compile output when input changes
 editor.onDidChangeModelContent(debounce(compile));
 
-function debounce(fn, delay = 300) {
-  let prevTimer = null;
-  return ((...args) => {
+function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number = 300
+): T {
+  let prevTimer: number | null = null
+  return ((...args: any[]) => {
     if (prevTimer) {
-      clearTimeout(prevTimer);
+      clearTimeout(prevTimer)
     }
     prevTimer = window.setTimeout(() => {
-      fn(...args);
-      prevTimer = null;
-    }, delay);
-  });
+      fn(...args)
+      prevTimer = null
+    }, delay)
+  }) as any
 }

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDirs": ["./src"],
+    "outDir": "dist",
+    "downlevelIteration": true,
+    "types": ["node", "jest"]
+  },
+  "include": [
+    "src/**/*",
+    "global.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}
