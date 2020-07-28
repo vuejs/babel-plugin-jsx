@@ -469,3 +469,30 @@ describe('variables outside slots', () => {
     expect(wrapper.get('#textarea').element.innerHTML).toBe('1');
   });
 });
+
+test('reassign variable as component should work', () => {
+  let a: any = 1;
+
+  const A = defineComponent({
+    setup(_, { slots }) {
+      return () => <span>{slots.default!()}</span>;
+    },
+  });
+
+  /* eslint-disable */
+  // @ts-ignore
+  const _a = 1;
+  // @ts-ignore
+  const __a = 2;
+  /* eslint-enable */
+
+  a = <A>{a}</A>;
+
+  const wrapper = mount({
+    render() {
+      return a;
+    },
+  });
+
+  expect(wrapper.html()).toBe('<span>1</span>');
+});

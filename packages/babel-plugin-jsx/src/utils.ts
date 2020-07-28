@@ -3,6 +3,7 @@ import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { NodePath } from '@babel/traverse';
 import { State } from '.';
+import SlotFlags from './slotFlags';
 
 /**
  * create Identifier
@@ -181,13 +182,48 @@ const transformJSXSpreadChild = (
   path: NodePath<t.JSXSpreadChild>,
 ): t.SpreadElement => t.spreadElement(path.get('expression').node);
 
-const walksScope = (path: NodePath, name: string): void => {
+const walksScope = (path: NodePath, name: string, slotFlag: SlotFlags): void => {
   if (path.scope.hasBinding(name) && path.parentPath) {
     if (t.isJSXElement(path.parentPath.node)) {
-      path.parentPath.setData('optimize', false);
+      path.parentPath.setData('slotFlag', slotFlag);
     }
-    walksScope(path.parentPath, name);
+    walksScope(path.parentPath, name, slotFlag);
   }
+};
+
+const createInsertName = (path: NodePath, name: string): t.Identifier => {
+  if (path.scope.hasBinding(name)) {
+    return createInsertName(path, `_${name}`);
+  }
+  return t.identifier(name);
+};
+
+const buildIIFE = (path: NodePath<t.JSXElement>, children: t.Expression[]) => {
+  const { parentPath } = path;
+  if (t.isAssignmentExpression(parentPath)) {
+    const { left } = parentPath.node as t.AssignmentExpression;
+    if (t.isIdentifier(left)) {
+      return children.map((child) => {
+        if (t.isIdentifier(child) && child.name === left.name) {
+          const insertName = createInsertName(parentPath, `_${child.name}`);
+          parentPath.insertBefore(
+            t.variableDeclaration('const', [
+              t.variableDeclarator(
+                insertName,
+                t.callExpression(
+                  t.functionExpression(null, [], t.blockStatement([t.returnStatement(child)])),
+                  [],
+                ),
+              ),
+            ]),
+          );
+          return insertName;
+        }
+        return child;
+      });
+    }
+  }
+  return children;
 };
 
 export {
@@ -202,4 +238,5 @@ export {
   transformJSXExpressionContainer,
   isFragment,
   walksScope,
+  buildIIFE,
 };

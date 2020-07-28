@@ -10,7 +10,6 @@ export type State = {
 
 interface Opts {
   transformOn?: boolean;
-  compatibleProps?: boolean;
   optimize?: boolean;
   isCustomElement?: (tag: string) => boolean;
 }

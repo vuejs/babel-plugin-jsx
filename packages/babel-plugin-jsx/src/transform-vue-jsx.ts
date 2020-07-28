@@ -1,16 +1,17 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-import { addDefault, addNamespace } from '@babel/helper-module-imports';
+import { addNamespace } from '@babel/helper-module-imports';
 import {
   createIdentifier,
   transformJSXSpreadChild,
   transformJSXText,
   transformJSXExpressionContainer,
   walksScope,
+  buildIIFE,
 } from './utils';
 import buildProps from './buildProps';
-import { PatchFlags } from './patchFlags';
-import { State, ExcludesBoolean } from '.';
+import SlotFlags from './slotFlags';
+import { State } from '.';
 
 /**
  * Get children from Array of JSX children
@@ -42,7 +43,7 @@ const getChildren = (
         const { name } = expression as t.Identifier;
         const { referencePaths = [] } = path.scope.getBinding(name) || {};
         referencePaths.forEach((referencePath) => {
-          walksScope(referencePath, name);
+          walksScope(referencePath, name, SlotFlags.DYNAMIC);
         });
       }
 
@@ -79,45 +80,39 @@ const transformJSXElement = (
     slots,
   } = buildProps(path, state);
 
-  const useOptimate = path.getData('optimize') !== false;
+  const { optimize = false } = state.opts;
 
-  const { compatibleProps = false, optimize = false } = state.opts;
-  if (compatibleProps && !state.get('compatibleProps')) {
-    state.set('compatibleProps', addDefault(
-      path, '@ant-design-vue/babel-helper-vue-compatible-props', { nameHint: '_compatibleProps' },
-    ));
-  }
+  const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(state, optimize ? 'createVNode' : 'h'), [
+  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
     tag,
-    // @ts-ignore
-    compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
+    props,
     (children.length || slots) ? (
       isComponent
         ? t.objectExpression([
           !!children.length && t.objectProperty(
             t.identifier('default'),
-            t.arrowFunctionExpression([], t.arrayExpression(children)),
+            t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, children))),
           ),
           ...(slots ? (
             t.isObjectExpression(slots)
               ? (slots! as t.ObjectExpression).properties
               : [t.spreadElement(slots!)]
           ) : []),
-        ].filter(Boolean as any as ExcludesBoolean))
+          optimize && t.objectProperty(
+            t.identifier('_'),
+            t.numericLiteral(slotFlag),
+          ),
+        ].filter(Boolean as any))
         : t.arrayExpression(children)
     ) : t.nullLiteral(),
-    !!patchFlag && optimize && (
-      useOptimate
-        ? t.numericLiteral(patchFlag)
-        : t.numericLiteral(PatchFlags.BAIL)
-    ),
+    !!patchFlag && optimize && t.numericLiteral(patchFlag),
     !!dynamicPropNames.size && optimize
     && t.arrayExpression(
       [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string)),
     ),
-  ].filter(Boolean as any as ExcludesBoolean));
+  ].filter(Boolean as any));
 
   if (!directives.length) {
     return createVNode;

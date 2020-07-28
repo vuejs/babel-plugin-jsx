@@ -1,3 +1,4 @@
+/* istanbul ignore next */
 module.exports = {
   presets: [
     '@babel/preset-env',
