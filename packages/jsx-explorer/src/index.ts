@@ -63,7 +63,7 @@ const compile = () => {
   console.clear();
   transform(src, {
     babelrc: false,
-    plugins: [[babelPluginJSx, { transformOn: true }]],
+    plugins: [[babelPluginJSx, { transformOn: true, optimize: true }]],
     ast: true,
   }, (err, result = {}) => {
     const res = result!;
@@ -87,18 +87,17 @@ compile();
 // update compile output when input changes
 editor.onDidChangeModelContent(debounce(compile));
 
-function debounce<T extends (...args: any[]) => any>(
+function debounce<T extends(...args: any[]) => any>(
   fn: T,
-  delay: number = 300
-): T {
-  let prevTimer: number | null = null
+  delay = 300): T {
+  let prevTimer: number | null = null;
   return ((...args: any[]) => {
     if (prevTimer) {
-      clearTimeout(prevTimer)
+      clearTimeout(prevTimer);
     }
     prevTimer = window.setTimeout(() => {
-      fn(...args)
-      prevTimer = null
-    }, delay)
-  }) as any
+      fn(...args);
+      prevTimer = null;
+    }, delay);
+  }) as any;
 }

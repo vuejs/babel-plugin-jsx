@@ -14,6 +14,7 @@ import parseDirectives from './parseDirectives';
 import { PatchFlags } from './patchFlags';
 import { State, ExcludesBoolean } from '.';
 import { transformJSXElement } from './transform-vue-jsx';
+import SlotFlags from './slotFlags';
 
 const xlinkRE = /^xlink([A-Z])/;
 const onRE = /^on[^a-z]/;
@@ -51,7 +52,7 @@ const transformJSXSpreadAttribute = (
   const { properties } = argument.node;
   if (!properties) {
     if (argument.isIdentifier()) {
-      walksScope(nodePath, (argument.node as t.Identifier).name);
+      walksScope(nodePath, (argument.node as t.Identifier).name, SlotFlags.DYNAMIC);
     }
     mergeArgs.push(argument.node);
   } else {
@@ -173,8 +174,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             hasStyleBinding = true;
           } else if (
             name !== 'key'
-            && !isDirective(name)
-            && name !== 'on'
+              && !isDirective(name)
+              && name !== 'on'
           ) {
             dynamicPropNames.add(name);
           }
