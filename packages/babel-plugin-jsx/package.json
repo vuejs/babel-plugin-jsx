@@ -23,7 +23,6 @@
     "dist"
   ],
   "dependencies": {
-    "@ant-design-vue/babel-helper-vue-compatible-props": "^1.0.0",
     "@ant-design-vue/babel-helper-vue-transform-on": "^1.0.0",
     "@babel/helper-module-imports": "^7.0.0",
     "@babel/plugin-syntax-jsx": "^7.0.0",
