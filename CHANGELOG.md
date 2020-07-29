@@ -1,3 +1,16 @@
+## 1.0.0-rc.1
+
+`2020-07-29`
+
+- 🌟 support `v-html` and `v-text`
+- 🌟 add `isCustomElement`
+- 🛠 do not optimize by default
+
+### Breaking Change
+
+- remove `compatibleProps`
+- rename `usePatchFlag` as `optimize`
+
 ## 1.0.0-beta.4
 
 `2020-07-22`
