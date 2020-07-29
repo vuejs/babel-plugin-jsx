@@ -26,14 +26,29 @@ Then add the plugin to .babelrc:
 
 ### options
 
-* transformOn
+#### transformOn
+
+Type: `boolean`
+
+Default: `false`
 
 transform `on: { click: xx }` to `onClick: xxx`
-* compatibleProps
 
-compatible with Vue 2.x
+#### optimize
 
-`{ props, on = {}, attrs, ...rest }` will be transformed to `{ ...props, ...attrs, ...transformOn(on), ...rest }`
+Type: `boolean`
+
+Default: `false`
+
+enable optimization or not. It's not recommended to enable it If you are not familiar with Vue 3.
+
+#### isCustomElement
+
+Type: `(tag: string) => boolean`
+
+Default: `undefined`
+
+configuring custom elements
 
 ## Syntax
 

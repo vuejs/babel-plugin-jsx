@@ -26,15 +26,29 @@ npm install @ant-design-vue/babel-plugin-jsx -D
 
 ### 参数
 
-* transformOn
+#### transformOn
+
+Type: `boolean`
+
+Default: `false`
 
 把 `on: { click: xx }` 转成 `onClick: xxx`
 
-* compatibleProps
+#### optimize
 
-兼容大多数 Vue 2 的写法，Vue 3 中，把所有属性都改成了顶级属性，意味这不需要再传递 props，attrs 这些属性。
+Type: `boolean`
 
-开启这个参数意味着对 { attrs, props, on } 做了兼容处理，但是所有的属性外层都会有 `compatibleProps` 方法
+Default: `false`
+
+是否开启优化. 如果你对 Vue 3 不太熟悉，不建议打开
+
+#### isCustomElement
+
+Type: `(tag: string) => boolean`
+
+Default: `undefined`
+
+自定义元素
 
 ## 表达式
 
