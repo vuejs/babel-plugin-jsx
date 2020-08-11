@@ -1,6 +1,5 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-import { addNamespace } from '@babel/helper-module-imports';
 import {
   createIdentifier,
   transformJSXSpreadChild,
@@ -21,18 +20,18 @@ import { State } from '.';
 const getChildren = (
   paths: NodePath<
     t.JSXText
-      | t.JSXExpressionContainer
-      | t.JSXSpreadChild
-      | t.JSXElement
-      | t.JSXFragment
-    >[],
+    | t.JSXExpressionContainer
+    | t.JSXSpreadChild
+    | t.JSXElement
+    | t.JSXFragment
+  >[],
   state: State,
 ): t.Expression[] => paths
   .map((path) => {
     if (path.isJSXText()) {
       const transformedText = transformJSXText(path);
       if (transformedText) {
-        return t.callExpression(createIdentifier(state, 'createTextVNode'), [transformedText]);
+        return t.callExpression(createIdentifier(path, state, 'createTextVNode'), [transformedText]);
       }
       return transformedText;
     }
@@ -61,8 +60,8 @@ const getChildren = (
     throw new Error(`getChildren: ${path.type} is not supported`);
   }).filter(((value: any) => (
     value !== undefined
-      && value !== null
-      && !t.isJSXEmptyExpression(value)
+    && value !== null
+    && !t.isJSXEmptyExpression(value)
   )) as any);
 
 const transformJSXElement = (
@@ -85,7 +84,7 @@ const transformJSXElement = (
   const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
+  const createVNode = t.callExpression(createIdentifier(path, state, 'createVNode'), [
     tag,
     props,
     (children.length || slots) ? (
@@ -118,20 +117,16 @@ const transformJSXElement = (
     return createVNode;
   }
 
-  return t.callExpression(createIdentifier(state, 'withDirectives'), [
+  return t.callExpression(createIdentifier(path, state, 'withDirectives'), [
     createVNode,
     t.arrayExpression(directives),
   ]);
 };
-
 export { transformJSXElement };
 
 export default () => ({
   JSXElement: {
     exit(path: NodePath<t.JSXElement>, state: State) {
-      if (!state.get('vue')) {
-        state.set('vue', addNamespace(path, 'vue'));
-      }
       path.replaceWith(
         transformJSXElement(path, state),
       );
