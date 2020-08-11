@@ -2,17 +2,32 @@ import * as t from '@babel/types';
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { NodePath } from '@babel/traverse';
+import { addNamed } from '@babel/helper-module-imports';
 import { State } from '.';
 
+const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
 /**
  * create Identifier
+ * @param path NodePath
  * @param state
  * @param id string
  * @returns MemberExpression
  */
 const createIdentifier = (
-  state: State, id: string,
-): t.MemberExpression => t.memberExpression(state.get('vue'), t.identifier(id));
+  path:NodePath<any>, state:State, id: string,
+): t.Identifier => {
+  if (!state.get(JSX_HELPER_KEY)) {
+    state.set(JSX_HELPER_KEY, new Map());
+  }
+  const helpers = state.get(JSX_HELPER_KEY);
+  let identifier = helpers.get(id);
+  if (identifier) {
+    return helpers.get(id);
+  }
+  identifier = addNamed(path, id, 'vue');
+  helpers.set(id, identifier);
+  return identifier;
+};
 
 /**
  * Checks if string is describing a directive
@@ -35,7 +50,9 @@ const isFragment = (
 /**
  * Check if a Node is a component
  *
- * @param t
+ * @param t    enter(path:NodePath<t.Program>,state:State){
+
+    }
  * @param path JSXOpeningElement
  * @returns boolean
  */
@@ -89,7 +106,7 @@ const getTag = (
         : (
           state.opts.isCustomElement?.(name)
             ? t.stringLiteral(name)
-            : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)])
+            : t.callExpression(createIdentifier(path, state, 'resolveComponent'), [t.stringLiteral(name)])
         );
     }
 
@@ -202,4 +219,5 @@ export {
   transformJSXExpressionContainer,
   isFragment,
   walksScope,
+  JSX_HELPER_KEY,
 };

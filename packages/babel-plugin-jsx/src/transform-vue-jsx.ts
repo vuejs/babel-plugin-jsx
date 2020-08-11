@@ -1,12 +1,13 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-import { addDefault, addNamespace } from '@babel/helper-module-imports';
+import { addDefault } from '@babel/helper-module-imports';
 import {
   createIdentifier,
   transformJSXSpreadChild,
   transformJSXText,
   transformJSXExpressionContainer,
   walksScope,
+  JSX_HELPER_KEY,
 } from './utils';
 import buildProps from './buildProps';
 import { PatchFlags } from './patchFlags';
@@ -31,7 +32,7 @@ const getChildren = (
     if (path.isJSXText()) {
       const transformedText = transformJSXText(path);
       if (transformedText) {
-        return t.callExpression(createIdentifier(state, 'createTextVNode'), [transformedText]);
+        return t.callExpression(createIdentifier(path, state, 'createTextVNode'), [transformedText]);
       }
       return transformedText;
     }
@@ -89,7 +90,7 @@ const transformJSXElement = (
   }
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(state, optimize ? 'createVNode' : 'h'), [
+  const createVNode = t.callExpression(createIdentifier(path, state, optimize ? 'createVNode' : 'h'), [
     tag,
     // @ts-ignore
     compatibleProps ? t.callExpression(state.get('compatibleProps'), [props]) : props,
@@ -123,7 +124,7 @@ const transformJSXElement = (
     return createVNode;
   }
 
-  return t.callExpression(createIdentifier(state, 'withDirectives'), [
+  return t.callExpression(createIdentifier(path, state, 'withDirectives'), [
     createVNode,
     t.arrayExpression(directives),
   ]);
@@ -134,12 +135,44 @@ export { transformJSXElement };
 export default () => ({
   JSXElement: {
     exit(path: NodePath<t.JSXElement>, state: State) {
-      if (!state.get('vue')) {
-        state.set('vue', addNamespace(path, 'vue'));
-      }
       path.replaceWith(
         transformJSXElement(path, state),
       );
+    },
+  },
+  Program: {
+    exit(path:NodePath<t.Program>, state:State) {
+      const helpers:Map<string, t.Identifier> = state.get(JSX_HELPER_KEY);
+      if (!helpers) {
+        return;
+      }
+      const importedHelperKeys = Array.from(helpers.keys());
+      const importedFromVueExpression = path.get('body').filter((innerPath:NodePath<any>) => {
+        if (innerPath.isImportDeclaration()) {
+          const importSpecifiers = innerPath.get('specifiers') as NodePath<t.ImportSpecifier>[];
+          if (importSpecifiers.length > 1) {
+            return false;
+          }
+          const firstSpecifier = importSpecifiers[0];
+          if (firstSpecifier.isImportSpecifier()) {
+            const imported = firstSpecifier.get('imported').get('name') as NodePath<string>;
+            const local = firstSpecifier.get('local').get('name') as NodePath<string>;
+            return helpers.get(imported.node)?.name === local.node;
+          }
+        }
+        return false;
+      });
+      importedFromVueExpression.forEach((exp) => exp.remove());
+      const importDeclaration: (t.ImportSpecifier | t.ImportDefaultSpecifier | t.ImportNamespaceSpecifier)[] = [];
+      importedHelperKeys.forEach((imported:string) => {
+        const local = helpers.get(imported);
+        if (!local) {
+          throw Error(`Cannot find specific imports for ${imported}`);
+        }
+        importDeclaration.push(t.importSpecifier(local, t.identifier(imported)));
+      });
+      const expression = t.importDeclaration(importDeclaration, t.stringLiteral('vue'));
+      path.unshiftContainer('body', expression);
     },
   },
 });
