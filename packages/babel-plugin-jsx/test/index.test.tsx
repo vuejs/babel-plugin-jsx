@@ -222,7 +222,7 @@ describe('Transform JSX', () => {
       onClick() {
         calls.push(3);
       },
-      innerHTML: 2,
+      innerHTML: '2',
       class: ['a', 'b'],
     };
 
@@ -418,7 +418,7 @@ describe('variables outside slots', () => {
       },
       render() {
         const attrs = {
-          innerHTML: this.val,
+          innerHTML: `${this.val}`,
         };
         return (
           <A inc={this.inc}>
@@ -450,7 +450,7 @@ describe('variables outside slots', () => {
       },
       render() {
         const attrs = {
-          innerHTML: this.val,
+          innerHTML: `${this.val}`,
         };
         const textarea = <textarea id="textarea" {...attrs} />;
         return (
