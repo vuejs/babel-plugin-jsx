@@ -18,37 +18,16 @@ interface Opts {
 }
 
 function filterOutDuplicateVueImports(path: NodePath<t.Program>, state: State) {
-  const helpers: Map<string, t.Identifier> = state.get(JSX_HELPER_KEY);
+  const helpers: Set<string> = state.get(JSX_HELPER_KEY);
   if (!helpers) {
     return;
   }
-  const importedHelperKeys = Array.from(helpers.keys());
-  const importedFromVueExpression = path.get('body').filter((innerPath: NodePath<any>) => {
-    if (innerPath.isImportDeclaration()) {
-      const importSpecifiers = innerPath.get('specifiers') as NodePath<t.ImportSpecifier>[];
-      if (importSpecifiers.length > 1) {
-        return false;
-      }
-      const firstSpecifier = importSpecifiers[0];
-      if (firstSpecifier.isImportSpecifier()) {
-        const imported = firstSpecifier.get('imported').get('name') as NodePath<string>;
-        const local = firstSpecifier.get('local').get('name') as NodePath<string>;
-        return helpers.get(imported.node)?.name === local.node;
-      }
-    }
-    return false;
-  });
-  importedFromVueExpression.forEach((exp) => exp.remove());
-  const importDeclaration: (t.ImportSpecifier
-    | t.ImportDefaultSpecifier
-    | t.ImportNamespaceSpecifier)[] = [];
-  importedHelperKeys.forEach((imported: string) => {
-    const local = helpers.get(imported);
-    if (!local) {
-      throw Error(`Cannot find specific imports for ${imported}`);
-    }
-    importDeclaration.push(t.importSpecifier(local, t.identifier(imported)));
-  });
+  const importedHelperKeys = Array.from(helpers.values());
+  const importDeclaration: t.ImportSpecifier[] = importedHelperKeys.map(
+    (imported) => t.importSpecifier(
+      t.identifier(imported), t.identifier(imported),
+    ),
+  );
   const expression = t.importDeclaration(importDeclaration, t.stringLiteral('vue'));
   path.unshiftContainer('body', expression);
 }

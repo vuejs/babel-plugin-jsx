@@ -2,11 +2,11 @@ import * as t from '@babel/types';
 import htmlTags from 'html-tags';
 import svgTags from 'svg-tags';
 import { NodePath } from '@babel/traverse';
-import { addNamed } from '@babel/helper-module-imports';
 import { State } from '.';
 import SlotFlags from './slotFlags';
 
 const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
+const FRAGMENT_ID = 'Fragment';
 /**
  * create Identifier
  * @param path NodePath
@@ -18,16 +18,11 @@ const createIdentifier = (
   path: NodePath<any>, state: State, id: string,
 ): t.Identifier => {
   if (!state.get(JSX_HELPER_KEY)) {
-    state.set(JSX_HELPER_KEY, new Map());
+    state.set(JSX_HELPER_KEY, new Set());
   }
   const helpers = state.get(JSX_HELPER_KEY);
-  let identifier = helpers.get(id);
-  if (identifier) {
-    return identifier;
-  }
-  identifier = addNamed(path, id, 'vue');
-  helpers.set(id, identifier);
-  return identifier;
+  helpers.add(id);
+  return t.identifier(id);
 };
 
 /**
@@ -45,8 +40,12 @@ const isDirective = (src: string): boolean => src.startsWith('v-')
 const isFragment = (
   path:
     NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>,
-): boolean => t.isJSXMemberExpression(path)
-  && (path.node as t.JSXMemberExpression).property.name === 'Fragment';
+): boolean => {
+  if (path.isJSXIdentifier()) {
+    return path.node.name === FRAGMENT_ID;
+  }
+  return false;
+};
 
 /**
  * Check if a Node is a component
@@ -57,14 +56,10 @@ const isFragment = (
  */
 const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
   const namePath = path.get('name');
-
-  if (t.isJSXMemberExpression(namePath)) {
-    return !isFragment(namePath); // For withCtx
-  }
-
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
-
-  return !htmlTags.includes(tag) && !svgTags.includes(tag);
+  const isNativeTag = htmlTags.includes(tag) || svgTags.includes(tag);
+  // For withCtx
+  return !isFragment(namePath) && !isNativeTag;
 };
 
 /**
@@ -100,6 +95,9 @@ const getTag = (
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
     if (!htmlTags.includes(name) && !svgTags.includes(name)) {
+      if (isFragment(namePath)) {
+        return createIdentifier(path, state, FRAGMENT_ID);
+      }
       return path.scope.hasBinding(name)
         ? t.identifier(name)
         : (
