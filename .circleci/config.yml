@@ -1,0 +1,28 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: vuejs/ci
+        user: node
+
+    working_directory: /home/node/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v2-dependencies-{{ checksum "yarn.lock" }}
+
+      - run: yarn install --pure-lockfile
+
+      - save_cache:
+          paths:
+            - node_modules
+            - ~/.cache/yarn
+          key: v2-dependencies-{{ checksum "yarn.lock" }}
+
+      # run tests!
+      - run: yarn test

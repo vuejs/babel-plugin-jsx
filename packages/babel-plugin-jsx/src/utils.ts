@@ -5,15 +5,25 @@ import { NodePath } from '@babel/traverse';
 import { State } from '.';
 import SlotFlags from './slotFlags';
 
+const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
+const FRAGMENT = 'Fragment';
 /**
  * create Identifier
+ * @param path NodePath
  * @param state
  * @param id string
  * @returns MemberExpression
  */
 const createIdentifier = (
   state: State, id: string,
-): t.MemberExpression => t.memberExpression(state.get('vue'), t.identifier(id));
+): t.Identifier => {
+  if (!state.get(JSX_HELPER_KEY)) {
+    state.set(JSX_HELPER_KEY, new Set());
+  }
+  const helpers = state.get(JSX_HELPER_KEY);
+  helpers.add(id);
+  return t.identifier(id);
+};
 
 /**
  * Checks if string is describing a directive
@@ -30,8 +40,15 @@ const isDirective = (src: string): boolean => src.startsWith('v-')
 const isFragment = (
   path:
     NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>,
-): boolean => t.isJSXMemberExpression(path)
-    && (path.node as t.JSXMemberExpression).property.name === 'Fragment';
+): boolean => {
+  if (path.isJSXIdentifier()) {
+    return path.node.name === FRAGMENT;
+  }
+  if (path.isJSXMemberExpression()) {
+    return (path.node as t.JSXMemberExpression).property.name === FRAGMENT;
+  }
+  return false;
+};
 
 /**
  * Check if a Node is a component
@@ -49,7 +66,7 @@ const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
 
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
 
-  return !htmlTags.includes(tag) && !svgTags.includes(tag);
+  return tag !== FRAGMENT && !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
 
 /**
@@ -85,13 +102,13 @@ const getTag = (
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
     if (!htmlTags.includes(name) && !svgTags.includes(name)) {
-      return path.scope.hasBinding(name)
-        ? t.identifier(name)
-        : (
-          state.opts.isCustomElement?.(name)
+      return (name === FRAGMENT
+        ? createIdentifier(state, FRAGMENT)
+        : path.scope.hasBinding(name)
+          ? t.identifier(name)
+          : state.opts.isCustomElement?.(name)
             ? t.stringLiteral(name)
-            : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)])
-        );
+            : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)]));
     }
 
     return t.stringLiteral(name);
@@ -171,7 +188,7 @@ const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | null => 
 const transformJSXExpressionContainer = (
   path: NodePath<t.JSXExpressionContainer>,
 ): (t.Expression
-) => path.get('expression').node as t.Expression;
+  ) => path.get('expression').node as t.Expression;
 
 /**
  * Transform JSXSpreadChild
@@ -237,6 +254,8 @@ export {
   transformJSXSpreadChild,
   transformJSXExpressionContainer,
   isFragment,
+  FRAGMENT,
   walksScope,
   buildIIFE,
+  JSX_HELPER_KEY,
 };

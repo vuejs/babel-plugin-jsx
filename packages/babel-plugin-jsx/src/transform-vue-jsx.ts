@@ -1,6 +1,5 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-import { addNamespace } from '@babel/helper-module-imports';
 import {
   createIdentifier,
   transformJSXSpreadChild,
@@ -21,11 +20,11 @@ import { State } from '.';
 const getChildren = (
   paths: NodePath<
     t.JSXText
-      | t.JSXExpressionContainer
-      | t.JSXSpreadChild
-      | t.JSXElement
-      | t.JSXFragment
-    >[],
+    | t.JSXExpressionContainer
+    | t.JSXSpreadChild
+    | t.JSXElement
+    | t.JSXFragment
+  >[],
   state: State,
 ): t.Expression[] => paths
   .map((path) => {
@@ -61,8 +60,8 @@ const getChildren = (
     throw new Error(`getChildren: ${path.type} is not supported`);
   }).filter(((value: any) => (
     value !== undefined
-      && value !== null
-      && !t.isJSXEmptyExpression(value)
+    && value !== null
+    && !t.isJSXEmptyExpression(value)
   )) as any);
 
 const transformJSXElement = (
@@ -123,15 +122,11 @@ const transformJSXElement = (
     t.arrayExpression(directives),
   ]);
 };
-
 export { transformJSXElement };
 
 export default () => ({
   JSXElement: {
     exit(path: NodePath<t.JSXElement>, state: State) {
-      if (!state.get('vue')) {
-        state.set('vue', addNamespace(path, 'vue'));
-      }
       path.replaceWith(
         transformJSXElement(path, state),
       );
