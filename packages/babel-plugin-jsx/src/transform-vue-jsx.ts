@@ -31,7 +31,7 @@ const getChildren = (
     if (path.isJSXText()) {
       const transformedText = transformJSXText(path);
       if (transformedText) {
-        return t.callExpression(createIdentifier(path, state, 'createTextVNode'), [transformedText]);
+        return t.callExpression(createIdentifier(state, 'createTextVNode'), [transformedText]);
       }
       return transformedText;
     }
@@ -84,7 +84,7 @@ const transformJSXElement = (
   const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
 
   // @ts-ignore
-  const createVNode = t.callExpression(createIdentifier(path, state, 'createVNode'), [
+  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
     tag,
     props,
     (children.length || slots) ? (
@@ -117,7 +117,7 @@ const transformJSXElement = (
     return createVNode;
   }
 
-  return t.callExpression(createIdentifier(path, state, 'withDirectives'), [
+  return t.callExpression(createIdentifier(state, 'withDirectives'), [
     createVNode,
     t.arrayExpression(directives),
   ]);

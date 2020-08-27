@@ -6,7 +6,7 @@ import { State } from '.';
 import SlotFlags from './slotFlags';
 
 const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
-const FRAGMENT_ID = 'Fragment';
+const FRAGMENT = 'Fragment';
 /**
  * create Identifier
  * @param path NodePath
@@ -15,7 +15,7 @@ const FRAGMENT_ID = 'Fragment';
  * @returns MemberExpression
  */
 const createIdentifier = (
-  path: NodePath<any>, state: State, id: string,
+  state: State, id: string,
 ): t.Identifier => {
   if (!state.get(JSX_HELPER_KEY)) {
     state.set(JSX_HELPER_KEY, new Set());
@@ -42,7 +42,10 @@ const isFragment = (
     NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>,
 ): boolean => {
   if (path.isJSXIdentifier()) {
-    return path.node.name === FRAGMENT_ID;
+    return path.node.name === FRAGMENT;
+  }
+  if (path.isJSXMemberExpression()) {
+    return (path.node as t.JSXMemberExpression).property.name === FRAGMENT;
   }
   return false;
 };
@@ -56,10 +59,14 @@ const isFragment = (
  */
 const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
   const namePath = path.get('name');
+
+  if (t.isJSXMemberExpression(namePath)) {
+    return !isFragment(namePath); // For withCtx
+  }
+
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
-  const isNativeTag = htmlTags.includes(tag) || svgTags.includes(tag);
-  // For withCtx
-  return !isFragment(namePath) && !isNativeTag;
+
+  return tag !== FRAGMENT && !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
 
 /**
@@ -95,16 +102,13 @@ const getTag = (
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
     if (!htmlTags.includes(name) && !svgTags.includes(name)) {
-      if (isFragment(namePath)) {
-        return createIdentifier(path, state, FRAGMENT_ID);
-      }
-      return path.scope.hasBinding(name)
-        ? t.identifier(name)
-        : (
-          state.opts.isCustomElement?.(name)
+      return (name === FRAGMENT
+        ? createIdentifier(state, FRAGMENT)
+        : path.scope.hasBinding(name)
+          ? t.identifier(name)
+          : state.opts.isCustomElement?.(name)
             ? t.stringLiteral(name)
-            : t.callExpression(createIdentifier(path, state, 'resolveComponent'), [t.stringLiteral(name)])
-        );
+            : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)]));
     }
 
     return t.stringLiteral(name);
@@ -250,6 +254,7 @@ export {
   transformJSXSpreadChild,
   transformJSXExpressionContainer,
   isFragment,
+  FRAGMENT,
   walksScope,
   buildIIFE,
   JSX_HELPER_KEY,

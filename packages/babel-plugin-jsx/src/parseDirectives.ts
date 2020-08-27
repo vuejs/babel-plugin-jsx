@@ -102,38 +102,38 @@ const resolveDirective = (
   directiveName: string,
 ) => {
   if (directiveName === 'show') {
-    return createIdentifier(path, state, 'vShow');
+    return createIdentifier(state, 'vShow');
   }
   if (directiveName === 'model') {
     let modelToUse;
     const type = getType(path.parentPath as NodePath<t.JSXOpeningElement>);
     switch ((tag as t.StringLiteral).value) {
       case 'select':
-        modelToUse = createIdentifier(path, state, 'vModelSelect');
+        modelToUse = createIdentifier(state, 'vModelSelect');
         break;
       case 'textarea':
-        modelToUse = createIdentifier(path, state, 'vModelText');
+        modelToUse = createIdentifier(state, 'vModelText');
         break;
       default:
         if (t.isStringLiteral(type) || !type) {
           switch ((type as t.StringLiteral)?.value) {
             case 'checkbox':
-              modelToUse = createIdentifier(path, state, 'vModelCheckbox');
+              modelToUse = createIdentifier(state, 'vModelCheckbox');
               break;
             case 'radio':
-              modelToUse = createIdentifier(path, state, 'vModelRadio');
+              modelToUse = createIdentifier(state, 'vModelRadio');
               break;
             default:
-              modelToUse = createIdentifier(path, state, 'vModelText');
+              modelToUse = createIdentifier(state, 'vModelText');
           }
         } else {
-          modelToUse = createIdentifier(path, state, 'vModelDynamic');
+          modelToUse = createIdentifier(state, 'vModelDynamic');
         }
     }
     return modelToUse;
   }
   return t.callExpression(
-    createIdentifier(path, state, 'resolveDirective'), [
+    createIdentifier(state, 'resolveDirective'), [
       t.stringLiteral(directiveName),
     ],
   );

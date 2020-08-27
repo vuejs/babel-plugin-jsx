@@ -326,7 +326,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         }
       });
       propsExpression = t.callExpression(
-        createIdentifier(path, state, 'mergeProps'),
+        createIdentifier(state, 'mergeProps'),
         [
           ...exps,
           !!objectProperties.length && t.objectExpression(objectProperties),

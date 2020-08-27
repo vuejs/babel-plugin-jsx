@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { State } from '.';
-import { createIdentifier } from './utils';
+import { createIdentifier, FRAGMENT } from './utils';
 
 const transformFragment = (path: NodePath<t.JSXElement>, Fragment: t.JSXIdentifier) => {
   const children = path.get('children') || [];
@@ -19,7 +19,7 @@ export default () => ({
       path.replaceWith(
         transformFragment(
           path,
-          t.jsxIdentifier(createIdentifier(path, state, 'Fragment').name),
+          t.jsxIdentifier(createIdentifier(state, FRAGMENT).name),
         ),
       );
     },
