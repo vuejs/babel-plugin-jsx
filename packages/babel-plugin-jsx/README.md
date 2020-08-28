@@ -1,6 +1,6 @@
 # Babel Plugin JSX for Vue 3.0
 
-![test](https://github.com/vueComponent/jsx/workflows/test/badge.svg) [![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
+[![CircleCI](https://circleci.com/gh/vuejs/jsx-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-next) [![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
 
 To add Vue JSX support.
 
@@ -11,14 +11,14 @@ English | [简体中文](/packages/babel-plugin-jsx/README-zh_CN.md)
 Install the plugin with:
 
 ```bash
-npm install @ant-design-vue/babel-plugin-jsx -D
+npm install @vue/babel-plugin-jsx -D
 ```
 
 Then add the plugin to .babelrc:
 
 ```js
 {
-  "plugins": ["@ant-design-vue/babel-plugin-jsx"]
+  "plugins": ["@vue/babel-plugin-jsx"]
 }
 ```
 

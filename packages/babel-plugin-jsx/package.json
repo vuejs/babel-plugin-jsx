@@ -1,5 +1,5 @@
 {
-  "name": "@ant-design-vue/babel-plugin-jsx",
+  "name": "@vue/babel-plugin-jsx",
   "version": "1.0.0-rc.1",
   "description": "Babel plugin for Vue 3.0 JSX",
   "author": "Amour1688 <lcz_1996@foxmail.com>",
@@ -23,7 +23,7 @@
     "dist"
   ],
   "dependencies": {
-    "@ant-design-vue/babel-helper-vue-transform-on": "^1.0.0",
+    "@vue/babel-helper-vue-transform-on": "^1.0.0",
     "@babel/helper-module-imports": "^7.0.0",
     "@babel/plugin-syntax-jsx": "^7.0.0",
     "@babel/traverse": "^7.0.0",
