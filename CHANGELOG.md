@@ -1,3 +1,10 @@
+## 1.0.0-rc.2
+
+`2020-08-28`
+
+- 🌟 rename package scope from ant-design-vue to vue ([09c220e](https://github.com/vuejs/jsx-next/commit/09c220eeff98bbec757a83d41af1f0731652d00c))
+- 🌟 replace namespace imports with named imports [#67](https://github.com/vuejs/jsx-next/pull/67)
+
 ## 1.0.0-rc.1
 
 `2020-07-29`

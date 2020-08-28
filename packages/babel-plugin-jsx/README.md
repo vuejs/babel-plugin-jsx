@@ -1,6 +1,6 @@
 # Babel Plugin JSX for Vue 3.0
 
-[![CircleCI](https://circleci.com/gh/vuejs/jsx-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-next) [![npm package](https://img.shields.io/npm/v/@ant-design-vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@ant-design-vue/babel-plugin-jsx)
+[![CircleCI](https://circleci.com/gh/vuejs/jsx-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-next) [![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
 
 To add Vue JSX support.
 
