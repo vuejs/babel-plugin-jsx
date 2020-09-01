@@ -56,7 +56,7 @@ configuring custom elements
 functional component
 
 ```jsx
-const App = () => <div></div>;
+const App = () => <div>Vue 3.0</div>;
 ```
 
 with render
@@ -70,37 +70,23 @@ const App = {
 ```
 
 ```jsx
-const App = defineComponent(() => {
-  const count = ref(0);
+import { withModifiers, defineComponent } from 'vue';
 
-  const inc = () => {
-    count.value++;
-  };
+const App = defineComponent({
+  setup() {
+    const count = ref(0);
 
-  return () => (
-    <div onClick={inc}>
-      {count.value}
-    </div>
-  );
-});
-```
+    const inc = () => {
+      count.value++;
+    };
 
-```jsx
-import { withModifiers } from 'vue';
-
-const App = () => {
-  const count = ref(0);
-
-  const inc = () => {
-    count.value++;
-  };
-
-  return () => (
-    <div onClick={withModifiers(inc, ['self'])}>
-      {count.value}
-    </div>
-  );
-}
+    return () => (
+      <div onClick={withModifiers(inc, ['self'])}>
+        {count.value}
+      </div>
+    );
+  }
+})
 ```
 
 Fragment
@@ -202,6 +188,18 @@ const App = {
     return () => <A v-slots={slots} />;
   }
 };
+```
+
+### In TypesSript
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "jsx": "preserve"
+  }
+}
 ```
 
 ## Who is using
