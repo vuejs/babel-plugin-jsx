@@ -190,7 +190,7 @@ const App = {
 };
 ```
 
-### In TypesSript
+### In TypeScript
 
 `tsconfig.json`:
 

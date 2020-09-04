@@ -190,7 +190,7 @@ const App = {
 };
 ```
 
-### 在 TypesSript 中使用
+### 在 TypeSript 中使用
 
 `tsconfig.json`:
 
