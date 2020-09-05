@@ -41,7 +41,7 @@
     "@types/svg-tags": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
-    "@vue/compiler-dom": "3.0.0-rc.9",
+    "@vue/compiler-dom": "3.0.0-rc.10",
     "@vue/test-utils": "2.0.0-beta.2",
     "babel-jest": "^26.0.1",
     "babel-loader": "^8.1.0",
