@@ -18,6 +18,6 @@
     "vue": "3.0.0-rc.10",
     "webpack": "^4.43.0",
     "webpack-dev-server": "^3.11.0",
-    "worker-plugin": "^4.0.3"
+    "worker-plugin": "^5.0.0"
   }
 }
