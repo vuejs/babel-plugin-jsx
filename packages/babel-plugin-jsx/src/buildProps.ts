@@ -12,7 +12,7 @@ import {
 } from './utils';
 import parseDirectives from './parseDirectives';
 import { PatchFlags } from './patchFlags';
-import { State, ExcludesBoolean } from '.';
+import { State } from '.';
 import { transformJSXElement } from './transform-vue-jsx';
 import SlotFlags from './slotFlags';
 
@@ -136,7 +136,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
     };
   }
 
-  const properties: t.ObjectProperty[] = [];
+  let properties: t.ObjectProperty[] = [];
 
   // patchFlag analysis
   let hasRef = false;
@@ -145,7 +145,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   let hasHydrationEventBinding = false;
   let hasDynamicKeys = false;
 
-  const mergeArgs: (t.CallExpression | t.ObjectProperty | t.Identifier)[] = [];
+  const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] = [];
   props
     .forEach((prop) => {
       if (prop.isJSXAttribute()) {
@@ -263,15 +263,17 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
             dynamicPropNames.add(`onUpdate:${propName}`);
           }
-          return;
+        } else {
+          if (name.match(xlinkRE)) {
+            name = name.replace(xlinkRE, (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`);
+          }
+          properties.push(t.objectProperty(
+            t.stringLiteral(name),
+            attributeValue || t.booleanLiteral(true),
+          ));
         }
-        if (name.match(xlinkRE)) {
-          name = name.replace(xlinkRE, (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`);
-        }
-        properties.push(t.objectProperty(
-          t.stringLiteral(name),
-          attributeValue || t.booleanLiteral(true),
-        ));
+        mergeArgs.push(t.objectExpression(dedupeProperties(properties)));
+        properties = [];
       } else {
         // JSXSpreadAttribute
         hasDynamicKeys = true;
@@ -284,7 +286,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
     });
 
   // patchFlag analysis
-  // tslint:disable: no-bitwise
   if (hasDynamicKeys) {
     patchFlag |= PatchFlags.FULL_PROPS;
   } else {
@@ -312,32 +313,15 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   let propsExpression: t.Expression | t.ObjectProperty | t.Literal = t.nullLiteral();
 
   if (mergeArgs.length) {
-    if (properties.length) {
-      mergeArgs.push(...dedupeProperties(properties));
-    }
     if (mergeArgs.length > 1) {
-      const exps: (t.CallExpression | t.Identifier)[] = [];
-      const objectProperties: t.ObjectProperty[] = [];
-      mergeArgs.forEach((arg) => {
-        if (t.isIdentifier(arg) || t.isExpression(arg)) {
-          exps.push(arg);
-        } else {
-          objectProperties.push(arg);
-        }
-      });
       propsExpression = t.callExpression(
         createIdentifier(state, 'mergeProps'),
-        [
-          ...exps,
-          !!objectProperties.length && t.objectExpression(objectProperties),
-        ].filter(Boolean as any as ExcludesBoolean),
+        mergeArgs,
       );
     } else {
       // single no need for a mergeProps call
       propsExpression = mergeArgs[0];
     }
-  } else if (properties.length) {
-    propsExpression = t.objectExpression(dedupeProperties(properties));
   }
 
   return {
