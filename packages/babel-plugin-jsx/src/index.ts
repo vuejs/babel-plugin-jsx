@@ -41,9 +41,13 @@ export default () => ({
               .filter((specifier) => {
                 if (t.isImportSpecifier(specifier)) {
                   const { imported, local } = specifier;
-                  specifierNames.add(imported.name);
-                  return local.name !== imported.name;
-                } if (t.isImportNamespaceSpecifier(specifier)) {
+                  if (local.name === imported.name) {
+                    specifierNames.add(imported.name);
+                    return false;
+                  }
+                  return true;
+                }
+                if (t.isImportNamespaceSpecifier(specifier)) {
                   // should keep when `import * as Vue from 'vue'`
                   shouldKeep = true;
                 }

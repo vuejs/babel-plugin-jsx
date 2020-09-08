@@ -1,0 +1,159 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MereProps Order: MereProps Order 1`] = `
+"import { createTextVNode, mergeProps, createVNode } from \\"vue\\";
+createVNode(\\"button\\", mergeProps({
+  \\"loading\\": true
+}, x, {
+  \\"type\\": \\"submit\\"
+}), [createTextVNode(\\"btn\\")], 16, [\\"loading\\"]);"
+`;
+
+exports[`Merge class/ style attributes into array: Merge class/ style attributes into array 1`] = `
+"import { createVNode } from \\"vue\\";
+createVNode(\\"div\\", {
+  \\"class\\": [\\"a\\", b],
+  \\"style\\": [\\"color: red\\", s]
+}, null, 6);"
+`;
+
+exports[`Without JSX should work: Without JSX should work 1`] = `
+"import { createVNode } from 'vue';
+createVNode('div', null, ['Without JSX should work']);"
+`;
+
+exports[`Without props: Without props 1`] = `
+"import { createTextVNode, createVNode } from \\"vue\\";
+createVNode(\\"a\\", null, [createTextVNode(\\"a\\")]);"
+`;
+
+exports[`custom directive: custom directive 1`] = `
+"import { resolveComponent, resolveDirective, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(resolveComponent(\\"A\\"), null, null, 512), [[resolveDirective(\\"cus\\"), x]]);"
+`;
+
+exports[`dynamic type in input: dynamic type in input 1`] = `
+"import { vModelDynamic, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"input\\", {
+  \\"type\\": type,
+  \\"onUpdate:modelValue\\": $event => test = $event
+}, null, 8, [\\"type\\", \\"onUpdate:modelValue\\"]), [[vModelDynamic, test]]);"
+`;
+
+exports[`input[type="checkbox"]: input[type="checkbox"] 1`] = `
+"import { vModelCheckbox, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"input\\", {
+  \\"type\\": \\"checkbox\\",
+  \\"onUpdate:modelValue\\": $event => test = $event
+}, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelCheckbox, test]]);"
+`;
+
+exports[`input[type="radio"]: input[type="radio"] 1`] = `
+"import { Fragment, vModelRadio, createVNode, withDirectives } from \\"vue\\";
+createVNode(Fragment, null, [withDirectives(createVNode(\\"input\\", {
+  \\"type\\": \\"radio\\",
+  \\"value\\": \\"1\\",
+  \\"onUpdate:modelValue\\": $event => test = $event,
+  \\"name\\": \\"test\\"
+}, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelRadio, test]]), withDirectives(createVNode(\\"input\\", {
+  \\"type\\": \\"radio\\",
+  \\"value\\": \\"2\\",
+  \\"onUpdate:modelValue\\": $event => test = $event,
+  \\"name\\": \\"test\\"
+}, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelRadio, test]])]);"
+`;
+
+exports[`input[type="text"] .lazy modifier: input[type="text"] .lazy modifier 1`] = `
+"import { vModelText, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"input\\", {
+  \\"onUpdate:modelValue\\": $event => test = $event
+}, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelText, test, void 0, {
+  lazy: true
+}]]);"
+`;
+
+exports[`input[type="text"]: input[type="text"] 1`] = `
+"import { vModelText, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"input\\", {
+  \\"onUpdate:modelValue\\": $event => test = $event
+}, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelText, test]]);"
+`;
+
+exports[`reassign variable as component: reassign variable as component 1`] = `
+"import { defineComponent, createVNode } from \\"vue\\";
+let a = 1;
+const A = defineComponent({
+  setup(_, {
+    slots
+  }) {
+    return () => createVNode(\\"span\\", null, [slots.default()]);
+  }
+
+});
+const _a = 1;
+
+const __a = function () {
+  return a;
+}();
+
+a = createVNode(A, null, {
+  default: () => [__a],
+  _: 2
+});"
+`;
+
+exports[`select: select 1`] = `
+"import { createTextVNode, createVNode, vModelSelect, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"select\\", {
+  \\"onUpdate:modelValue\\": $event => test = $event
+}, [createVNode(\\"option\\", {
+  \\"value\\": \\"1\\"
+}, [createTextVNode(\\"a\\")]), createVNode(\\"option\\", {
+  \\"value\\": 2
+}, [createTextVNode(\\"b\\")]), createVNode(\\"option\\", {
+  \\"value\\": 3
+}, [createTextVNode(\\"c\\")])], 8, [\\"onUpdate:modelValue\\"]), [[vModelSelect, test]]);"
+`;
+
+exports[`should keep \`import * as Vue from "vue"\`: should keep \`import * as Vue from "vue"\` 1`] = `
+"import { createTextVNode, createVNode } from \\"vue\\";
+import * as Vue from 'vue';
+createVNode(\\"div\\", null, [createTextVNode(\\"Vue\\")]);"
+`;
+
+exports[`single no need for a mergeProps call: single no need for a mergeProps call 1`] = `
+"import { createTextVNode, createVNode } from \\"vue\\";
+createVNode(\\"div\\", x, [createTextVNode(\\"single\\")], 16);"
+`;
+
+exports[`specifiers should be merged into a single importDeclaration: specifiers should be merged into a single importDeclaration 1`] = `
+"import { createVNode, vShow } from \\"vue\\";
+import { Fragment as _Fragment } from \\"vue\\";
+createVNode(_Fragment, null, null);"
+`;
+
+exports[`textarea: textarea 1`] = `
+"import { vModelText, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"textarea\\", {
+  \\"onUpdate:modelValue\\": $event => test = $event
+}, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelText, test]]);"
+`;
+
+exports[`v-show: v-show 1`] = `
+"import { createTextVNode, vShow, createVNode, withDirectives } from \\"vue\\";
+withDirectives(createVNode(\\"div\\", null, [createTextVNode(\\"vShow\\")], 512), [[vShow, x]]);"
+`;
+
+exports[`vHtml: vHtml 1`] = `
+"import { createVNode } from \\"vue\\";
+createVNode(\\"h1\\", {
+  \\"innerHTML\\": \\"<div>foo</div>\\"
+}, null, 8, [\\"innerHTML\\"]);"
+`;
+
+exports[`vText: vText 1`] = `
+"import { createVNode } from \\"vue\\";
+createVNode(\\"div\\", {
+  \\"textContent\\": text
+}, null, 8, [\\"textContent\\"]);"
+`;
