@@ -272,9 +272,12 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             attributeValue || t.booleanLiteral(true),
           ));
         }
-        mergeArgs.push(t.objectExpression(dedupeProperties(properties)));
-        properties = [];
       } else {
+        if (properties.length) {
+          mergeArgs.push(t.objectExpression(dedupeProperties(properties)));
+          properties = [];
+        }
+
         // JSXSpreadAttribute
         hasDynamicKeys = true;
         transformJSXSpreadAttribute(
@@ -313,6 +316,9 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   let propsExpression: t.Expression | t.ObjectProperty | t.Literal = t.nullLiteral();
 
   if (mergeArgs.length) {
+    if (properties.length) {
+      mergeArgs.push(t.objectExpression(dedupeProperties(properties)));
+    }
     if (mergeArgs.length > 1) {
       propsExpression = t.callExpression(
         createIdentifier(state, 'mergeProps'),
@@ -322,6 +328,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       // single no need for a mergeProps call
       propsExpression = mergeArgs[0];
     }
+  } else if (properties.length) {
+    propsExpression = t.objectExpression(dedupeProperties(properties));
   }
 
   return {
