@@ -1,12 +1,14 @@
 import { transform } from '@babel/core';
-import JSX from '../src';
+import JSX, { Opts } from '../src';
 
-const transpile = (source: string) => new Promise((resolve, reject) => transform(
+const transpile = (
+  source: string, options: Opts = {},
+) => new Promise((resolve, reject) => transform(
   source,
   {
     filename: '',
     presets: null,
-    plugins: [[JSX, { optimize: true }]],
+    plugins: [[JSX, options]],
     configFile: false,
   }, (error, result) => {
     if (error) {
@@ -138,7 +140,26 @@ tests.forEach((
   test(
     name,
     async () => {
-      expect(await transpile(from)).toMatchSnapshot(name);
+      expect(await transpile(from, { optimize: true })).toMatchSnapshot(name);
+    },
+  );
+});
+
+const overridePropsTests = [{
+  name: 'single',
+  from: '<div {...a}></div>',
+}, {
+  name: 'multiple',
+  from: '<A loading {...a} class="x" style={x}></A>',
+}];
+
+overridePropsTests.forEach((
+  { name, from },
+) => {
+  test(
+    `override props ${name}`,
+    async () => {
+      expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name);
     },
   );
 });

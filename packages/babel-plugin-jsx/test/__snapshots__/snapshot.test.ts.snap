@@ -79,6 +79,21 @@ withDirectives(createVNode(\\"input\\", {
 }, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelText, test]]);"
 `;
 
+exports[`override props multiple: multiple 1`] = `
+"import { resolveComponent, createVNode } from \\"vue\\";
+createVNode(resolveComponent(\\"A\\"), {
+  \\"loading\\": true,
+  ...a,
+  \\"class\\": \\"x\\",
+  \\"style\\": x
+}, null);"
+`;
+
+exports[`override props single: single 1`] = `
+"import { createVNode } from \\"vue\\";
+createVNode(\\"div\\", a, null);"
+`;
+
 exports[`reassign variable as component: reassign variable as component 1`] = `
 "import { defineComponent, createVNode } from \\"vue\\";
 let a = 1;

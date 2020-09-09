@@ -11,7 +11,7 @@ export type State = {
   opts: Opts;
 }
 
-interface Opts {
+export interface Opts {
   transformOn?: boolean;
   optimize?: boolean;
   mergeProps?: boolean;
