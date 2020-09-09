@@ -14,6 +14,7 @@ export type State = {
 interface Opts {
   transformOn?: boolean;
   optimize?: boolean;
+  mergeProps?: boolean;
   isCustomElement?: (tag: string) => boolean;
 }
 

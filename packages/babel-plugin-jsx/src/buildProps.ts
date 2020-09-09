@@ -46,7 +46,8 @@ const getJSXAttributeValue = (
 const transformJSXSpreadAttribute = (
   nodePath: NodePath,
   path: NodePath<t.JSXSpreadAttribute>,
-  mergeArgs: (t.ObjectProperty | t.Expression)[],
+  mergeProps: boolean,
+  args: (t.ObjectProperty | t.Expression | t.SpreadElement)[],
 ) => {
   const argument = path.get('argument') as NodePath<t.ObjectExpression>;
   const { properties } = argument.node;
@@ -54,9 +55,9 @@ const transformJSXSpreadAttribute = (
     if (argument.isIdentifier()) {
       walksScope(nodePath, (argument.node as t.Identifier).name, SlotFlags.DYNAMIC);
     }
-    mergeArgs.push(argument.node);
+    args.push(mergeProps ? argument.node : t.spreadElement(argument.node));
   } else {
-    mergeArgs.push(t.objectExpression(properties));
+    args.push(t.objectExpression(properties));
   }
 };
 
@@ -71,7 +72,10 @@ const mergeAsArray = (existing: t.ObjectProperty, incoming: t.ObjectProperty) =>
   }
 };
 
-const dedupeProperties = (properties: t.ObjectProperty[] = []) => {
+const dedupeProperties = (properties: t.ObjectProperty[] = [], mergeProps?: boolean) => {
+  if (!mergeProps) {
+    return properties;
+  }
   const knownProps = new Map<string, t.ObjectProperty>();
   const deduped: t.ObjectProperty[] = [];
   properties.forEach((prop) => {
@@ -146,6 +150,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   let hasDynamicKeys = false;
 
   const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] = [];
+  const { mergeProps = true } = state.opts;
   props
     .forEach((prop) => {
       if (prop.isJSXAttribute()) {
@@ -273,8 +278,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           ));
         }
       } else {
-        if (properties.length) {
-          mergeArgs.push(t.objectExpression(dedupeProperties(properties)));
+        if (properties.length && mergeProps) {
+          mergeArgs.push(t.objectExpression(dedupeProperties(properties, mergeProps)));
           properties = [];
         }
 
@@ -283,7 +288,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         transformJSXSpreadAttribute(
           path as NodePath,
           prop as NodePath<t.JSXSpreadAttribute>,
-          mergeArgs,
+          mergeProps,
+          mergeProps ? mergeArgs : properties,
         );
       }
     });
@@ -314,10 +320,9 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   }
 
   let propsExpression: t.Expression | t.ObjectProperty | t.Literal = t.nullLiteral();
-
   if (mergeArgs.length) {
     if (properties.length) {
-      mergeArgs.push(t.objectExpression(dedupeProperties(properties)));
+      mergeArgs.push(t.objectExpression(dedupeProperties(properties, mergeProps)));
     }
     if (mergeArgs.length > 1) {
       propsExpression = t.callExpression(
@@ -329,7 +334,12 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       propsExpression = mergeArgs[0];
     }
   } else if (properties.length) {
-    propsExpression = t.objectExpression(dedupeProperties(properties));
+    // single no need for spread
+    if (properties.length === 1 && t.isSpreadElement(properties[0])) {
+      propsExpression = (properties[0] as unknown as t.SpreadElement).argument;
+    } else {
+      propsExpression = t.objectExpression(dedupeProperties(properties, mergeProps));
+    }
   }
 
   return {
