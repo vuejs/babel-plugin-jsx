@@ -1,5 +1,7 @@
 ## 1.0.0-rc.3
 
+`2020-09-14`
+
 - 🐞 fix mergeProps order error ([bf59811](https://github.com/vuejs/jsx-next/commit/bf59811f4334dbc30fd62ba33a33926031dd8835))
 - 🌟 optional mergeProps ([e16695d](https://github.com/vuejs/jsx-next/commit/e16695d87e269000055828f32492690c4cf796b2))
 
