@@ -1,6 +1,6 @@
 {
   "name": "@vue/jsx-explorer",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "private": true,
   "dependencies": {
     "monaco-editor": "^0.20.0"
