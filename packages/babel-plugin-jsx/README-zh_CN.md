@@ -50,6 +50,14 @@ Default: `undefined`
 
 自定义元素
 
+#### mergeProps
+
+Type: `boolean`
+
+Default: `true`
+
+合并 class / style / onXXX handlers
+
 ## 表达式
 
 ### 内容

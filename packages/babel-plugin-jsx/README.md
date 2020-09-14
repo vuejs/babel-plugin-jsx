@@ -50,6 +50,14 @@ Default: `undefined`
 
 configuring custom elements
 
+#### mergeProps
+
+Type: `boolean`
+
+Default: `true`
+
+merge static and dynamic class / style attributes / onXXX handlers
+
 ## Syntax
 
 ### Content
