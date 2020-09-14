@@ -16,7 +16,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'import'],
   extends: [
     'eslint-config-airbnb-base',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
   ],
   rules: {
     'no-nested-ternary': [0],
@@ -26,18 +26,18 @@ module.exports = {
     'import/no-extraneous-dependencies': [0],
     'consistent-return': [0],
     'no-bitwise': [0],
-    'prefer-destructuring': [2, { 'array': false }],
-    'import/extensions': [2, 'ignorePackages', { ts: 'never' }],
+    'prefer-destructuring': [2, { array: false }],
+    'import/extensions': [0],
     '@typescript-eslint/ban-ts-comment': [0],
     '@typescript-eslint/explicit-module-boundary-types': [0],
     '@typescript-eslint/no-explicit-any': [0],
-    '@typescript-eslint/no-non-null-assertion': [0]
+    '@typescript-eslint/no-non-null-assertion': [0],
   },
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx']
-      }
-    }
-  }
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
+  },
 };
