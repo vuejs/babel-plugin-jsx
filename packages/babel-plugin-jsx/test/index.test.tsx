@@ -481,9 +481,8 @@ test('reassign variable as component should work', () => {
 
   /* eslint-disable */
   // @ts-ignore
-  const _a = 1;
-  // @ts-ignore
-  const __a = 2;
+  const _a2 = 2;
+  a = _a2;
   /* eslint-enable */
 
   a = <A>{a}</A>;
@@ -494,5 +493,5 @@ test('reassign variable as component should work', () => {
     },
   });
 
-  expect(wrapper.html()).toBe('<span>1</span>');
+  expect(wrapper.html()).toBe('<span>2</span>');
 });

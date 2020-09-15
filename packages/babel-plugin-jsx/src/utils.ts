@@ -208,13 +208,6 @@ const walksScope = (path: NodePath, name: string, slotFlag: SlotFlags): void => 
   }
 };
 
-const createInsertName = (path: NodePath, name: string): t.Identifier => {
-  if (path.scope.hasBinding(name)) {
-    return createInsertName(path, `_${name}`);
-  }
-  return t.identifier(name);
-};
-
 const buildIIFE = (path: NodePath<t.JSXElement>, children: t.Expression[]) => {
   const { parentPath } = path;
   if (t.isAssignmentExpression(parentPath)) {
@@ -222,7 +215,7 @@ const buildIIFE = (path: NodePath<t.JSXElement>, children: t.Expression[]) => {
     if (t.isIdentifier(left)) {
       return children.map((child) => {
         if (t.isIdentifier(child) && child.name === left.name) {
-          const insertName = createInsertName(parentPath, `_${child.name}`);
+          const insertName = path.scope.generateUidIdentifier(child.name);
           parentPath.insertBefore(
             t.variableDeclaration('const', [
               t.variableDeclarator(

@@ -127,7 +127,9 @@ const tests = [
         },
       });
 
-      const _a = 1;
+      const _a2 = 2;
+
+      a = _a2;
 
       a = <A>{a}</A>;
     `,

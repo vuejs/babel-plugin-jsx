@@ -105,14 +105,15 @@ const A = defineComponent({
   }
 
 });
-const _a = 1;
+const _a2 = 2;
+a = _a2;
 
-const __a = function () {
+const _a = function () {
   return a;
 }();
 
 a = createVNode(A, null, {
-  default: () => [__a],
+  default: () => [_a],
   _: 2
 });"
 `;
