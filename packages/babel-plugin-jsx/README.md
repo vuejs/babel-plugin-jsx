@@ -236,6 +236,17 @@ const App = {
           <strong>Vant</strong>
         </a>
       </td>
+      <td align="center">
+        <a target="_blank" href="https://github.com/element-plus/element-plus">
+          <img
+            height="32"
+            style="vertical-align: -0.32em; margin-right: 8px;"
+            src="https://user-images.githubusercontent.com/10731096/91267529-259f3680-e7a6-11ea-9a60-3286f750de01.png"
+          />
+          <br>
+          <strong>Element Plus</strong>
+        </a>
+      </td>
     </tr>
   </tbody>
 </table>
