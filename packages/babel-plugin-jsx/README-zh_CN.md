@@ -150,22 +150,22 @@ v-model
 ```
 
 ```jsx
-<input v-model={[val, ['trim']]} />
+<input v-model={[val, ['modifier']]} />
 ```
 
 ```jsx
-<A v-model={[val, 'foo', ['bar']]} />
+<A v-model={[val, 'argument', ['modifier']]} />
 ```
 
 会变编译成：
 
 ```js
 h(A, {
-  'foo': val,
-  "fooModifiers": {
-    "bar": true
+  'argument': val,
+  "argumentModifiers": {
+    "modifier": true
   },
-  "onUpdate:foo": $event => val = $event
+  "onUpdate:argument": $event => val = $event
 })
 ```
 
