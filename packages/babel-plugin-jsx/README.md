@@ -186,7 +186,24 @@ const App = {
 
 ### Slot 
 
+> Note: In `jsx`, *`v-slot`* should be replace with **`v-slots`**
+
 ```jsx
+const App = {
+  setup() {
+    const slots = {
+      foo: () => <span>B</span>
+    };
+    return () => (
+      <A v-slots={slots}>
+        <div>A</div>
+      </A>
+    );
+  }
+};
+
+// or
+
 const App = {
   setup() {
     const slots = {

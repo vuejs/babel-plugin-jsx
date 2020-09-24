@@ -186,7 +186,24 @@ const App = {
 
 ### 插槽 
 
+> 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 *`v-slot`*
+
 ```jsx
+const App = {
+  setup() {
+    const slots = {
+      foo: () => <span>B</span>
+    };
+    return () => (
+      <A v-slots={slots}>
+        <div>A</div>
+      </A>
+    );
+  }
+};
+
+// or
+
 const App = {
   setup() {
     const slots = {
