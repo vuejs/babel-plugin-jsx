@@ -393,10 +393,10 @@ describe('PatchFlags', () => {
 });
 
 describe('variables outside slots', () => {
-  interface AProps {
-    inc: () => void
-  }
-  const A = defineComponent<AProps>({
+  const A = defineComponent({
+    props: {
+      inc: Function,
+    },
     render() {
       return this.$slots.default?.();
     },
@@ -405,7 +405,7 @@ describe('variables outside slots', () => {
   A.inheritAttrs = false;
 
   test('internal', async () => {
-    const wrapper = mount({
+    const wrapper = mount(defineComponent({
       data() {
         return {
           val: 0,
@@ -429,7 +429,7 @@ describe('variables outside slots', () => {
           </A>
         );
       },
-    });
+    }));
 
     expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
     await wrapper.get('#button').trigger('click');
