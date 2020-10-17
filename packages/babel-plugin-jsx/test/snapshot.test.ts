@@ -149,10 +149,10 @@ tests.forEach((
 
 const overridePropsTests = [{
   name: 'single',
-  from: '<div {...a}></div>',
+  from: '<div {...a} />',
 }, {
   name: 'multiple',
-  from: '<A loading {...a} class="x" style={x}></A>',
+  from: '<A loading {...a} {...{ b: 1, c: { d: 2 } }} class="x" style={x} />',
 }];
 
 overridePropsTests.forEach((

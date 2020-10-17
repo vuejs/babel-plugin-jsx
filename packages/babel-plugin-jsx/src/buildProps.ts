@@ -56,8 +56,10 @@ const transformJSXSpreadAttribute = (
       walksScope(nodePath, (argument.node as t.Identifier).name, SlotFlags.DYNAMIC);
     }
     args.push(mergeProps ? argument.node : t.spreadElement(argument.node));
-  } else {
+  } else if (mergeProps) {
     args.push(t.objectExpression(properties));
+  } else {
+    args.push(...(properties as t.ObjectProperty[]));
   }
 };
 
