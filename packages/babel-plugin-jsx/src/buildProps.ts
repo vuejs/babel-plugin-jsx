@@ -224,17 +224,17 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           } else if (directiveName === 'model') {
             // must be v-model and is a component
             properties.push(t.objectProperty(
-              arg || t.stringLiteral('modelValue'),
+              (arg as t.StringLiteral) || t.stringLiteral('modelValue'),
               value as any,
             ));
 
             dynamicPropNames.add(propName);
 
-            if (modifiers.size) {
+            if ((modifiers as Set<string>).size) {
               properties.push(t.objectProperty(
                 t.stringLiteral(`${argVal || 'model'}Modifiers`),
                 t.objectExpression(
-                  [...modifiers].map((modifier) => (
+                  [...(modifiers as Set<string>)].map((modifier) => (
                     t.objectProperty(
                       t.stringLiteral(modifier),
                       t.booleanLiteral(true),
@@ -267,6 +267,42 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             ));
 
             dynamicPropNames.add(`onUpdate:${propName}`);
+          }
+
+          if (directiveName === 'models' && Array.isArray(value)) {
+            for (let index = 0; index < value.length; index++) {
+              const modelsPropName = (arg as t.StringLiteral[])[index]?.value;
+
+              properties.push(t.objectProperty(
+                (arg as t.StringLiteral[])[index],
+                value[index],
+              ));
+
+              properties.push(t.objectProperty(
+                t.stringLiteral(`onUpdate:${modelsPropName}`),
+                t.arrowFunctionExpression(
+                  [t.identifier('$event')],
+                  t.assignmentExpression('=', value[index] as any, t.identifier('$event')),
+                ),
+              ));
+
+              if ((modifiers as Set<string>[])[index].size) {
+                properties.push(t.objectProperty(
+                  t.stringLiteral(`${modelsPropName}Modifiers`),
+                  t.objectExpression(
+                    [...(modifiers as Set<string>[])[index]].map((modifier) => (
+                      t.objectProperty(
+                        t.stringLiteral(modifier),
+                        t.booleanLiteral(true),
+                      )
+                    )),
+                  ),
+                ));
+              }
+
+              dynamicPropNames.add(modelsPropName);
+              dynamicPropNames.add(`onUpdate:${modelsPropName}`);
+            }
           }
         } else {
           if (name.match(xlinkRE)) {

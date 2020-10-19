@@ -44,10 +44,10 @@ const parseDirectives = (args: {
   const {
     name, path, value, state, tag, isComponent,
   } = args;
-  let modifiers: string[] = name.split('_');
-  let arg;
-  let val;
-
+  let modifiers: string[] | string[][] = name.split('_');
+  let arg: t.StringLiteral | t.StringLiteral[] | undefined;
+  let val: t.Expression | t.Expression[] | undefined;
+  let modifiersSet: Set<string> | Set<string>[];
   const directiveName: string = modifiers.shift()
     ?.replace(/^v/, '')
     .replace(/^-/, '')
@@ -57,10 +57,31 @@ const parseDirectives = (args: {
     throw new Error('You have to use JSX Expression inside your v-model');
   }
 
-  const shouldResolve = !['html', 'text', 'model'].includes(directiveName)
+  if (directiveName === 'models' && !isComponent) {
+    throw new Error('v-models can only use in custom components');
+  }
+
+  const shouldResolve = !['html', 'text', 'model', 'models'].includes(directiveName)
     || (directiveName === 'model' && !isComponent);
 
-  if (t.isArrayExpression(value)) {
+  if (directiveName === 'models' && t.isArrayExpression(value)) {
+    const { elements } = value;
+    arg = [];
+    modifiers = [];
+    val = [];
+
+    elements.forEach((element) => {
+      const { elements: _elements } = element as t.ArrayExpression;
+      const [first, second, third] = _elements;
+      if (t.isStringLiteral(second)) {
+        (arg as t.StringLiteral[]).push(second);
+        (modifiers as string[][]).push(parseModifiers(third as t.Expression));
+      } else {
+        throw new Error('You should pass the second param as string to the array element in the 2D array');
+      }
+      (val as t.Expression[]).push(first as t.Expression);
+    });
+  } else if (t.isArrayExpression(value)) {
     const { elements } = value;
     const [first, second, third] = elements;
     if (t.isStringLiteral(second)) {
@@ -69,10 +90,14 @@ const parseDirectives = (args: {
     } else if (second) {
       modifiers = parseModifiers(second as t.Expression);
     }
-    val = first;
+    val = first as t.Expression;
   }
 
-  const modifiersSet = new Set(modifiers);
+  if (directiveName === 'models' && t.isArrayExpression(value)) {
+    modifiersSet = (modifiers as string[][]).map((item) => new Set(item));
+  } else {
+    modifiersSet = new Set(modifiers as string[]);
+  }
 
   return {
     directiveName,
@@ -81,10 +106,10 @@ const parseDirectives = (args: {
     arg,
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
-      val || value,
-      !!modifiersSet.size && t.unaryExpression('void', t.numericLiteral(0), true),
-      !!modifiersSet.size && t.objectExpression(
-        [...modifiersSet].map(
+      (val as t.Expression) || value,
+      !!(modifiersSet as Set<string>).size && t.unaryExpression('void', t.numericLiteral(0), true),
+      !!(modifiersSet as Set<string>).size && t.objectExpression(
+        [...(modifiersSet as Set<string>)].map(
           (modifier) => t.objectProperty(
             t.identifier(modifier),
             t.booleanLiteral(true),

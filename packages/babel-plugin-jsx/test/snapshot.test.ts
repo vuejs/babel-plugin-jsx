@@ -134,6 +134,10 @@ const tests = [
       a = <A>{a}</A>;
     `,
   },
+  {
+    name: 'vModels',
+    from: '<C v-models={[[foo, \'foo\', [\'modifier\']], [bar, \'bar\', [\'modifier\']]]} />',
+  },
 ];
 
 tests.forEach((
