@@ -39,7 +39,7 @@ const getChildren = (
       const expression = transformJSXExpressionContainer(path);
 
       if (t.isIdentifier(expression)) {
-        const { name } = expression as t.Identifier;
+        const { name } = expression;
         const { referencePaths = [] } = path.scope.getBinding(name) || {};
         referencePaths.forEach((referencePath) => {
           walksScope(referencePath, name, SlotFlags.DYNAMIC);
@@ -109,7 +109,7 @@ const transformJSXElement = (
     !!patchFlag && optimize && t.numericLiteral(patchFlag),
     !!dynamicPropNames.size && optimize
     && t.arrayExpression(
-      [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name as string)),
+      [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name)),
     ),
   ].filter(Boolean as any));
 

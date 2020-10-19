@@ -125,7 +125,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   const isComponent = checkIsComponent(path.get('openingElement'));
   const props = path.get('openingElement').get('attributes');
   const directives: t.ArrayExpression[] = [];
-  const dynamicPropNames = new Set();
+  const dynamicPropNames = new Set<string>();
 
   let slots: Slots = null;
   let patchFlag = 0;
@@ -225,8 +225,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             // must be v-model and is a component
             properties.push(t.objectProperty(
               arg || t.stringLiteral('modelValue'),
-              // @ts-ignore
-              value,
+              value as any,
             ));
 
             dynamicPropNames.add(propName);
@@ -263,8 +262,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
               t.stringLiteral(`onUpdate:${propName}`),
               t.arrowFunctionExpression(
                 [t.identifier('$event')],
-                // @ts-ignore
-                t.assignmentExpression('=', value, t.identifier('$event')),
+                t.assignmentExpression('=', value as any, t.identifier('$event')),
               ),
             ));
 

@@ -187,8 +187,9 @@ const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | null => 
  */
 const transformJSXExpressionContainer = (
   path: NodePath<t.JSXExpressionContainer>,
-): (t.Expression
-  ) => path.get('expression').node as t.Expression;
+): (
+  t.Expression
+) => path.get('expression').node as t.Expression;
 
 /**
  * Transform JSXSpreadChild

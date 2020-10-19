@@ -27,7 +27,7 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
 const parseModifiers = (value: t.Expression) => {
   let modifiers: string[] = [];
   if (t.isArrayExpression(value)) {
-    modifiers = (value as t.ArrayExpression).elements
+    modifiers = value.elements
       .map((el) => (t.isStringLiteral(el) ? el.value : '')).filter(Boolean);
   }
   return modifiers;
@@ -61,7 +61,7 @@ const parseDirectives = (args: {
     || (directiveName === 'model' && !isComponent);
 
   if (t.isArrayExpression(value)) {
-    const { elements } = value as t.ArrayExpression;
+    const { elements } = value;
     const [first, second, third] = elements;
     if (t.isStringLiteral(second)) {
       arg = second;
@@ -86,7 +86,7 @@ const parseDirectives = (args: {
       !!modifiersSet.size && t.objectExpression(
         [...modifiersSet].map(
           (modifier) => t.objectProperty(
-            t.identifier(modifier as string),
+            t.identifier(modifier),
             t.booleanLiteral(true),
           ),
         ),
