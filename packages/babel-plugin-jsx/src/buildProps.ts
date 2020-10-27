@@ -212,8 +212,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             state,
             value: attributeValue,
           });
-          const argVal = (arg as t.StringLiteral)?.value;
-          const propName = argVal || 'modelValue';
 
           if (directiveName === 'slots') {
             slots = attributeValue as Slots;
@@ -221,87 +219,61 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           }
           if (directive) {
             directives.push(t.arrayExpression(directive));
-          } else if (directiveName === 'model') {
-            // must be v-model and is a component
-            properties.push(t.objectProperty(
-              (arg as t.StringLiteral) || t.stringLiteral('modelValue'),
-              value as any,
-            ));
-
-            dynamicPropNames.add(propName);
-
-            if ((modifiers as Set<string>).size) {
-              properties.push(t.objectProperty(
-                t.stringLiteral(`${argVal || 'model'}Modifiers`),
-                t.objectExpression(
-                  [...(modifiers as Set<string>)].map((modifier) => (
-                    t.objectProperty(
-                      t.stringLiteral(modifier),
-                      t.booleanLiteral(true),
-                    )
-                  )),
-                ),
-              ));
-            }
           } else if (directiveName === 'html') {
             properties.push(t.objectProperty(
               t.stringLiteral('innerHTML'),
-              value as any,
+              value[0] as any,
             ));
             dynamicPropNames.add('innerHTML');
           } else if (directiveName === 'text') {
             properties.push(t.objectProperty(
               t.stringLiteral('textContent'),
-              value as any,
+              value[0] as any,
             ));
             dynamicPropNames.add('textContent');
           }
 
-          if (directiveName === 'model' && value) {
-            properties.push(t.objectProperty(
-              t.stringLiteral(`onUpdate:${propName}`),
-              t.arrowFunctionExpression(
-                [t.identifier('$event')],
-                t.assignmentExpression('=', value as any, t.identifier('$event')),
-              ),
-            ));
-
-            dynamicPropNames.add(`onUpdate:${propName}`);
-          }
-
-          if (directiveName === 'models' && Array.isArray(value)) {
+          if (['models', 'model'].includes(directiveName) && value[0]) {
             for (let index = 0; index < value.length; index++) {
-              const modelsPropName = (arg as t.StringLiteral[])[index]?.value;
+              const argVal = arg[index]?.value;
+              const propName = argVal || 'modelValue';
 
-              properties.push(t.objectProperty(
-                (arg as t.StringLiteral[])[index],
-                value[index],
-              ));
-
-              properties.push(t.objectProperty(
-                t.stringLiteral(`onUpdate:${modelsPropName}`),
-                t.arrowFunctionExpression(
-                  [t.identifier('$event')],
-                  t.assignmentExpression('=', value[index] as any, t.identifier('$event')),
-                ),
-              ));
-
-              if ((modifiers as Set<string>[])[index].size) {
-                properties.push(t.objectProperty(
-                  t.stringLiteral(`${modelsPropName}Modifiers`),
-                  t.objectExpression(
-                    [...(modifiers as Set<string>[])[index]].map((modifier) => (
-                      t.objectProperty(
-                        t.stringLiteral(modifier),
-                        t.booleanLiteral(true),
-                      )
-                    )),
+              // must be v-model or v-models and is a component
+              if (!directive) {
+                properties.push(
+                  t.objectProperty(
+                    arg[index] || t.stringLiteral('modelValue'),
+                    value[index] as any,
                   ),
-                ));
+                );
+                dynamicPropNames.add(propName);
+
+                if (modifiers[index].size) {
+                  properties.push(
+                    t.objectProperty(
+                      t.stringLiteral(`${argVal || 'model'}Modifiers`),
+                      t.objectExpression(
+                        [...modifiers[index]].map((modifier) => t.objectProperty(
+                          t.stringLiteral(modifier),
+                          t.booleanLiteral(true),
+                        )),
+                      ),
+                    ),
+                  );
+                }
               }
 
-              dynamicPropNames.add(modelsPropName);
-              dynamicPropNames.add(`onUpdate:${modelsPropName}`);
+              properties.push(
+                t.objectProperty(
+                  t.stringLiteral(`onUpdate:${propName}`),
+                  t.arrowFunctionExpression(
+                    [t.identifier('$event')],
+                    t.assignmentExpression('=', value[index] as any, t.identifier('$event')),
+                  ),
+                ),
+              );
+
+              dynamicPropNames.add(`onUpdate:${propName}`);
             }
           }
         } else {

@@ -44,72 +44,77 @@ const parseDirectives = (args: {
   const {
     name, path, value, state, tag, isComponent,
   } = args;
-  let modifiers: string[] | string[][] = name.split('_');
-  let arg: t.StringLiteral | t.StringLiteral[] | undefined;
-  let val: t.Expression | t.Expression[] | undefined;
-  let modifiersSet: Set<string> | Set<string>[];
-  const directiveName: string = modifiers.shift()
+  let modifiers: string[][] = [name.split('_')];
+  const arg: t.StringLiteral[] = [];
+  const val: t.Expression[] = [];
+  let modifiersSet: Set<string>[];
+  const directiveName: string = modifiers[0].shift()
     ?.replace(/^v/, '')
     .replace(/^-/, '')
     .replace(/^\S/, (s: string) => s.toLowerCase()) || '';
 
+  const isVModels = directiveName === 'models';
   if (directiveName === 'model' && !t.isJSXExpressionContainer(path.get('value'))) {
     throw new Error('You have to use JSX Expression inside your v-model');
   }
 
-  if (directiveName === 'models' && !isComponent) {
+  if (isVModels && !isComponent) {
     throw new Error('v-models can only use in custom components');
   }
 
   const shouldResolve = !['html', 'text', 'model', 'models'].includes(directiveName)
     || (directiveName === 'model' && !isComponent);
 
-  if (directiveName === 'models' && t.isArrayExpression(value)) {
-    const { elements } = value;
-    arg = [];
-    modifiers = [];
-    val = [];
-
-    elements.forEach((element) => {
-      const { elements: _elements } = element as t.ArrayExpression;
-      const [first, second, third] = _elements;
-      if (t.isStringLiteral(second)) {
-        (arg as t.StringLiteral[]).push(second);
-        (modifiers as string[][]).push(parseModifiers(third as t.Expression));
-      } else {
-        throw new Error('You should pass the second param as string to the array element in the 2D array');
-      }
-      (val as t.Expression[]).push(first as t.Expression);
-    });
-  } else if (t.isArrayExpression(value)) {
-    const { elements } = value;
-    const [first, second, third] = elements;
-    if (t.isStringLiteral(second)) {
-      arg = second;
-      modifiers = parseModifiers(third as t.Expression);
-    } else if (second) {
-      modifiers = parseModifiers(second as t.Expression);
+  if (['models', 'model'].includes(directiveName) && t.isArrayExpression(value)) {
+    let elementsList;
+    if (isVModels) {
+      elementsList = value.elements;
+      modifiers = [];
+    } else {
+      elementsList = [value];
     }
-    val = first as t.Expression;
+
+    elementsList.forEach((element) => {
+      if (isVModels && !t.isArrayExpression(element)) {
+        throw new Error('You should pass a 2D array to v-models');
+      }
+
+      const { elements } = element as t.ArrayExpression;
+      const [first, second, third] = elements;
+
+      if (isVModels && !t.isStringLiteral(second)) {
+        throw new Error('You should pass the second param as string to the array element in the 2D array');
+      } else if (directiveName === 'model' && second) {
+        modifiers = [];
+      }
+
+      if (t.isStringLiteral(second)) {
+        arg.push(second);
+        modifiers.push(parseModifiers(third as t.Expression));
+      } else if (second) {
+        modifiers.push(parseModifiers(second as t.Expression));
+      }
+      val.push(first as t.Expression);
+    });
   }
 
-  if (directiveName === 'models' && t.isArrayExpression(value)) {
-    modifiersSet = (modifiers as string[][]).map((item) => new Set(item));
+  if (isVModels && t.isArrayExpression(value)) {
+    modifiersSet = modifiers.map((item) => new Set(item));
   } else {
-    modifiersSet = new Set(modifiers as string[]);
+    modifiersSet = [new Set(modifiers[0])];
   }
 
   return {
     directiveName,
     modifiers: modifiersSet,
-    value: val || value,
+    value: val.length ? val : [value],
     arg,
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
-      (val as t.Expression) || value,
-      !!(modifiersSet as Set<string>).size && t.unaryExpression('void', t.numericLiteral(0), true),
-      !!(modifiersSet as Set<string>).size && t.objectExpression(
-        [...(modifiersSet as Set<string>)].map(
+      val[0] || value,
+      !!modifiersSet[0].size && t.unaryExpression('void', t.numericLiteral(0), true),
+      !!modifiersSet[0].size && t.objectExpression(
+        [...modifiersSet[0]].map(
           (modifier) => t.objectProperty(
             t.identifier(modifier),
             t.booleanLiteral(true),
