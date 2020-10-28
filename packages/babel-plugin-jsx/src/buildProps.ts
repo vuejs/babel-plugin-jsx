@@ -203,7 +203,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         }
         if (isDirective(name)) {
           const {
-            directive, modifiers, value, arg, directiveName,
+            directive, modifiers, values, arg, directiveName,
           } = parseDirectives({
             tag,
             isComponent,
@@ -222,19 +222,19 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           } else if (directiveName === 'html') {
             properties.push(t.objectProperty(
               t.stringLiteral('innerHTML'),
-              value[0] as any,
+              values[0] as any,
             ));
             dynamicPropNames.add('innerHTML');
           } else if (directiveName === 'text') {
             properties.push(t.objectProperty(
               t.stringLiteral('textContent'),
-              value[0] as any,
+              values[0] as any,
             ));
             dynamicPropNames.add('textContent');
           }
 
-          if (['models', 'model'].includes(directiveName) && value[0]) {
-            for (let index = 0; index < value.length; index++) {
+          if (['models', 'model'].includes(directiveName) && values[0]) {
+            for (let index = 0; index < values.length; index++) {
               const argVal = arg[index]?.value;
               const propName = argVal || 'modelValue';
 
@@ -243,7 +243,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                 properties.push(
                   t.objectProperty(
                     arg[index] || t.stringLiteral('modelValue'),
-                    value[index] as any,
+                    values[index] as any,
                   ),
                 );
                 dynamicPropNames.add(propName);
@@ -268,7 +268,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                   t.stringLiteral(`onUpdate:${propName}`),
                   t.arrowFunctionExpression(
                     [t.identifier('$event')],
-                    t.assignmentExpression('=', value[index] as any, t.identifier('$event')),
+                    t.assignmentExpression('=', values[index] as any, t.identifier('$event')),
                   ),
                 ),
               );

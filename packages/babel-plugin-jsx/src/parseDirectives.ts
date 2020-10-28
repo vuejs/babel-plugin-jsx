@@ -107,7 +107,7 @@ const parseDirectives = (args: {
   return {
     directiveName,
     modifiers: modifiersSet,
-    value: val.length ? val : [value],
+    values: val.length ? val : [value],
     arg,
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
