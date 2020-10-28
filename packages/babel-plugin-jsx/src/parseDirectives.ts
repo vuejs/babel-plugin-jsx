@@ -24,14 +24,12 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
   return typePath ? typePath.get('value').node : null;
 };
 
-const parseModifiers = (value: t.Expression) => {
-  let modifiers: string[] = [];
-  if (t.isArrayExpression(value)) {
-    modifiers = value.elements
-      .map((el) => (t.isStringLiteral(el) ? el.value : '')).filter(Boolean);
-  }
-  return modifiers;
-};
+const parseModifiers = (value: t.ArrayExpression): string[] => (
+  t.isArrayExpression(value)
+    ? value.elements
+      .map((el) => (t.isStringLiteral(el) ? el.value : ''))
+      .filter(Boolean)
+    : []);
 
 const parseDirectives = (params: {
   name: string,
@@ -81,10 +79,10 @@ const parseDirectives = (params: {
 
         if (t.isStringLiteral(second)) {
           args.push(second);
-          modifiers = parseModifiers(third as t.Expression);
-        } else if (second) {
+          modifiers = parseModifiers(third as t.ArrayExpression);
+        } else if (t.isArrayExpression(second)) {
           args.push(t.stringLiteral('model'));
-          modifiers = parseModifiers(second as t.Expression);
+          modifiers = parseModifiers(second);
         } else {
           // work as v-model={[value]} or v-models={[[value]]}
           args.push(t.stringLiteral('model'));

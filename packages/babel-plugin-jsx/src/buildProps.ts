@@ -236,8 +236,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           if (['models', 'model'].includes(directiveName)) {
             values.forEach((value, index) => {
               const argVal = args[index].value;
-              const isArgEqModel = argVal === 'model';
-              const propName = isArgEqModel ? 'modelValue' : argVal;
+              const propName = argVal === 'model' ? 'modelValue' : argVal;
 
               // must be v-model or v-models and is a component
               if (!directive) {

@@ -174,17 +174,18 @@ createVNode(\\"h1\\", {
 exports[`vModels: vModels 1`] = `
 "import { resolveComponent, createVNode } from \\"vue\\";
 createVNode(resolveComponent(\\"C\\"), {
-  \\"foo\\": foo,
-  \\"fooModifiers\\": {
+  \\"modelValue\\": foo,
+  \\"modelModifiers\\": {
     \\"modifier\\": true
   },
-  \\"onUpdate:foo\\": $event => foo = $event,
+  \\"onUpdate:modelValue\\": $event => foo = $event,
   \\"bar\\": bar,
   \\"barModifiers\\": {
-    \\"modifier\\": true
+    \\"modifier1\\": true,
+    \\"modifier2\\": true
   },
   \\"onUpdate:bar\\": $event => bar = $event
-}, null, 8, [\\"foo\\", \\"onUpdate:foo\\", \\"bar\\", \\"onUpdate:bar\\"]);"
+}, null, 8, [\\"modelValue\\", \\"onUpdate:modelValue\\", \\"bar\\", \\"onUpdate:bar\\"]);"
 `;
 
 exports[`vText: vText 1`] = `
