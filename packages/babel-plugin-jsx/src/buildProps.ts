@@ -233,25 +233,23 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             dynamicPropNames.add('textContent');
           }
 
-          if (['models', 'model'].includes(directiveName) && values[0]) {
-            for (let index = 0; index < values.length; index++) {
-              const argVal = args[index]?.value;
-              const propName = argVal || 'modelValue';
+          if (['models', 'model'].includes(directiveName)) {
+            values.forEach((value, index) => {
+              const argVal = args[index].value;
+              const isArgEqModel = argVal === 'model';
+              const propName = isArgEqModel ? 'modelValue' : argVal;
 
               // must be v-model or v-models and is a component
               if (!directive) {
                 properties.push(
-                  t.objectProperty(
-                    args[index] || t.stringLiteral('modelValue'),
-                    values[index] as any,
-                  ),
+                  t.objectProperty(t.stringLiteral(propName), value as any),
                 );
                 dynamicPropNames.add(propName);
 
-                if (modifiers[index].size) {
+                if (modifiers[index]?.size) {
                   properties.push(
                     t.objectProperty(
-                      t.stringLiteral(`${argVal || 'model'}Modifiers`),
+                      t.stringLiteral(`${argVal}Modifiers`),
                       t.objectExpression(
                         [...modifiers[index]].map((modifier) => t.objectProperty(
                           t.stringLiteral(modifier),
@@ -268,13 +266,13 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                   t.stringLiteral(`onUpdate:${propName}`),
                   t.arrowFunctionExpression(
                     [t.identifier('$event')],
-                    t.assignmentExpression('=', values[index] as any, t.identifier('$event')),
+                    t.assignmentExpression('=', value as any, t.identifier('$event')),
                   ),
                 ),
               );
 
               dynamicPropNames.add(`onUpdate:${propName}`);
-            }
+            });
           }
         } else {
           if (name.match(xlinkRE)) {

@@ -174,12 +174,12 @@ createVNode(\\"h1\\", {
 exports[`vModels: vModels 1`] = `
 "import { resolveComponent, createVNode } from \\"vue\\";
 createVNode(resolveComponent(\\"C\\"), {
-  'foo': foo,
+  \\"foo\\": foo,
   \\"fooModifiers\\": {
     \\"modifier\\": true
   },
   \\"onUpdate:foo\\": $event => foo = $event,
-  'bar': bar,
+  \\"bar\\": bar,
   \\"barModifiers\\": {
     \\"modifier\\": true
   },

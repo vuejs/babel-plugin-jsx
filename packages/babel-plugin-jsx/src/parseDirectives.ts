@@ -47,13 +47,15 @@ const parseDirectives = (params: {
   const args: t.StringLiteral[] = [];
   const vals: t.Expression[] = [];
   const modifiersSet: Set<string>[] = [];
-  const directiveName: string = name.split('_').shift()
+  const underscoreModifiers = name.split('_');
+  const directiveName: string = underscoreModifiers.shift()
     ?.replace(/^v/, '')
     .replace(/^-/, '')
     .replace(/^\S/, (s: string) => s.toLowerCase()) || '';
 
   const isVModels = directiveName === 'models';
-  if (directiveName === 'model' && !t.isJSXExpressionContainer(path.get('value'))) {
+  const isVModel = directiveName === 'model';
+  if (isVModel && !t.isJSXExpressionContainer(path.get('value'))) {
     throw new Error('You have to use JSX Expression inside your v-model');
   }
 
@@ -62,36 +64,41 @@ const parseDirectives = (params: {
   }
 
   const shouldResolve = !['html', 'text', 'model', 'models'].includes(directiveName)
-    || (directiveName === 'model' && !isComponent);
+    || (isVModel && !isComponent);
 
-  if (['models', 'model'].includes(directiveName) && t.isArrayExpression(value)) {
-    let elementsList;
-    if (isVModels) {
-      elementsList = value.elements;
-    } else {
-      elementsList = [value];
+  if (['models', 'model'].includes(directiveName)) {
+    if (t.isArrayExpression(value)) {
+      const elementsList = isVModels ? value.elements! : [value];
+
+      elementsList.forEach((element) => {
+        if (isVModels && !t.isArrayExpression(element)) {
+          throw new Error('You should pass a Two-dimensional Arrays to v-models');
+        }
+
+        const { elements } = element as t.ArrayExpression;
+        const [first, second, third] = elements;
+        let modifiers = underscoreModifiers;
+
+        if (t.isStringLiteral(second)) {
+          args.push(second);
+          modifiers = parseModifiers(third as t.Expression);
+        } else if (second) {
+          args.push(t.stringLiteral('model'));
+          modifiers = parseModifiers(second as t.Expression);
+        } else {
+          // work as v-model={[value]} or v-models={[[value]]}
+          args.push(t.stringLiteral('model'));
+        }
+        modifiersSet.push(new Set(modifiers));
+        vals.push(first as t.Expression);
+      });
+    } else if (isVModel) {
+      // work as v-model={value}
+      args.push(t.stringLiteral('model'));
+      modifiersSet.push(new Set(underscoreModifiers));
     }
-
-    elementsList.forEach((element) => {
-      if (isVModels && !t.isArrayExpression(element)) {
-        throw new Error('You should pass a 2D array to v-models');
-      }
-
-      const { elements } = element as t.ArrayExpression;
-      const [first, second, third] = elements;
-
-      if (isVModels && !t.isStringLiteral(second)) {
-        throw new Error('You should pass the second param as string to the array element in the 2D array');
-      }
-
-      if (t.isStringLiteral(second)) {
-        args.push(second);
-        modifiersSet.push(new Set(parseModifiers(third as t.Expression)));
-      } else if (second) {
-        modifiersSet.push(new Set(parseModifiers(second as t.Expression)));
-      }
-      vals.push(first as t.Expression);
-    });
+  } else {
+    modifiersSet.push(new Set(underscoreModifiers));
   }
 
   return {

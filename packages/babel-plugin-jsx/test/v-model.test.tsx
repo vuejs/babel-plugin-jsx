@@ -1,5 +1,5 @@
-import { shallowMount } from '@vue/test-utils';
-import { VNode } from '@vue/runtime-dom';
+import { shallowMount, mount } from '@vue/test-utils';
+import { defineComponent, VNode } from '@vue/runtime-dom';
 
 test('input[type="checkbox"] should work', async () => {
   const wrapper = shallowMount({
@@ -163,4 +163,69 @@ test('dynamic type should work', async () => {
   wrapper.vm.test = false;
   await wrapper.vm.$nextTick();
   expect(wrapper.vm.$el.checked).toBe(false);
+});
+
+test('underscore modifier should work', async () => {
+  const wrapper = shallowMount({
+    data: () => ({
+      test: 'b',
+    }),
+    render() {
+      return <input v-model_lazy={this.test} />;
+    },
+  });
+  const el = wrapper.vm.$el;
+
+  expect(el.value).toBe('b');
+  expect(wrapper.vm.test).toBe('b');
+  el.value = 'c';
+  await wrapper.trigger('input');
+  expect(wrapper.vm.test).toBe('b');
+  el.value = 'c';
+  await wrapper.trigger('change');
+  expect(wrapper.vm.test).toBe('c');
+});
+
+test('underscore modifier should work in custom component', async () => {
+  const Child = defineComponent({
+    props: {
+      modelValue: {
+        type: Number,
+        default: 0,
+      },
+      modelModifiers: {
+        default: () => ({ double: false }),
+      },
+    },
+    setup(props, { emit }) {
+      const handleClick = () => {
+        emit('update:modelValue', 3);
+      };
+      return () => (
+        <div onClick={handleClick}>
+          {props.modelModifiers.double
+            ? props.modelValue * 2
+            : props.modelValue}
+        </div>
+      );
+    },
+  });
+
+  const wrapper = mount({
+    data() {
+      return {
+        foo: 1,
+      };
+    },
+    render() {
+      return <Child v-model_double={this.foo} />;
+    },
+  });
+
+  expect(wrapper.html()).toBe('<div>2</div>');
+  wrapper.vm.$data.foo += 1;
+  await wrapper.vm.$nextTick();
+  expect(wrapper.html()).toBe('<div>4</div>');
+  await wrapper.trigger('click');
+  expect(wrapper.html()).toBe('<div>6</div>');
 });
