@@ -203,7 +203,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         }
         if (isDirective(name)) {
           const {
-            directive, modifiers, value, arg, directiveName,
+            directive, modifiers, values, args, directiveName,
           } = parseDirectives({
             tag,
             isComponent,
@@ -212,8 +212,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             state,
             value: attributeValue,
           });
-          const argVal = (arg as t.StringLiteral)?.value;
-          const propName = argVal || 'modelValue';
 
           if (directiveName === 'slots') {
             slots = attributeValue as Slots;
@@ -221,52 +219,59 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           }
           if (directive) {
             directives.push(t.arrayExpression(directive));
-          } else if (directiveName === 'model') {
-            // must be v-model and is a component
-            properties.push(t.objectProperty(
-              arg || t.stringLiteral('modelValue'),
-              value as any,
-            ));
-
-            dynamicPropNames.add(propName);
-
-            if (modifiers.size) {
-              properties.push(t.objectProperty(
-                t.stringLiteral(`${argVal || 'model'}Modifiers`),
-                t.objectExpression(
-                  [...modifiers].map((modifier) => (
-                    t.objectProperty(
-                      t.stringLiteral(modifier),
-                      t.booleanLiteral(true),
-                    )
-                  )),
-                ),
-              ));
-            }
           } else if (directiveName === 'html') {
             properties.push(t.objectProperty(
               t.stringLiteral('innerHTML'),
-              value as any,
+              values[0] as any,
             ));
             dynamicPropNames.add('innerHTML');
           } else if (directiveName === 'text') {
             properties.push(t.objectProperty(
               t.stringLiteral('textContent'),
-              value as any,
+              values[0] as any,
             ));
             dynamicPropNames.add('textContent');
           }
 
-          if (directiveName === 'model' && value) {
-            properties.push(t.objectProperty(
-              t.stringLiteral(`onUpdate:${propName}`),
-              t.arrowFunctionExpression(
-                [t.identifier('$event')],
-                t.assignmentExpression('=', value as any, t.identifier('$event')),
-              ),
-            ));
+          if (['models', 'model'].includes(directiveName)) {
+            values.forEach((value, index) => {
+              const argVal = args[index].value;
+              const propName = argVal === 'model' ? 'modelValue' : argVal;
 
-            dynamicPropNames.add(`onUpdate:${propName}`);
+              // must be v-model or v-models and is a component
+              if (!directive) {
+                properties.push(
+                  t.objectProperty(t.stringLiteral(propName), value as any),
+                );
+                dynamicPropNames.add(propName);
+
+                if (modifiers[index]?.size) {
+                  properties.push(
+                    t.objectProperty(
+                      t.stringLiteral(`${argVal}Modifiers`),
+                      t.objectExpression(
+                        [...modifiers[index]].map((modifier) => t.objectProperty(
+                          t.stringLiteral(modifier),
+                          t.booleanLiteral(true),
+                        )),
+                      ),
+                    ),
+                  );
+                }
+              }
+
+              properties.push(
+                t.objectProperty(
+                  t.stringLiteral(`onUpdate:${propName}`),
+                  t.arrowFunctionExpression(
+                    [t.identifier('$event')],
+                    t.assignmentExpression('=', value as any, t.identifier('$event')),
+                  ),
+                ),
+              );
+
+              dynamicPropNames.add(`onUpdate:${propName}`);
+            });
           }
         } else {
           if (name.match(xlinkRE)) {
