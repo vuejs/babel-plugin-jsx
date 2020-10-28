@@ -33,7 +33,7 @@ const parseModifiers = (value: t.Expression) => {
   return modifiers;
 };
 
-const parseDirectives = (args: {
+const parseDirectives = (params: {
   name: string,
   path: NodePath<t.JSXAttribute>,
   value: t.StringLiteral | t.Expression | null,
@@ -43,12 +43,11 @@ const parseDirectives = (args: {
 }) => {
   const {
     name, path, value, state, tag, isComponent,
-  } = args;
-  let modifiers: string[][] = [name.split('_')];
-  const arg: t.StringLiteral[] = [];
-  const val: t.Expression[] = [];
-  let modifiersSet: Set<string>[];
-  const directiveName: string = modifiers[0].shift()
+  } = params;
+  const args: t.StringLiteral[] = [];
+  const vals: t.Expression[] = [];
+  const modifiersSet: Set<string>[] = [];
+  const directiveName: string = name.split('_').shift()
     ?.replace(/^v/, '')
     .replace(/^-/, '')
     .replace(/^\S/, (s: string) => s.toLowerCase()) || '';
@@ -69,7 +68,6 @@ const parseDirectives = (args: {
     let elementsList;
     if (isVModels) {
       elementsList = value.elements;
-      modifiers = [];
     } else {
       elementsList = [value];
     }
@@ -84,36 +82,28 @@ const parseDirectives = (args: {
 
       if (isVModels && !t.isStringLiteral(second)) {
         throw new Error('You should pass the second param as string to the array element in the 2D array');
-      } else if (directiveName === 'model' && second) {
-        modifiers = [];
       }
 
       if (t.isStringLiteral(second)) {
-        arg.push(second);
-        modifiers.push(parseModifiers(third as t.Expression));
+        args.push(second);
+        modifiersSet.push(new Set(parseModifiers(third as t.Expression)));
       } else if (second) {
-        modifiers.push(parseModifiers(second as t.Expression));
+        modifiersSet.push(new Set(parseModifiers(second as t.Expression)));
       }
-      val.push(first as t.Expression);
+      vals.push(first as t.Expression);
     });
-  }
-
-  if (isVModels && t.isArrayExpression(value)) {
-    modifiersSet = modifiers.map((item) => new Set(item));
-  } else {
-    modifiersSet = [new Set(modifiers[0])];
   }
 
   return {
     directiveName,
     modifiers: modifiersSet,
-    values: val.length ? val : [value],
-    arg,
+    values: vals.length ? vals : [value],
+    args,
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
-      val[0] || value,
-      !!modifiersSet[0].size && t.unaryExpression('void', t.numericLiteral(0), true),
-      !!modifiersSet[0].size && t.objectExpression(
+      vals[0] || value,
+      !!modifiersSet[0]?.size && t.unaryExpression('void', t.numericLiteral(0), true),
+      !!modifiersSet[0]?.size && t.objectExpression(
         [...modifiersSet[0]].map(
           (modifier) => t.objectProperty(
             t.identifier(modifier),

@@ -203,7 +203,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         }
         if (isDirective(name)) {
           const {
-            directive, modifiers, values, arg, directiveName,
+            directive, modifiers, values, args, directiveName,
           } = parseDirectives({
             tag,
             isComponent,
@@ -235,14 +235,14 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
           if (['models', 'model'].includes(directiveName) && values[0]) {
             for (let index = 0; index < values.length; index++) {
-              const argVal = arg[index]?.value;
+              const argVal = args[index]?.value;
               const propName = argVal || 'modelValue';
 
               // must be v-model or v-models and is a component
               if (!directive) {
                 properties.push(
                   t.objectProperty(
-                    arg[index] || t.stringLiteral('modelValue'),
+                    args[index] || t.stringLiteral('modelValue'),
                     values[index] as any,
                   ),
                 );

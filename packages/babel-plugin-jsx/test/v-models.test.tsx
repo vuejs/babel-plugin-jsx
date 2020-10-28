@@ -21,9 +21,7 @@ test('single value binding should work', async () => {
       };
     },
     render() {
-      return (
-        <Child v-models={[[this.foo, 'foo']]} />
-      );
+      return <Child v-models={[[this.foo, 'foo']]} />;
     },
   });
 
@@ -46,7 +44,11 @@ test('multiple values binding should work', async () => {
         emit('update:foo', 3);
         emit('update:bar', 2);
       };
-      return () => <div onClick={handleClick}>{props.foo},{props.bar}</div>;
+      return () => (
+        <div onClick={handleClick}>
+          {props.foo},{props.bar}
+        </div>
+      );
     },
   });
 
@@ -59,7 +61,12 @@ test('multiple values binding should work', async () => {
     },
     render() {
       return (
-        <Child v-models={[[this.foo, 'foo'], [this.bar, 'bar']]} />
+        <Child
+          v-models={[
+            [this.foo, 'foo'],
+            [this.bar, 'bar'],
+          ]}
+        />
       );
     },
   });
@@ -88,9 +95,11 @@ test('modifier should work', async () => {
       const handleClick = () => {
         emit('update:foo', 3);
       };
-      return () => (<div onClick={handleClick}>
-        {props.fooModifiers.double ? props.foo * 2 : props.foo}
-        </div>);
+      return () => (
+        <div onClick={handleClick}>
+          {props.fooModifiers.double ? props.foo * 2 : props.foo}
+        </div>
+      );
     },
   });
 
@@ -101,9 +110,7 @@ test('modifier should work', async () => {
       };
     },
     render() {
-      return (
-        <Child v-models={[[this.foo, 'foo', ['double']]]} />
-      );
+      return <Child v-models={[[this.foo, 'foo', ['double']]]} />;
     },
   });
 
