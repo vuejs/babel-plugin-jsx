@@ -235,8 +235,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
           if (['models', 'model'].includes(directiveName)) {
             values.forEach((value, index) => {
-              const argVal = args[index].value;
-              const propName = argVal === 'model' ? 'modelValue' : argVal;
+              const argVal = (args[index] as t.StringLiteral)?.value;
+              const propName = argVal || 'modelValue';
 
               // must be v-model or v-models and is a component
               if (!directive) {
@@ -248,7 +248,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                 if (modifiers[index]?.size) {
                   properties.push(
                     t.objectProperty(
-                      t.stringLiteral(`${argVal}Modifiers`),
+                      t.stringLiteral(`${argVal || 'model'}Modifiers`),
                       t.objectExpression(
                         [...modifiers[index]].map((modifier) => t.objectProperty(
                           t.stringLiteral(modifier),

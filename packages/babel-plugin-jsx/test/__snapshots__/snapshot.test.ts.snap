@@ -159,6 +159,14 @@ withDirectives(createVNode(\\"textarea\\", {
 }, null, 8, [\\"onUpdate:modelValue\\"]), [[vModelText, test]]);"
 `;
 
+exports[`use "model" as the prop name: use "model" as the prop name 1`] = `
+"import { resolveComponent, createVNode } from \\"vue\\";
+createVNode(resolveComponent(\\"C\\"), {
+  \\"model\\": foo,
+  \\"onUpdate:model\\": $event => foo = $event
+}, null, 8, [\\"model\\", \\"onUpdate:model\\"]);"
+`;
+
 exports[`v-show: v-show 1`] = `
 "import { createTextVNode, vShow, createVNode, withDirectives } from \\"vue\\";
 withDirectives(createVNode(\\"div\\", null, [createTextVNode(\\"vShow\\")], 512), [[vShow, x]]);"

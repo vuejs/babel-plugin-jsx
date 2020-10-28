@@ -42,7 +42,7 @@ const parseDirectives = (params: {
   const {
     name, path, value, state, tag, isComponent,
   } = params;
-  const args: t.StringLiteral[] = [];
+  const args: Array<t.StringLiteral| t.NullLiteral> = [];
   const vals: t.Expression[] = [];
   const modifiersSet: Set<string>[] = [];
   const underscoreModifiers = name.split('_');
@@ -81,18 +81,18 @@ const parseDirectives = (params: {
           args.push(second);
           modifiers = parseModifiers(third as t.ArrayExpression);
         } else if (t.isArrayExpression(second)) {
-          args.push(t.stringLiteral('model'));
+          args.push(t.nullLiteral());
           modifiers = parseModifiers(second);
         } else {
           // work as v-model={[value]} or v-models={[[value]]}
-          args.push(t.stringLiteral('model'));
+          args.push(t.nullLiteral());
         }
         modifiersSet.push(new Set(modifiers));
         vals.push(first as t.Expression);
       });
     } else if (isVModel) {
       // work as v-model={value}
-      args.push(t.stringLiteral('model'));
+      args.push(t.nullLiteral());
       modifiersSet.push(new Set(underscoreModifiers));
     }
   } else {
