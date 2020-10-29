@@ -6,6 +6,7 @@ test('single value binding should work', async () => {
     props: {
       foo: Number,
     },
+    emits: ['update:foo'],
     setup(props, { emit }) {
       const handleClick = () => {
         emit('update:foo', 3);
@@ -39,6 +40,7 @@ test('multiple values binding should work', async () => {
       foo: Number,
       bar: Number,
     },
+    emits: ['update:foo', 'update:bar'],
     setup(props, { emit }) {
       const handleClick = () => {
         emit('update:foo', 3);
@@ -91,6 +93,7 @@ test('modifier should work', async () => {
         default: () => ({ double: false }),
       },
     },
+    emits: ['update:foo'],
     setup(props, { emit }) {
       const handleClick = () => {
         emit('update:foo', 3);
