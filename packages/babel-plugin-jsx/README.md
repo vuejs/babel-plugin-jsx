@@ -247,7 +247,7 @@ const App = {
       console.log(val)
     };
     return () => (
-        <A onMyEvent={appEvent} />
+      <A onMyEvent={appEvent} />
     );
   }
 };

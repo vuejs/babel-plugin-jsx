@@ -227,7 +227,7 @@ const App = {
 };
 ```
 
-自定义事件
+### 自定义事件
 
 ```jsx
 
@@ -244,10 +244,10 @@ const A = {
 const App = {
   setup() {
     const appEvent = (val) => {
-      ...
+      console.log(val)
     };
     return () => (
-        <A onMyEvent={appEvent} />
+      <A onMyEvent={appEvent} />
     );
   }
 };
