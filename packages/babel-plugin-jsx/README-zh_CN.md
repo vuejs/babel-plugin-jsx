@@ -189,6 +189,18 @@ const App = {
 > 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 *`v-slot`*
 
 ```jsx
+
+// Component A
+
+const A = {
+  ...
+    <div>default: {slots.default()}</div>
+    <div>foo: {slots.foo()}</div>
+  ...
+}
+
+// App
+
 const App = {
   setup() {
     const slots = {
@@ -211,6 +223,32 @@ const App = {
       foo: () => <span>B</span>
     };
     return () => <A v-slots={slots} />;
+  }
+};
+```
+
+自定义事件
+
+```jsx
+
+// Component A
+
+const A = {
+  ...
+    emit('myEvent', val);
+  ...
+}
+
+// App
+
+const App = {
+  setup() {
+    const appEvent = (val) => {
+      ...
+    };
+    return () => (
+        <A onMyEvent={appEvent} />
+    );
   }
 };
 ```
