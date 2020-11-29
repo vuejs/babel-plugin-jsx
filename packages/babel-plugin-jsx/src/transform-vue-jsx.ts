@@ -10,7 +10,7 @@ import {
 } from './utils';
 import buildProps from './buildProps';
 import SlotFlags from './slotFlags';
-import { State } from '.';
+import { State, ExcludesBoolean } from '.';
 
 /**
  * Get children from Array of JSX children
@@ -52,7 +52,7 @@ const getChildren = (
       return transformJSXSpreadChild(path as NodePath<t.JSXSpreadChild>);
     }
     if (path.isCallExpression()) {
-      return path.node;
+      return (path as NodePath<t.CallExpression>).node;
     }
     if (path.isJSXElement()) {
       return transformJSXElement(path, state);
@@ -83,7 +83,6 @@ const transformJSXElement = (
 
   const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
 
-  // @ts-ignore
   const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
     tag,
     props,
@@ -111,7 +110,7 @@ const transformJSXElement = (
     && t.arrayExpression(
       [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name)),
     ),
-  ].filter(Boolean as any));
+  ].filter(Boolean as unknown as ExcludesBoolean));
 
   if (!directives.length) {
     return createVNode;
@@ -122,13 +121,14 @@ const transformJSXElement = (
     t.arrayExpression(directives),
   ]);
 };
+
 export { transformJSXElement };
 
-export default () => ({
+export default ({
   JSXElement: {
     exit(path: NodePath<t.JSXElement>, state: State) {
       path.replaceWith(
-        transformJSXElement(path, state),
+        t.inherits(transformJSXElement(path, state), path.node),
       );
     },
   },

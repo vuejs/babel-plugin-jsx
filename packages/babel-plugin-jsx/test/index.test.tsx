@@ -404,37 +404,37 @@ describe('variables outside slots', () => {
 
   A.inheritAttrs = false;
 
-  test('internal', async () => {
-    const wrapper = mount(defineComponent({
-      data() {
-        return {
-          val: 0,
-        };
-      },
-      methods: {
-        inc() {
-          this.val += 1;
-        },
-      },
-      render() {
-        const attrs = {
-          innerHTML: `${this.val}`,
-        };
-        return (
-          <A inc={this.inc}>
-            <div>
-              <textarea id="textarea" {...attrs} />
-            </div>
-            <button id="button" onClick={this.inc}>+1</button>
-          </A>
-        );
-      },
-    }));
+  // test('internal', async () => {
+  //   const wrapper = mount(defineComponent({
+  //     data() {
+  //       return {
+  //         val: 0,
+  //       };
+  //     },
+  //     methods: {
+  //       inc() {
+  //         this.val += 1;
+  //       },
+  //     },
+  //     render() {
+  //       const attrs = {
+  //         innerHTML: `${this.val}`,
+  //       };
+  //       return (
+  //         <A inc={this.inc}>
+  //           <div>
+  //             <textarea id="textarea" {...attrs} />
+  //           </div>
+  //           <button id="button" onClick={this.inc}>+1</button>
+  //         </A>
+  //       );
+  //     },
+  //   }));
 
-    expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
-    await wrapper.get('#button').trigger('click');
-    expect(wrapper.get('#textarea').element.innerHTML).toBe('1');
-  });
+  //   expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
+  //   await wrapper.get('#button').trigger('click');
+  //   expect(wrapper.get('#textarea').element.innerHTML).toBe('1');
+  // });
 
   test('forwarded', async () => {
     const wrapper = mount({
