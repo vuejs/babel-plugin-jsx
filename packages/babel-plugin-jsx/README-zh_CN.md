@@ -114,7 +114,7 @@ const App = () => (
 const App = () => <input type="email" />;
 ```
 
-with a dynamic binding:
+动态绑定:
 
 ```jsx
 const placeholderText = 'email';
