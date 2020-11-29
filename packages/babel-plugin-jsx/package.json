@@ -15,7 +15,7 @@
     "build": "tsc",
     "lint": "eslint 'src/*.ts'",
     "test": "npm run build && jest --coverage",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "bugs": {
     "url": "https://github.com/vuejs/jsx-next/issues"

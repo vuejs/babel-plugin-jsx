@@ -188,6 +188,7 @@ test('underscore modifier should work', async () => {
 
 test('underscore modifier should work in custom component', async () => {
   const Child = defineComponent({
+    emits: ['update:modelValue'],
     props: {
       modelValue: {
         type: Number,
