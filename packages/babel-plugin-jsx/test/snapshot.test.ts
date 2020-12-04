@@ -1,6 +1,11 @@
 import { transform } from '@babel/core';
 import JSX, { Opts } from '../src';
 
+interface Test {
+  name: string;
+  from: string;
+}
+
 const transpile = (
   source: string, options: Opts = {},
 ) => new Promise((resolve, reject) => transform(
@@ -18,7 +23,7 @@ const transpile = (
   },
 ));
 
-const tests = [
+const tests: Test[] = [
   {
     name: 'input[type="checkbox"]',
     from: '<input type="checkbox" v-model={test} />',
@@ -142,6 +147,12 @@ const tests = [
     name: 'use "model" as the prop name',
     from: '<C v-model={[foo, "model"]} />',
   },
+  {
+    name: 'single expression, function expression',
+    from: `
+      <A>{() => "foo"}</A>
+    `,
+  },
 ];
 
 tests.forEach((
@@ -155,7 +166,7 @@ tests.forEach((
   );
 });
 
-const overridePropsTests = [{
+const overridePropsTests: Test[] = [{
   name: 'single',
   from: '<div {...a} />',
 }, {
