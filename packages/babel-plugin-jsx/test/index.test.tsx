@@ -504,18 +504,40 @@ test('reassign variable as component should work', () => {
 });
 
 describe('should support passing object slots via JSX children', () => {
-  test('single expression, object literal', () => {
-    const A = defineComponent({
-      setup(_, { slots }) {
-        return () => (
-          <span>
-            {slots.default?.()}
-            {slots.foo?.()}
-          </span>
-        );
+  const A = defineComponent({
+    setup(_, { slots }) {
+      return () => (
+        <span>
+          {slots.default?.()}
+          {slots.foo?.()}
+        </span>
+      );
+    },
+  });
+
+  test('single expression, variable', () => {
+    const slots = { default: () => 1, foo: () => 2 };
+
+    const wrapper = mount({
+      render() {
+        return <A>{slots}</A>;
       },
     });
 
+    expect(wrapper.html()).toBe('<span>12</span>');
+  });
+
+  test('single expression, object literal', () => {
+    const wrapper = mount({
+      render() {
+        return <A>{{ default: () => 1, foo: () => 2 }}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>12</span>');
+  });
+
+  test('single expression, object literal', () => {
     const wrapper = mount({
       render() {
         return <A>{{ default: () => 1, foo: () => 2 }}</A>;
@@ -526,12 +548,6 @@ describe('should support passing object slots via JSX children', () => {
   });
 
   test('single expression, non-literal value', () => {
-    const A = defineComponent({
-      setup(_, { slots }) {
-        return () => <span>{slots.default?.()}</span>;
-      },
-    });
-
     const foo = () => 1;
 
     const wrapper = mount({
@@ -540,15 +556,10 @@ describe('should support passing object slots via JSX children', () => {
       },
     });
 
-    expect(wrapper.html()).toBe('<span>1</span>');
+    expect(wrapper.html()).toBe('<span>1<!----></span>');
   });
 
   test('single expression, function expression', () => {
-    const A = defineComponent({
-      setup(_, { slots }) {
-        return () => <span>{slots.default?.()}</span>;
-      },
-    });
     const wrapper = mount({
       render() {
         return (
@@ -557,6 +568,6 @@ describe('should support passing object slots via JSX children', () => {
       },
     });
 
-    expect(wrapper.html()).toBe('<span>foo</span>');
+    expect(wrapper.html()).toBe('<span>foo<!----></span>');
   });
 });
