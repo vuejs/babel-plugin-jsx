@@ -86,7 +86,7 @@ export default ({ types }: typeof BabelCore) => ({
             });
             state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
               if (importMap.runtimeIsSlot) {
-                return types.cloneDeep(importMap.runtimeIsSlot);
+                return importMap.runtimeIsSlot;
               }
               const { name: isVNodeName } = state.get('isVNode')();
               const isSlot = path.scope.generateUidIdentifier('isSlot');
