@@ -11,11 +11,10 @@
     "url": "git+https://github.com/vuejs/jsx-next.git"
   },
   "scripts": {
-    "dev": "npm run build && webpack-dev-server",
     "build": "tsc",
     "lint": "eslint 'src/*.ts'",
-    "test": "npm run build && jest --coverage",
-    "prepublishOnly": "npm run build"
+    "test": "yarn build && jest --coverage",
+    "prepublishOnly": "yarn build"
   },
   "bugs": {
     "url": "https://github.com/vuejs/jsx-next/issues"
