@@ -1,5 +1,6 @@
 import * as t from '@babel/types';
 import * as BabelCore from '@babel/core';
+import template from '@babel/template';
 import syntaxJsx from '@babel/plugin-syntax-jsx';
 import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
@@ -23,7 +24,6 @@ export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
 
 const hasJSX = (parentPath: NodePath) => {
   let fileHasJSX = false;
-
   parentPath.traverse({
     JSXElement(path) { // skip ts error
       fileHasJSX = true;
@@ -62,6 +62,7 @@ export default ({ types }: typeof BabelCore) => ({
             'resolveDirective',
             'mergeProps',
             'createTextVNode',
+            'isVNode',
           ];
           if (isModule(path)) {
             // import { createVNode } from "vue";
@@ -82,6 +83,24 @@ export default ({ types }: typeof BabelCore) => ({
                 importMap[name] = identifier;
                 return identifier;
               });
+            });
+            state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
+              if (importMap.runtimeIsSlot) {
+                return importMap.runtimeIsSlot;
+              }
+              const { name: isVNodeName } = state.get('isVNode')();
+              const isSlot = path.scope.generateUidIdentifier('isSlot');
+              const ast = template.ast`
+                function ${isSlot.name}(s) {
+                  return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
+                }
+              `;
+              const lastImport = (path.get('body') as NodePath[]).filter((p) => p.isImportDeclaration()).pop();
+              if (lastImport) {
+                lastImport.insertAfter(ast);
+              }
+              importMap.runtimeIsSlot = isSlot;
+              return isSlot;
             });
           } else {
             // var _vue = require('vue');

@@ -1,6 +1,11 @@
 import { transform } from '@babel/core';
 import JSX, { Opts } from '../src';
 
+interface Test {
+  name: string;
+  from: string;
+}
+
 const transpile = (
   source: string, options: Opts = {},
 ) => new Promise((resolve, reject) => transform(
@@ -18,7 +23,7 @@ const transpile = (
   },
 ));
 
-const tests = [
+const tests: Test[] = [
   {
     name: 'input[type="checkbox"]',
     from: '<input type="checkbox" v-model={test} />',
@@ -155,7 +160,7 @@ tests.forEach((
   );
 });
 
-const overridePropsTests = [{
+const overridePropsTests: Test[] = [{
   name: 'single',
   from: '<div {...a} />',
 }, {
@@ -170,6 +175,37 @@ overridePropsTests.forEach((
     `override props ${name}`,
     async () => {
       expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name);
+    },
+  );
+});
+
+const slotsTests: Test[] = [
+  {
+    name: 'multiple expressions',
+    from: '<A>{foo}{bar}</A>',
+  },
+  {
+    name: 'single expression, function expression',
+    from: `
+      <A>{() => "foo"}</A>
+    `,
+  },
+  {
+    name: 'single expression, non-literal value: runtime check',
+    from: `
+      const foo = () => 1;
+      <A>{foo()}</A>;
+    `,
+  },
+];
+
+slotsTests.forEach(({
+  name, from,
+}) => {
+  test(
+    `passing object slots via JSX children ${name}`,
+    async () => {
+      expect(await transpile(from, { optimize: true })).toMatchSnapshot(name);
     },
   );
 });

@@ -1,5 +1,9 @@
 import {
-  reactive, ref, defineComponent, CSSProperties, ComponentPublicInstance,
+  reactive,
+  ref,
+  defineComponent,
+  CSSProperties,
+  ComponentPublicInstance,
 } from 'vue';
 import { shallowMount, mount, VueWrapper } from '@vue/test-utils';
 
@@ -66,9 +70,7 @@ describe('Transform JSX', () => {
 
     const wrapper = mount({
       render() {
-        return (
-          <Child class="parent" foo={1} />
-        );
+        return <Child class="parent" foo={1} />;
       },
     });
     expect(wrapper.classes()).toStrictEqual([]);
@@ -123,7 +125,7 @@ describe('Transform JSX', () => {
     const wrapper = shallowMount({
       setup() {
         // @ts-ignore
-        return () => <div class="a" {...{ class: 'b' } } />;
+        return () => <div class="a" {...{ class: 'b' }} />;
       },
     });
     expect(wrapper.classes().sort()).toEqual(['a', 'b'].sort());
@@ -145,10 +147,12 @@ describe('Transform JSX', () => {
     const wrapper = shallowMount({
       setup() {
         // @ts-ignore
-        return () => <div { ...propsA } { ...propsB } />;
+        return () => <div {...propsA} {...propsB} />;
       },
     });
-    expect(wrapper.html()).toBe('<div style="color: blue; width: 300px; height: 300px;"></div>');
+    expect(wrapper.html()).toBe(
+      '<div style="color: blue; width: 300px; height: 300px;"></div>',
+    );
   });
 
   test('JSXSpreadChild', () => {
@@ -259,7 +263,7 @@ describe('directive', () => {
         calls.push(1);
       },
     };
-    const wrapper = shallowMount(({
+    const wrapper = shallowMount({
       directives: { custom: customDirective },
       setup() {
         return () => (
@@ -272,28 +276,28 @@ describe('directive', () => {
           />
         );
       },
-    }));
+    });
     const node = wrapper.vm.$.subTree;
     expect(calls).toEqual(expect.arrayContaining([1]));
     expect(node.dirs).toHaveLength(1);
   });
 
   test('vHtml', () => {
-    const wrapper = shallowMount(({
+    const wrapper = shallowMount({
       setup() {
         return () => <h1 v-html="<div>foo</div>"></h1>;
       },
-    }));
+    });
     expect(wrapper.html()).toBe('<h1><div>foo</div></h1>');
   });
 
   test('vText', () => {
     const text = 'foo';
-    const wrapper = shallowMount(({
+    const wrapper = shallowMount({
       setup() {
         return () => <div v-text={text}></div>;
       },
-    }));
+    });
     expect(wrapper.html()).toBe('<div>foo</div>');
   });
 });
@@ -315,7 +319,11 @@ describe('slots', () => {
 
     const wrapper = mount({
       setup() {
-        return () => <A v-slots={{ foo: (val: string) => val }}><span>default</span></A>;
+        return () => (
+          <A v-slots={{ foo: (val: string) => val }}>
+            <span>default</span>
+          </A>
+        );
       },
     });
 
@@ -325,11 +333,7 @@ describe('slots', () => {
   test('without default', () => {
     const A = defineComponent({
       setup(_, { slots }) {
-        return () => (
-          <div>
-            {slots.foo?.('foo')}
-          </div>
-        );
+        return () => <div>{slots.foo?.('foo')}</div>;
       },
     });
 
@@ -362,7 +366,11 @@ describe('PatchFlags', () => {
         const onClick = () => {
           visible.value = false;
         };
-        return () => <div v-show={visible.value} onClick={onClick}>NEED_PATCH</div>;
+        return () => (
+          <div v-show={visible.value} onClick={onClick}>
+            NEED_PATCH
+          </div>
+        );
       },
     });
 
@@ -380,7 +388,9 @@ describe('PatchFlags', () => {
         };
 
         return () => (
-          <div {...bindProps} class="static" onClick={onClick}>full props</div>
+          <div {...bindProps} class="static" onClick={onClick}>
+            full props
+          </div>
         );
       },
     });
@@ -455,9 +465,7 @@ describe('variables outside slots', () => {
         const textarea = <textarea id="textarea" {...attrs} />;
         return (
           <A inc={this.inc}>
-            <div>
-              {textarea}
-            </div>
+            <div>{textarea}</div>
             <button id="button" onClick={this.inc}>+1</button>
           </A>
         );
@@ -480,7 +488,6 @@ test('reassign variable as component should work', () => {
   });
 
   /* eslint-disable */
-  // @ts-ignore
   const _a2 = 2;
   a = _a2;
   /* eslint-enable */
@@ -494,4 +501,73 @@ test('reassign variable as component should work', () => {
   });
 
   expect(wrapper.html()).toBe('<span>2</span>');
+});
+
+describe('should support passing object slots via JSX children', () => {
+  const A = defineComponent({
+    setup(_, { slots }) {
+      return () => (
+        <span>
+          {slots.default?.()}
+          {slots.foo?.()}
+        </span>
+      );
+    },
+  });
+
+  test('single expression, variable', () => {
+    const slots = { default: () => 1, foo: () => 2 };
+
+    const wrapper = mount({
+      render() {
+        return <A>{slots}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>12</span>');
+  });
+
+  test('single expression, object literal', () => {
+    const wrapper = mount({
+      render() {
+        return <A>{{ default: () => 1, foo: () => 2 }}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>12</span>');
+  });
+
+  test('single expression, object literal', () => {
+    const wrapper = mount({
+      render() {
+        return <A>{{ default: () => 1, foo: () => 2 }}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>12</span>');
+  });
+
+  test('single expression, non-literal value', () => {
+    const foo = () => 1;
+
+    const wrapper = mount({
+      render() {
+        return <A>{foo()}</A>;
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>1<!----></span>');
+  });
+
+  test('single expression, function expression', () => {
+    const wrapper = mount({
+      render() {
+        return (
+          <A>{() => 'foo'}</A>
+        );
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span>foo<!----></span>');
+  });
 });

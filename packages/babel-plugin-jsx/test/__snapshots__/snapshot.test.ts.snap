@@ -127,9 +127,53 @@ exports[`override props single: single 1`] = `
 _createVNode(\\"div\\", a, null);"
 `;
 
-exports[`reassign variable as component: reassign variable as component 1`] = `
+exports[`passing object slots via JSX children multiple expressions: multiple expressions 1`] = `
 "import { createVNode as _createVNode } from \\"vue\\";
+import { resolveComponent as _resolveComponent } from \\"vue\\";
+
+_createVNode(_resolveComponent(\\"A\\"), null, {
+  default: () => [foo, bar],
+  _: 1
+});"
+`;
+
+exports[`passing object slots via JSX children single expression, function expression: single expression, function expression 1`] = `
+"import { createVNode as _createVNode } from \\"vue\\";
+import { resolveComponent as _resolveComponent } from \\"vue\\";
+
+_createVNode(_resolveComponent(\\"A\\"), null, {
+  default: () => \\"foo\\"
+});"
+`;
+
+exports[`passing object slots via JSX children single expression, non-literal value: runtime check: single expression, non-literal value: runtime check 1`] = `
+"import { createVNode as _createVNode } from \\"vue\\";
+import { isVNode as _isVNode } from \\"vue\\";
+import { resolveComponent as _resolveComponent } from \\"vue\\";
+
+let _slot;
+
+function _isSlot(s) {
+  return typeof s === 'function' || Object.prototype.toString.call(s) === '[object Object]' && !_isVNode(s);
+}
+
+const foo = () => 1;
+
+_createVNode(_resolveComponent(\\"A\\"), null, _isSlot(_slot = foo()) ? _slot : {
+  default: () => [_slot],
+  _: 1
+});"
+`;
+
+exports[`reassign variable as component: reassign variable as component 1`] = `
+"import { isVNode as _isVNode } from \\"vue\\";
+import { createVNode as _createVNode } from \\"vue\\";
 import { defineComponent } from 'vue';
+
+function _isSlot(s) {
+  return typeof s === 'function' || Object.prototype.toString.call(s) === '[object Object]' && !_isVNode(s);
+}
+
 let a = 1;
 const A = defineComponent({
   setup(_, {
@@ -146,7 +190,7 @@ const _a = function () {
   return a;
 }();
 
-a = _createVNode(A, null, {
+a = _createVNode(A, null, _isSlot(a) ? a : {
   default: () => [_a],
   _: 2
 });"
