@@ -147,12 +147,6 @@ const tests: Test[] = [
     name: 'use "model" as the prop name',
     from: '<C v-model={[foo, "model"]} />',
   },
-  {
-    name: 'single expression, function expression',
-    from: `
-      <A>{() => "foo"}</A>
-    `,
-  },
 ];
 
 tests.forEach((
@@ -181,6 +175,37 @@ overridePropsTests.forEach((
     `override props ${name}`,
     async () => {
       expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name);
+    },
+  );
+});
+
+const slotsTests: Test[] = [
+  {
+    name: 'multiple expressions',
+    from: '<A>{foo}{bar}</A>',
+  },
+  {
+    name: 'single expression, function expression',
+    from: `
+      <A>{() => "foo"}</A>
+    `,
+  },
+  {
+    name: 'single expression, non-literal value: runtime check',
+    from: `
+      const foo = () => 1;
+      <A>{foo()}</A>;
+    `,
+  },
+];
+
+slotsTests.forEach(({
+  name, from,
+}) => {
+  test(
+    `passing object slots via JSX children ${name}`,
+    async () => {
+      expect(await transpile(from, { optimize: true })).toMatchSnapshot(name);
     },
   );
 });
