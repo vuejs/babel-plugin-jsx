@@ -213,6 +213,23 @@ const App = {
     return () => <A v-slots={slots} />;
   }
 };
+
+// or
+const App = {
+  setup() {
+    return () => (
+      <>
+        <A>
+          {
+            default: () => <div>A</div>,
+            foo: () => <span>B</span>
+          }
+        </A>
+        <B>{() => 'foo'}</B>
+      </>
+    );
+  }
+}
 ```
 
 ### In TypeScript
