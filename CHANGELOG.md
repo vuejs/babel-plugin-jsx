@@ -1,3 +1,10 @@
+## 1.0.0-rc.4
+
+`2020-12-08`
+
+- 🌟 support multiple v-models
+- 🌟 support support passing object slots via JSX children
+
 ## 1.0.0-rc.3
 
 `2020-09-14`
