@@ -161,11 +161,49 @@ v-model
 
 ```js
 h(A, {
-  'argument': val,
-  "argumentModifiers": {
-    "modifier": true
+  argument: val,
+  argumentModifiers: {
+    modifier: true
   },
-  "onUpdate:argument": $event => val = $event
+  'onUpdate:argument': $event => val = $event
+})
+```
+
+v-models
+
+> 注意: 你应该传递一个二维数组给 v-models。
+
+```jsx
+<A v-models={[[foo], [bar, 'bar']]} />
+```
+
+```jsx
+<A v-models={[[foo, 'foo'], [bar, 'bar']]} />
+```
+
+```jsx
+<A
+  v-models={[
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
+  ]}
+/>
+```
+
+会变编译成：
+
+```js
+h(A, {
+  modelValue: foo,
+  modelModifiers: {
+    modifier: true,
+  },
+  'onUpdate:modelValue': $event => foo = $event,
+  bar: bar,
+  barModifiers: {
+    modifier: true,
+  },
+  'onUpdate:bar': $event => bar = $event,
 })
 ```
 

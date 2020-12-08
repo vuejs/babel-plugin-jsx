@@ -161,11 +161,49 @@ Will compile to:
 
 ```js
 h(A, {
-  'argument': val,
-  "argumentModifiers": {
-    "modifier": true
+  argument: val,
+  argumentModifiers: {
+    modifier: true
   },
-  "onUpdate:argument": $event => val = $event
+  'onUpdate:argument': $event => val = $event
+})
+```
+
+v-models
+
+> Note: You should pass a Two-dimensional Arrays to v-models.
+
+```jsx
+<A v-models={[[foo], [bar, 'bar']]} />
+```
+
+```jsx
+<A v-models={[[foo, 'foo'], [bar, 'bar']]} />
+```
+
+```jsx
+<A
+  v-models={[
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
+  ]}
+/>
+```
+
+Will compile to:
+
+```js
+h(A, {
+  modelValue: foo,
+  modelModifiers: {
+    modifier: true,
+  },
+  'onUpdate:modelValue': $event => foo = $event,
+  bar: bar,
+  barModifiers: {
+    modifier: true,
+  },
+  'onUpdate:bar': $event => bar = $event,
 })
 ```
 
