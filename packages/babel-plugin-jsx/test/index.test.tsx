@@ -570,4 +570,24 @@ describe('should support passing object slots via JSX children', () => {
 
     expect(wrapper.html()).toBe('<span>foo<!----></span>');
   });
+
+  test('single expression, array map expression', () => {
+    const Test = defineComponent({
+      setup(_, { slots }) {
+        return () => <span>{slots.default?.()}</span>;
+      },
+    });
+
+    const data = ['A', 'B', 'C'];
+
+    const wrapper = mount({
+      render() {
+        return (
+          <div>{data.map((item: string) => <Test><span>{item}</span></Test>)}</div>
+        );
+      },
+    });
+
+    expect(wrapper.html()).toBe('<div><span><span>A</span></span><span><span>B</span></span><span><span>C</span></span></div>');
+  });
 });

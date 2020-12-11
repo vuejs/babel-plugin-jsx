@@ -137,38 +137,6 @@ _createVNode(_resolveComponent(\\"A\\"), null, {
 });"
 `;
 
-exports[`passing object slots via JSX children single expression, array map expression: single expression, array map expression 1`] = `
-"import { isVNode as _isVNode } from \\"vue\\";
-import { createVNode as _createVNode } from \\"vue\\";
-import { createTextVNode as _createTextVNode } from \\"vue\\";
-
-function _isSlot(s) {
-  return typeof s === 'function' || Object.prototype.toString.call(s) === '[object Object]' && !_isVNode(s);
-}
-
-const data = ['A', 'B', 'C'];
-const Test = defineComponent({
-  setup(_, {
-    slots
-  }) {
-    return () => _createVNode(\\"span\\", null, [slots.default(), _createTextVNode(\\" \\")]);
-  }
-
-});
-
-_createVNode(\\"div\\", null, [data.map(item => {
-  let _slot;
-
-  return _createVNode(Test, null, _isSlot(_slot = _createVNode(\\"span\\", null, _isSlot(item) ? item : {
-    default: () => [item],
-    _: 2
-  })) ? _slot : {
-    default: () => [_slot],
-    _: 2
-  });
-})]);"
-`;
-
 exports[`passing object slots via JSX children single expression, function expression: single expression, function expression 1`] = `
 "import { createVNode as _createVNode } from \\"vue\\";
 import { resolveComponent as _resolveComponent } from \\"vue\\";
