@@ -1,3 +1,9 @@
+## 1.0.0-rc.5
+
+`2020-12-12`
+
+- 🐞 wrong result in slots array map expression [#218](https://github.com/vuejs/jsx-next/pull/218)
+
 ## 1.0.0-rc.4
 
 `2020-12-08`
