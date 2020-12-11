@@ -121,8 +121,8 @@ const transformJSXElement = (
     } else if (
       t.isCallExpression(child) && child.loc && isComponent
     ) { // the element was generated and doesn't have location information
-      const slotId = path.scope.generateUidIdentifier('slot');
-      const scope = path.scope;
+      const { scope } = path;
+      const slotId = scope.generateUidIdentifier('slot');
       if (scope) {
         scope.push({
           id: slotId,

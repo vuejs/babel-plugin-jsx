@@ -571,23 +571,49 @@ describe('should support passing object slots via JSX children', () => {
     expect(wrapper.html()).toBe('<span>foo<!----></span>');
   });
 
-  test('single expression, array map expression', () => {
-    const Test = defineComponent({
-      setup(_, { slots }) {
-        return () => <span>{slots.default?.()}</span>;
+  test('single expression, function expression variable', () => {
+    const foo = () => 'foo';
+
+    const wrapper = mount({
+      render() {
+        return (
+          <A>{foo}</A>
+        );
       },
     });
 
+    expect(wrapper.html()).toBe('<span>foo<!----></span>');
+  });
+
+  test('single expression, array map expression', () => {
     const data = ['A', 'B', 'C'];
 
     const wrapper = mount({
       render() {
         return (
-          <div>{data.map((item: string) => <Test><span>{item}</span></Test>)}</div>
+          <>
+            {data.map((item) => <A><span>{item}</span></A>)}
+          </>
         );
       },
     });
 
-    expect(wrapper.html()).toBe('<div><span><span>A</span></span><span><span>B</span></span><span><span>C</span></span></div>');
+    expect(wrapper.html()).toBe('<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>');
+  });
+
+  test('xx', () => {
+    const data = ['A', 'B', 'C'];
+
+    const wrapper = mount({
+      render() {
+        return (
+          <>
+            {data.map((item) => <A>{() => <span>{item}</span>}</A>)}
+          </>
+        );
+      },
+    });
+
+    expect(wrapper.html()).toBe('<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>');
   });
 });
