@@ -197,6 +197,20 @@ const slotsTests: Test[] = [
       <A>{foo()}</A>;
     `,
   },
+  {
+    name: 'single expression, array map expression',
+    from: `
+      const data = ['A', 'B', 'C'];
+
+      const Test = defineComponent({
+        setup(_, { slots }) {
+          return () => <span>{slots.default()} </span>
+        },
+      });
+
+      <div>{data.map((item) => <Test><span>{item}</span></Test>)}</div>
+    `,
+  },
 ];
 
 slotsTests.forEach(({
