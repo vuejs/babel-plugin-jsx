@@ -258,10 +258,10 @@ const App = {
     return () => (
       <>
         <A>
-          {
+          {{
             default: () => <div>A</div>,
             foo: () => <span>B</span>
-          }
+          }}
         </A>
         <B>{() => 'foo'}</B>
       </>
