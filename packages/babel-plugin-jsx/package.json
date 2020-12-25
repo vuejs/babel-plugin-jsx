@@ -1,6 +1,6 @@
 {
   "name": "@vue/babel-plugin-jsx",
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0",
   "description": "Babel plugin for Vue 3.0 JSX",
   "author": "Amour1688 <lcz_1996@foxmail.com>",
   "homepage": "https://github.com/vuejs/jsx-next/tree/dev/packages/babel-plugin-jsx#readme",
@@ -28,7 +28,7 @@
     "@babel/template": "^7.0.0",
     "@babel/traverse": "^7.0.0",
     "@babel/types": "^7.0.0",
-    "@vue/babel-helper-vue-transform-on": "^1.0.0-rc.2",
+    "@vue/babel-helper-vue-transform-on": "^1.0.0",
     "camelcase": "^6.0.0",
     "html-tags": "^3.1.0",
     "svg-tags": "^1.0.0"
