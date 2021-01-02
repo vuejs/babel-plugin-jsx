@@ -269,6 +269,19 @@ const App = {
   }
 }
 ```
+> Note: In `jsx`, the default slots exposed by components should:
+```jsx
+const Component = {
+  setup(props, { slots }) {
+    return () => (
+      <div>
+        <span></span>
+        {slots.default?.()}
+      </div>
+    );
+  }
+}
+```
 
 ### In TypeScript
 
