@@ -269,6 +269,20 @@ const App = {
   }
 }
 ```
+> 注意: 在 `jsx` 中，组件暴露默认插槽应当：
+```jsx
+const Component = {
+  setup(props, { slots }) {
+    return () => (
+      <div>
+        <span></span>
+        {slots.default?.()}
+      </div>
+    );
+  }
+}
+```
+
 
 ### 在 TypeSript 中使用
 
