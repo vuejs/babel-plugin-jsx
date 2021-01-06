@@ -23,19 +23,24 @@
     "dist"
   ],
   "dependencies": {
+    "@babel/generator": "^7.12.11",
     "@babel/helper-module-imports": "^7.0.0",
+    "@babel/parser": "^7.12.11",
     "@babel/plugin-syntax-jsx": "^7.0.0",
     "@babel/template": "^7.0.0",
     "@babel/traverse": "^7.0.0",
     "@babel/types": "^7.0.0",
     "@vue/babel-helper-vue-transform-on": "^1.0.0",
     "camelcase": "^6.0.0",
+    "hash": "^0.2.1",
+    "hash-sum": "^2.0.0",
     "html-tags": "^3.1.0",
     "svg-tags": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
+    "@types/hash-sum": "^1.0.0",
     "@types/jest": "^26.0.7",
     "@types/svg-tags": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.0.1",

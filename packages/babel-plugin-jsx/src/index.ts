@@ -2,16 +2,18 @@ import * as t from '@babel/types';
 import * as BabelCore from '@babel/core';
 import template from '@babel/template';
 import syntaxJsx from '@babel/plugin-syntax-jsx';
+
 import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import tranformVueJSX from './transform-vue-jsx';
 import sugarFragment from './sugar-fragment';
+import injectHmr from './inject-hmr';
 
 export type State = {
   get: (name: string) => any;
   set: (name: string, value: any) => any;
   opts: Opts;
-}
+};
 
 export interface Opts {
   transformOn?: boolean;
@@ -22,10 +24,13 @@ export interface Opts {
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
 
+const HMR_INJECT_NAME = '$HotMoudleId$';
+
 const hasJSX = (parentPath: NodePath) => {
   let fileHasJSX = false;
   parentPath.traverse({
-    JSXElement(path) { // skip ts error
+    JSXElement(path) {
+      // skip ts error
       fileHasJSX = true;
       path.stop();
     },
@@ -44,6 +49,22 @@ export default ({ types }: typeof BabelCore) => ({
   visitor: {
     ...tranformVueJSX,
     ...sugarFragment,
+    VariableDeclaration(path: NodePath<t.VariableDeclaration>, state: State) {
+      if (
+        t.isVariableDeclarator(path.node.declarations[0]) &&
+        t.isIdentifier(
+          (path.node.declarations[0] as t.VariableDeclarator).id,
+        ) &&
+        ((path.node.declarations[0] as t.VariableDeclarator).id as t.Identifier)
+          .name === HMR_INJECT_NAME
+      ) {
+        state.set(
+          'HOT_MODULE_ID',
+          ((path.node.declarations[0] as t.VariableDeclarator)
+            .init as t.StringLiteral).value,
+        );
+      }
+    },
     Program: {
       enter(path: NodePath, state: State) {
         if (hasJSX(path)) {
@@ -72,14 +93,9 @@ export default ({ types }: typeof BabelCore) => ({
                 if (importMap[name]) {
                   return types.cloneDeep(importMap[name]);
                 }
-                const identifier = addNamed(
-                  path,
-                  name,
-                  'vue',
-                  {
-                    ensureLiveReference: true,
-                  },
-                );
+                const identifier = addNamed(path, name, 'vue', {
+                  ensureLiveReference: true,
+                });
                 importMap[name] = identifier;
                 return identifier;
               });
@@ -95,7 +111,9 @@ export default ({ types }: typeof BabelCore) => ({
                   return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
                 }
               `;
-              const lastImport = (path.get('body') as NodePath[]).filter((p) => p.isImportDeclaration()).pop();
+              const lastImport = (path.get('body') as NodePath[])
+                .filter((p) => p.isImportDeclaration())
+                .pop();
               if (lastImport) {
                 lastImport.insertAfter(ast);
               }
@@ -108,19 +126,21 @@ export default ({ types }: typeof BabelCore) => ({
             importNames.forEach((name) => {
               state.set(name, () => {
                 if (!sourceName) {
-                  sourceName = addNamespace(
-                    path,
-                    'vue',
-                    {
-                      ensureLiveReference: true,
-                    },
-                  ).name;
+                  sourceName = addNamespace(path, 'vue', {
+                    ensureLiveReference: true,
+                  }).name;
                 }
-                return t.memberExpression(t.identifier(sourceName), t.identifier(name));
+                return t.memberExpression(
+                  t.identifier(sourceName),
+                  t.identifier(name),
+                );
               });
             });
           }
         }
+      },
+      exit(path: NodePath<t.Program>, state: State) {
+        injectHmr(path, state);
       },
     },
   },
