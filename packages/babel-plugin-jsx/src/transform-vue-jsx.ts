@@ -85,6 +85,11 @@ const transformJSXElement = (
   let VNodeChild;
 
   if (children.length > 1 || slots) {
+    /*
+      <A v-slots={slots}>{a}{b}</A>
+        ---> {{ default: () => [a, b], ...slots }}
+        ---> {[a, b]}
+    */
     VNodeChild = isComponent ? t.objectExpression([
       !!children.length && t.objectProperty(
         t.identifier('default'),
@@ -101,7 +106,10 @@ const transformJSXElement = (
       ),
     ].filter(Boolean as any)) : t.arrayExpression(children);
   } else if (children.length === 1) {
-    const isObjectSlotsEnabled = state.opts.enableObjectSlots;
+    /*
+      <A>{a}</A> or <A>{() => a}</A>
+     */
+    const { enableObjectSlots = true } = state.opts;
     const child = children[0];
     const objectExpression = t.objectExpression([
       t.objectProperty(
@@ -114,7 +122,7 @@ const transformJSXElement = (
       ) as any,
     ].filter(Boolean));
     if (t.isIdentifier(child)) {
-      VNodeChild = isObjectSlotsEnabled ? t.conditionalExpression(
+      VNodeChild = enableObjectSlots ? t.conditionalExpression(
         t.callExpression(state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(), [child]),
         child,
         objectExpression,
@@ -122,8 +130,8 @@ const transformJSXElement = (
     } else if (
       t.isCallExpression(child) && child.loc && isComponent
     ) { // the element was generated and doesn't have location information
-      const { scope } = path;
-      if (isObjectSlotsEnabled) {
+      if (enableObjectSlots) {
+        const { scope } = path;
         const slotId = scope.generateUidIdentifier('slot');
         if (scope) {
           scope.push({

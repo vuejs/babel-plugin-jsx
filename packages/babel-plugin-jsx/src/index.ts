@@ -85,7 +85,8 @@ export default ({ types }: typeof BabelCore) => ({
                 return identifier;
               });
             });
-            if (state.opts.enableObjectSlots) {
+            const { enableObjectSlots = true } = state.opts;
+            if (enableObjectSlots) {
               state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
                 if (importMap.runtimeIsSlot) {
                   return importMap.runtimeIsSlot;
