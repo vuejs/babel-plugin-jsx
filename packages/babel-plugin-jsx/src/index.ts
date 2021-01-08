@@ -18,6 +18,7 @@ export interface Opts {
   optimize?: boolean;
   mergeProps?: boolean;
   isCustomElement?: (tag: string) => boolean;
+  enableObjectSlots?: boolean;
 }
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
@@ -70,7 +71,7 @@ export default ({ types }: typeof BabelCore) => ({
             importNames.forEach((name) => {
               state.set(name, () => {
                 if (importMap[name]) {
-                  return types.cloneDeep(importMap[name]);
+                  return types.cloneNode(importMap[name]);
                 }
                 const identifier = addNamed(
                   path,
@@ -84,24 +85,27 @@ export default ({ types }: typeof BabelCore) => ({
                 return identifier;
               });
             });
-            state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
-              if (importMap.runtimeIsSlot) {
-                return importMap.runtimeIsSlot;
-              }
-              const { name: isVNodeName } = state.get('isVNode')();
-              const isSlot = path.scope.generateUidIdentifier('isSlot');
-              const ast = template.ast`
-                function ${isSlot.name}(s) {
-                  return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
+            const { enableObjectSlots = true } = state.opts;
+            if (enableObjectSlots) {
+              state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
+                if (importMap.runtimeIsSlot) {
+                  return importMap.runtimeIsSlot;
                 }
-              `;
-              const lastImport = (path.get('body') as NodePath[]).filter((p) => p.isImportDeclaration()).pop();
-              if (lastImport) {
-                lastImport.insertAfter(ast);
-              }
-              importMap.runtimeIsSlot = isSlot;
-              return isSlot;
-            });
+                const { name: isVNodeName } = state.get('isVNode')();
+                const isSlot = path.scope.generateUidIdentifier('isSlot');
+                const ast = template.ast`
+                  function ${isSlot.name}(s) {
+                    return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
+                  }
+                `;
+                const lastImport = (path.get('body') as NodePath[]).filter((p) => p.isImportDeclaration()).pop();
+                if (lastImport) {
+                  lastImport.insertAfter(ast);
+                }
+                importMap.runtimeIsSlot = isSlot;
+                return isSlot;
+              });
+            }
           } else {
             // var _vue = require('vue');
             let sourceName = '';

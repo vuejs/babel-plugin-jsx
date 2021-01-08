@@ -42,6 +42,16 @@ import { resolveComponent as _resolveComponent } from \\"vue\\";
 _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"cus\\"), x]]);"
 `;
 
+exports[`disable object slot syntax with defaultSlot: defaultSlot 1`] = `
+"import { createVNode as _createVNode } from \\"vue\\";
+import { resolveComponent as _resolveComponent } from \\"vue\\";
+
+_createVNode(_resolveComponent(\\"Badge\\"), null, {
+  default: () => [slots.default()],
+  _: 1
+});"
+`;
+
 exports[`dynamic type in input: dynamic type in input 1`] = `
 "import { withDirectives as _withDirectives } from \\"vue\\";
 import { createVNode as _createVNode } from \\"vue\\";

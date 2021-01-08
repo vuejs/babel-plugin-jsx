@@ -155,7 +155,7 @@ tests.forEach((
   test(
     name,
     async () => {
-      expect(await transpile(from, { optimize: true })).toMatchSnapshot(name);
+      expect(await transpile(from, { optimize: true, enableObjectSlots: true })).toMatchSnapshot(name);
     },
   );
 });
@@ -205,7 +205,26 @@ slotsTests.forEach(({
   test(
     `passing object slots via JSX children ${name}`,
     async () => {
-      expect(await transpile(from, { optimize: true })).toMatchSnapshot(name);
+      expect(await transpile(from, { optimize: true, enableObjectSlots: true })).toMatchSnapshot(name);
+    },
+  );
+});
+
+const objectSlotsTests = [
+  {
+    name: 'defaultSlot',
+    from: '<Badge>{slots.default()}</Badge>',
+  },
+];
+
+objectSlotsTests.forEach(({
+  name, from,
+}) => {
+  test(
+    `disable object slot syntax with ${name}`,
+    async () => {
+      expect(await transpile(from, { optimize: true, enableObjectSlots: false }))
+        .toMatchSnapshot(name);
     },
   );
 });

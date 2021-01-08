@@ -82,10 +82,14 @@ const transformJSXElement = (
   const { optimize = false } = state.opts;
 
   const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
-
   let VNodeChild;
 
   if (children.length > 1 || slots) {
+    /*
+      <A v-slots={slots}>{a}{b}</A>
+        ---> {{ default: () => [a, b], ...slots }}
+        ---> {[a, b]}
+    */
     VNodeChild = isComponent ? t.objectExpression([
       !!children.length && t.objectProperty(
         t.identifier('default'),
@@ -102,51 +106,61 @@ const transformJSXElement = (
       ),
     ].filter(Boolean as any)) : t.arrayExpression(children);
   } else if (children.length === 1) {
+    /*
+      <A>{a}</A> or <A>{() => a}</A>
+     */
+    const { enableObjectSlots = true } = state.opts;
     const child = children[0];
+    const objectExpression = t.objectExpression([
+      t.objectProperty(
+        t.identifier('default'),
+        t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, [child]))),
+      ),
+      optimize && t.objectProperty(
+        t.identifier('_'),
+        t.numericLiteral(slotFlag),
+      ) as any,
+    ].filter(Boolean));
     if (t.isIdentifier(child)) {
-      VNodeChild = t.conditionalExpression(
+      VNodeChild = enableObjectSlots ? t.conditionalExpression(
         t.callExpression(state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(), [child]),
         child,
-        t.objectExpression([
-          t.objectProperty(
-            t.identifier('default'),
-            t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, [child]))),
-          ),
-          optimize && t.objectProperty(
-            t.identifier('_'),
-            t.numericLiteral(slotFlag),
-          ) as any,
-        ].filter(Boolean)),
-      );
+        objectExpression,
+      ) : objectExpression;
     } else if (
       t.isCallExpression(child) && child.loc && isComponent
     ) { // the element was generated and doesn't have location information
-      const { scope } = path;
-      const slotId = scope.generateUidIdentifier('slot');
-      if (scope) {
-        scope.push({
-          id: slotId,
-          kind: 'let',
-        });
-      }
-
-      VNodeChild = t.conditionalExpression(
-        t.callExpression(
-          state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(),
-          [t.assignmentExpression('=', slotId, child)],
-        ),
-        slotId,
-        t.objectExpression([
+      if (enableObjectSlots) {
+        const { scope } = path;
+        const slotId = scope.generateUidIdentifier('slot');
+        if (scope) {
+          scope.push({
+            id: slotId,
+            kind: 'let',
+          });
+        }
+        const alternate = t.objectExpression([
           t.objectProperty(
             t.identifier('default'),
             t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, [slotId]))),
-          ),
-          optimize && t.objectProperty(
+          ), optimize && t.objectProperty(
             t.identifier('_'),
             t.numericLiteral(slotFlag),
           ) as any,
-        ].filter(Boolean)),
-      );
+        ].filter(Boolean));
+        const assignment = t.assignmentExpression('=', slotId, child);
+        const condition = t.callExpression(
+          state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(),
+          [assignment],
+        );
+        VNodeChild = t.conditionalExpression(
+          condition,
+          slotId,
+          alternate,
+        );
+      } else {
+        VNodeChild = objectExpression;
+      }
     } else if (t.isFunctionExpression(child) || t.isArrowFunctionExpression(child)) {
       VNodeChild = t.objectExpression([
         t.objectProperty(
