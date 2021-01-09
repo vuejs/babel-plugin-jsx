@@ -1,3 +1,9 @@
+## 1.0.1
+
+`2021-01-09`
+
+- 🌟 support optional `enableObjectSlots` [#259]
+
 ## 1.0.0
 
 `2020-12-26`
