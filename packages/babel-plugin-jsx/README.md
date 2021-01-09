@@ -58,6 +58,15 @@ Default: `true`
 
 merge static and dynamic class / style attributes / onXXX handlers
 
+#### **enableObjectSlots**
+
+Type: `boolean`
+
+Default: `true`
+
+enable the object slots parsing by default. Setting to `false` allows a smaller output size if you don't use object slots in the code.
+
+
 ## Syntax
 
 ### Content

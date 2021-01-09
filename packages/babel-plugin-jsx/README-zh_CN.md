@@ -58,6 +58,15 @@ Default: `true`
 
 合并 class / style / onXXX handlers
 
+#### **enableObjectSlots**
+
+Type: `boolean`
+
+Default: `true`
+
+默认开启 `object slots` 语法解析。如果在你的代码中未使用`object slots` 语法，设置为`false`值可以获得体积更小的转译结果。
+
+
 ## 表达式
 
 ### 内容
