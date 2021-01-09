@@ -58,9 +58,18 @@ Default: `true`
 
 merge static and dynamic class / style attributes / onXXX handlers
 
+#### enableObjectSlots
+
+Type: `boolean`
+
+Default: `true`
+
+Whether to enable `object slots` (mentioned below the document) syntax". It might be useful in JSX, but it will add a lot of `_isSlot` condition expressions which increases your bundle size. And `v-slots` is still available even if `enableObjectSlots` is turned off.
+
 ## Syntax
 
 ### Content
+
 functional component
 
 ```jsx
@@ -73,12 +82,12 @@ with render
 const App = {
   render() {
     return <div>Vue 3.0</div>;
-  }
+  },
 };
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from 'vue';
+import { withModifiers, defineComponent } from "vue";
 
 const App = defineComponent({
   setup() {
@@ -89,12 +98,10 @@ const App = defineComponent({
     };
 
     return () => (
-      <div onClick={withModifiers(inc, ['self'])}>
-        {count.value}
-      </div>
+      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
     );
-  }
-})
+  },
+});
 ```
 
 Fragment
@@ -117,13 +124,8 @@ const App = () => <input type="email" />;
 with a dynamic binding:
 
 ```jsx
-const placeholderText = 'email';
-const App = () => (
-  <input
-    type="email"
-    placeholder={placeholderText}
-  />
-);
+const placeholderText = "email";
+const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
 ### Directives
@@ -150,11 +152,11 @@ v-model
 ```
 
 ```jsx
-<input v-model={[val, ['modifier']]} />
+<input v-model={[val, ["modifier"]]} />
 ```
 
 ```jsx
-<A v-model={[val, 'argument', ['modifier']]} />
+<A v-model={[val, "argument", ["modifier"]]} />
 ```
 
 Will compile to:
@@ -163,10 +165,10 @@ Will compile to:
 h(A, {
   argument: val,
   argumentModifiers: {
-    modifier: true
+    modifier: true,
   },
-  'onUpdate:argument': $event => val = $event
-})
+  "onUpdate:argument": ($event) => (val = $event),
+});
 ```
 
 v-models
@@ -174,18 +176,23 @@ v-models
 > Note: You should pass a Two-dimensional Arrays to v-models.
 
 ```jsx
-<A v-models={[[foo], [bar, 'bar']]} />
-```
-
-```jsx
-<A v-models={[[foo, 'foo'], [bar, 'bar']]} />
+<A v-models={[[foo], [bar, "bar"]]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, ['modifier']],
-    [bar, 'bar', ['modifier']],
+    [foo, "foo"],
+    [bar, "bar"],
+  ]}
+/>
+```
+
+```jsx
+<A
+  v-models={[
+    [foo, ["modifier"]],
+    [bar, "bar", ["modifier"]],
   ]}
 />
 ```
@@ -198,13 +205,13 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  'onUpdate:modelValue': $event => foo = $event,
+  "onUpdate:modelValue": ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  'onUpdate:bar': $event => bar = $event,
-})
+  "onUpdate:bar": ($event) => (bar = $event),
+});
 ```
 
 custom directive
@@ -213,31 +220,27 @@ custom directive
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => (
-      <a
-        v-custom={[val, 'arg', ['a', 'b']]}
-      />
-    );
+    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
   },
 };
 ```
 
-### Slot 
+### Slot
 
-> Note: In `jsx`, *`v-slot`* should be replace with **`v-slots`**
+> Note: In `jsx`, _`v-slot`_ should be replace with **`v-slots`**
 
 ```jsx
 const App = {
   setup() {
     const slots = {
-      foo: () => <span>B</span>
+      foo: () => <span>B</span>,
     };
     return () => (
       <A v-slots={slots}>
         <div>A</div>
       </A>
     );
-  }
+  },
 };
 
 // or
@@ -246,13 +249,13 @@ const App = {
   setup() {
     const slots = {
       default: () => <div>A</div>,
-      foo: () => <span>B</span>
+      foo: () => <span>B</span>,
     };
     return () => <A v-slots={slots} />;
-  }
+  },
 };
 
-// or
+// or you can use object slots when `enableObjectSlots` is not false.
 const App = {
   setup() {
     return () => (
@@ -260,14 +263,14 @@ const App = {
         <A>
           {{
             default: () => <div>A</div>,
-            foo: () => <span>B</span>
+            foo: () => <span>B</span>,
           }}
         </A>
-        <B>{() => 'foo'}</B>
+        <B>{() => "foo"}</B>
       </>
     );
-  }
-}
+  },
+};
 ```
 
 ### In TypeScript
