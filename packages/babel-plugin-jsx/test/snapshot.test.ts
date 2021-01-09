@@ -1,5 +1,5 @@
 import { transform } from '@babel/core';
-import JSX, { Opts } from '../src';
+import JSX, { VueJSXPluginOptions } from '../src';
 
 interface Test {
   name: string;
@@ -7,7 +7,7 @@ interface Test {
 }
 
 const transpile = (
-  source: string, options: Opts = {},
+  source: string, options: VueJSXPluginOptions = {},
 ) => new Promise((resolve, reject) => transform(
   source,
   {

@@ -4,11 +4,9 @@
     "rootDirs": ["./src"],
     "outDir": "dist",
     "downlevelIteration": true,
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "declaration": true
   },
-  "include": [
-    "src/**/*",
-    "global.d.ts"
-  ],
+  "include": ["src/**/*", "global.d.ts"],
   "exclude": ["node_modules"]
 }
