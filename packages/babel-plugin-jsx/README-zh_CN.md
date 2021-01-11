@@ -14,7 +14,7 @@
 npm install @vue/babel-plugin-jsx -D
 ```
 
-配置 Babel 
+配置 Babel
 
 ```js
 {
@@ -58,9 +58,14 @@ Default: `true`
 
 合并 class / style / onXXX handlers
 
+#### enableObjectSlots
+
+使用 `enableObjectSlots` (文档下面会提到)。虽然在 JSX 中比较好使，但是会增加一些 `_isSlot` 的运行时条件判断，这会增加你的项目体积。即使你关闭了 `enableObjectSlots`，`v-slots` 还是可以使用
+
 ## 表达式
 
 ### 内容
+
 函数式组件
 
 ```jsx
@@ -73,12 +78,12 @@ const App = () => <div></div>;
 const App = {
   render() {
     return <div>Vue 3.0</div>;
-  }
+  },
 };
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from 'vue';
+import { withModifiers, defineComponent } from "vue";
 
 const App = defineComponent({
   setup() {
@@ -89,11 +94,9 @@ const App = defineComponent({
     };
 
     return () => (
-      <div onClick={withModifiers(inc, ['self'])}>
-        {count.value}
-      </div>
+      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
     );
-  }
+  },
 });
 ```
 
@@ -117,13 +120,8 @@ const App = () => <input type="email" />;
 动态绑定:
 
 ```jsx
-const placeholderText = 'email';
-const App = () => (
-  <input
-    type="email"
-    placeholder={placeholderText}
-  />
-);
+const placeholderText = "email";
+const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
 ### 指令
@@ -150,11 +148,11 @@ v-model
 ```
 
 ```jsx
-<input v-model={[val, ['modifier']]} />
+<input v-model={[val, ["modifier"]]} />
 ```
 
 ```jsx
-<A v-model={[val, 'argument', ['modifier']]} />
+<A v-model={[val, "argument", ["modifier"]]} />
 ```
 
 会变编译成：
@@ -163,10 +161,10 @@ v-model
 h(A, {
   argument: val,
   argumentModifiers: {
-    modifier: true
+    modifier: true,
   },
-  'onUpdate:argument': $event => val = $event
-})
+  "onUpdate:argument": ($event) => (val = $event),
+});
 ```
 
 v-models
@@ -174,18 +172,23 @@ v-models
 > 注意: 你应该传递一个二维数组给 v-models。
 
 ```jsx
-<A v-models={[[foo], [bar, 'bar']]} />
-```
-
-```jsx
-<A v-models={[[foo, 'foo'], [bar, 'bar']]} />
+<A v-models={[[foo], [bar, "bar"]]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, ['modifier']],
-    [bar, 'bar', ['modifier']],
+    [foo, "foo"],
+    [bar, "bar"],
+  ]}
+/>
+```
+
+```jsx
+<A
+  v-models={[
+    [foo, ["modifier"]],
+    [bar, "bar", ["modifier"]],
   ]}
 />
 ```
@@ -198,13 +201,13 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  'onUpdate:modelValue': $event => foo = $event,
+  "onUpdate:modelValue": ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  'onUpdate:bar': $event => bar = $event,
-})
+  "onUpdate:bar": ($event) => (bar = $event),
+});
 ```
 
 自定义指令
@@ -213,31 +216,27 @@ h(A, {
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => (
-      <a
-        v-custom={[val, 'arg', ['a', 'b']]}
-      />
-    );
+    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
   },
 };
 ```
 
-### 插槽 
+### 插槽
 
-> 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 *`v-slot`*
+> 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 _`v-slot`_
 
 ```jsx
 const App = {
   setup() {
     const slots = {
-      foo: () => <span>B</span>
+      foo: () => <span>B</span>,
     };
     return () => (
       <A v-slots={slots}>
         <div>A</div>
       </A>
     );
-  }
+  },
 };
 
 // or
@@ -246,10 +245,10 @@ const App = {
   setup() {
     const slots = {
       default: () => <div>A</div>,
-      foo: () => <span>B</span>
+      foo: () => <span>B</span>,
     };
     return () => <A v-slots={slots} />;
-  }
+  },
 };
 
 // or
@@ -260,14 +259,14 @@ const App = {
         <A>
           {{
             default: () => <div>A</div>,
-            foo: () => <span>B</span>
+            foo: () => <span>B</span>,
           }}
         </A>
-        <B>{() => 'foo'}</B>
+        <B>{() => "foo"}</B>
       </>
     );
-  }
-}
+  },
+};
 ```
 
 ### 在 TypeSript 中使用
