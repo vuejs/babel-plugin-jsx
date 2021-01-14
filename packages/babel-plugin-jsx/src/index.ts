@@ -131,7 +131,7 @@ export default ({ types }: typeof BabelCore) => ({
           }
         }
       },
-      exit(path: NodePath) {
+      exit(path: NodePath<t.Program>) {
         const body = path.get('body') as NodePath[];
         const specifiersMap = new Map<string, t.ImportSpecifier>();
 
@@ -150,7 +150,6 @@ export default ({ types }: typeof BabelCore) => ({
         const specifiers = [...specifiersMap.keys()].map(
           (imported) => specifiersMap.get(imported)!,
         );
-        // @ts-ignore
         path.unshiftContainer('body', t.importDeclaration(specifiers, t.stringLiteral('vue')));
       },
     },
