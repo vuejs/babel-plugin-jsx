@@ -154,7 +154,7 @@ export default ({ types }: typeof BabelCore) => ({
         const specifiers = [...specifiersMap.keys()].map(
           (imported) => specifiersMap.get(imported)!,
         );
-        if (specifiers) {
+        if (specifiers.length) {
           path.unshiftContainer('body', t.importDeclaration(specifiers, t.stringLiteral('vue')));
         }
       },
