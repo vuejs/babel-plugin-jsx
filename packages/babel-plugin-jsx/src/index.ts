@@ -139,12 +139,16 @@ export default ({ types }: typeof BabelCore) => ({
           && nodePath.node.source.value === 'vue')
           .forEach((nodePath) => {
             const { specifiers } = nodePath.node as t.ImportDeclaration;
+            let shouldRemove = false;
             specifiers.forEach((specifier) => {
               if (t.isImportSpecifier(specifier) && t.isIdentifier(specifier.imported)) {
                 specifiersMap.set(specifier.imported.name, specifier);
+                shouldRemove = true;
               }
             });
-            nodePath.remove();
+            if (shouldRemove) {
+              nodePath.remove();
+            }
           });
 
         const specifiers = [...specifiersMap.keys()].map(

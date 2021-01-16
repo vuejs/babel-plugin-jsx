@@ -197,6 +197,7 @@ _withDirectives(_createVNode(\\"select\\", {
 
 exports[`should keep \`import * as Vue from "vue"\`: should keep \`import * as Vue from "vue"\` 1`] = `
 "import { createVNode as _createVNode, createTextVNode as _createTextVNode } from \\"vue\\";
+import * as Vue from 'vue';
 
 _createVNode(\\"div\\", null, [_createTextVNode(\\"Vue\\")]);"
 `;
