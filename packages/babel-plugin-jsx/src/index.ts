@@ -28,7 +28,7 @@ export interface VueJSXPluginOptions {
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
 
-const hasJSX = (parentPath: NodePath) => {
+const hasJSX = (parentPath: NodePath<t.Program>) => {
   let fileHasJSX = false;
   parentPath.traverse({
     JSXElement(path) { // skip ts error
@@ -51,7 +51,7 @@ export default ({ types }: typeof BabelCore) => ({
     ...tranformVueJSX,
     ...sugarFragment,
     Program: {
-      enter(path: NodePath, state: State) {
+      enter(path: NodePath<t.Program>, state: State) {
         if (hasJSX(path)) {
           const importNames = [
             'createVNode',
@@ -141,7 +141,7 @@ export default ({ types }: typeof BabelCore) => ({
             const { specifiers } = nodePath.node as t.ImportDeclaration;
             let shouldRemove = false;
             specifiers.forEach((specifier) => {
-              if (t.isImportSpecifier(specifier) && t.isIdentifier(specifier.imported)) {
+              if (!specifier.loc && t.isImportSpecifier(specifier) && t.isIdentifier(specifier.imported)) {
                 specifiersMap.set(specifier.imported.name, specifier);
                 shouldRemove = true;
               }
@@ -154,7 +154,9 @@ export default ({ types }: typeof BabelCore) => ({
         const specifiers = [...specifiersMap.keys()].map(
           (imported) => specifiersMap.get(imported)!,
         );
-        path.unshiftContainer('body', t.importDeclaration(specifiers, t.stringLiteral('vue')));
+        if (specifiers) {
+          path.unshiftContainer('body', t.importDeclaration(specifiers, t.stringLiteral('vue')));
+        }
       },
     },
   },

@@ -20,7 +20,8 @@ _createVNode(\\"div\\", {
 `;
 
 exports[`Without JSX should work: Without JSX should work 1`] = `
-"import { createVNode } from \\"vue\\";
+"import \\"vue\\";
+import { createVNode } from 'vue';
 createVNode('div', null, ['Without JSX should work']);"
 `;
 
@@ -153,7 +154,8 @@ _createVNode(_resolveComponent(\\"A\\"), null, _isSlot(_slot = foo()) ? _slot : 
 `;
 
 exports[`reassign variable as component: reassign variable as component 1`] = `
-"import { isVNode as _isVNode, createVNode as _createVNode, defineComponent } from \\"vue\\";
+"import { isVNode as _isVNode, createVNode as _createVNode } from \\"vue\\";
+import { defineComponent } from 'vue';
 
 function _isSlot(s) {
   return typeof s === 'function' || Object.prototype.toString.call(s) === '[object Object]' && !_isVNode(s);
@@ -209,7 +211,9 @@ _createVNode(\\"div\\", x, [_createTextVNode(\\"single\\")], 16);"
 `;
 
 exports[`specifiers should be merged into a single importDeclaration: specifiers should be merged into a single importDeclaration 1`] = `
-"import { createVNode, Fragment as _Fragment, vShow } from \\"vue\\";
+"import { createVNode as _createVNode } from \\"vue\\";
+import { createVNode, Fragment as _Fragment } from 'vue';
+import { vShow } from 'vue';
 
 _createVNode(_Fragment, null, null);"
 `;
