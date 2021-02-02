@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "private": true,
   "dependencies": {
-    "monaco-editor": "^0.20.0"
+    "monaco-editor": "^0.22.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
