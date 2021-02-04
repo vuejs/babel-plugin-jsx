@@ -7,6 +7,8 @@ import SlotFlags from './slotFlags';
 
 const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
 const FRAGMENT = 'Fragment';
+const KEEP_ALIVE = 'KeepAlive';
+
 /**
  * create Identifier
  * @param path NodePath
@@ -26,22 +28,11 @@ const isDirective = (src: string): boolean => src.startsWith('v-')
   || (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
 
 /**
- * Check if a Node is fragment
- * @param {*} path JSXIdentifier | JSXMemberExpression | JSXNamespacedName
+ * Should transformed to slots
+ * @param tag string
  * @returns boolean
  */
-const isFragment = (
-  path:
-    NodePath<t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName>,
-): boolean => {
-  if (path.isJSXIdentifier()) {
-    return path.node.name.endsWith(FRAGMENT);
-  }
-  if (path.isJSXMemberExpression()) {
-    return path.node.property.name.endsWith(FRAGMENT);
-  }
-  return false;
-};
+const shouldTransformedToSlots = (tag: string) => !(tag.endsWith(FRAGMENT) || tag === KEEP_ALIVE);
 
 /**
  * Check if a Node is a component
@@ -53,13 +44,13 @@ const isFragment = (
 const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
   const namePath = path.get('name');
 
-  if (t.isJSXMemberExpression(namePath)) {
-    return !isFragment(namePath); // For withCtx
+  if (namePath.isJSXMemberExpression()) {
+    return shouldTransformedToSlots(namePath.node.property.name); // For withCtx
   }
 
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
 
-  return !tag.endsWith(FRAGMENT) && !htmlTags.includes(tag) && !svgTags.includes(tag);
+  return shouldTransformedToSlots(tag) && !htmlTags.includes(tag) && !svgTags.includes(tag);
 };
 
 /**
@@ -181,8 +172,8 @@ const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | null => 
 const transformJSXExpressionContainer = (
   path: NodePath<t.JSXExpressionContainer>,
 ): (
-  t.Expression
-) => path.get('expression').node as t.Expression;
+    t.Expression
+  ) => path.get('expression').node as t.Expression;
 
 /**
  * Transform JSXSpreadChild
@@ -240,7 +231,7 @@ export {
   transformJSXText,
   transformJSXSpreadChild,
   transformJSXExpressionContainer,
-  isFragment,
+  shouldTransformedToSlots,
   FRAGMENT,
   walksScope,
   buildIIFE,

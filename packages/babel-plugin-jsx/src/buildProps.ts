@@ -27,8 +27,8 @@ const getJSXAttributeValue = (
   path: NodePath<t.JSXAttribute>,
   state: State,
 ): (
-  t.StringLiteral | t.Expression | null
-) => {
+    t.StringLiteral | t.Expression | null
+  ) => {
   const valuePath = path.get('value');
   if (valuePath.isJSXElement()) {
     return transformJSXElement(valuePath, state);
@@ -181,8 +181,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             hasStyleBinding = true;
           } else if (
             name !== 'key'
-              && !isDirective(name)
-              && name !== 'on'
+            && !isDirective(name)
+            && name !== 'on'
           ) {
             dynamicPropNames.add(name);
           }

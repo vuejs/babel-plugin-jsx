@@ -121,7 +121,7 @@ const transformJSXElement = (
         t.numericLiteral(slotFlag),
       ) as any,
     ].filter(Boolean));
-    if (t.isIdentifier(child)) {
+    if (t.isIdentifier(child) && isComponent) {
       VNodeChild = enableObjectSlots ? t.conditionalExpression(
         t.callExpression(state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(), [child]),
         child,
@@ -212,9 +212,7 @@ export { transformJSXElement };
 export default ({
   JSXElement: {
     exit(path: NodePath<t.JSXElement>, state: State) {
-      path.replaceWith(
-        t.inherits(transformJSXElement(path, state), path.node),
-      );
+      path.replaceWith(transformJSXElement(path, state));
     },
   },
 });

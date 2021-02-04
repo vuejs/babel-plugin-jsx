@@ -20,18 +20,15 @@ export default ({
   JSXFragment: {
     enter(path: NodePath<t.JSXElement>, state: State) {
       const fragmentCallee = createIdentifier(state, FRAGMENT);
-      path.replaceWith(
-        t.inherits(transformFragment(
-          path,
-          t.isIdentifier(fragmentCallee)
-            ? t.jsxIdentifier(fragmentCallee.name)
-            : t.jsxMemberExpression(
-              t.jsxIdentifier((fragmentCallee.object as t.Identifier).name),
-              t.jsxIdentifier((fragmentCallee.property as t.Identifier).name),
-            ),
-        ), path.node)
-        ,
-      );
+      path.replaceWith(transformFragment(
+        path,
+        t.isIdentifier(fragmentCallee)
+          ? t.jsxIdentifier(fragmentCallee.name)
+          : t.jsxMemberExpression(
+            t.jsxIdentifier((fragmentCallee.object as t.Identifier).name),
+            t.jsxIdentifier((fragmentCallee.property as t.Identifier).name),
+          ),
+      ));
     },
   },
 });
