@@ -1,3 +1,9 @@
+## 1.0.3
+
+`2021-02-06`
+
+- 🐞 the child nodes of `keepAlive` should not be transformed to slots
+
 ## 1.0.2
 
 `2021-01-17`
