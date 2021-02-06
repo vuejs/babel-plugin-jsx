@@ -97,6 +97,20 @@ _withDirectives(_createVNode(\\"input\\", {
 }, null, 8, [\\"onUpdate:modelValue\\"]), [[_vModelText, test]]);"
 `;
 
+exports[`named import specifier \`Keep Alive\`: named import specifier \`Keep Alive\` 1`] = `
+"import { createVNode as _createVNode, createTextVNode as _createTextVNode } from \\"vue\\";
+import { KeepAlive } from 'vue';
+
+_createVNode(KeepAlive, null, [_createTextVNode(\\"123\\")]);"
+`;
+
+exports[`namespace specifier \`Keep Alive\`: namespace specifier \`Keep Alive\` 1`] = `
+"import { createVNode as _createVNode, createTextVNode as _createTextVNode } from \\"vue\\";
+import * as Vue from 'vue';
+
+_createVNode(Vue.KeepAlive, null, [_createTextVNode(\\"123\\")]);"
+`;
+
 exports[`override props multiple: multiple 1`] = `
 "import { createVNode as _createVNode, resolveComponent as _resolveComponent } from \\"vue\\";
 

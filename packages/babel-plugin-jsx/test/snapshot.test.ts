@@ -147,6 +147,22 @@ const tests: Test[] = [
     name: 'use "model" as the prop name',
     from: '<C v-model={[foo, "model"]} />',
   },
+  {
+    name: 'named import specifier `Keep Alive`',
+    from: `
+      import { KeepAlive } from 'vue';
+
+      <KeepAlive>123</KeepAlive>
+    `,
+  },
+  {
+    name: 'namespace specifier `Keep Alive`',
+    from: `
+      import * as Vue from 'vue';
+
+      <Vue.KeepAlive>123</Vue.KeepAlive>
+    `,
+  },
 ];
 
 tests.forEach((
