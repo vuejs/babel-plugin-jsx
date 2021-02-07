@@ -1,0 +1,27 @@
+name: Issue Reply
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  reply-helper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: help wanted
+        if: github.event.label.name == 'help wanted'
+        uses: actions-cool/issues-helper@v2.1.1
+        with:
+          actions: 'create-comment'
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Hello @${{ github.event.issue.user.login }}. We totally like your proposal/feedback, welcome to send us a Pull Request for it. Please be sure to fill in the default template in the Pull Request, provide changelog/documentation/test cases if needed and make sure CI passed, we will review it soon. We appreciate your effort in advance and looking forward to your contribution!
+
+      - name: need reproduction
+        if: github.event.label.name == 'need reproduction'
+        uses: actions-cool/issues-helper@v2.1.1
+        with:
+          actions: 'create-comment'
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Hello @${{ github.event.issue.user.login }}. In order to facilitate location and troubleshooting, we need you to provide a realistic example. Please forking these link [codesandbox](https://codesandbox.io/) or provide your GitHub repository.
