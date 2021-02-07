@@ -24,4 +24,4 @@ jobs:
           actions: 'create-comment'
           issue-number: ${{ github.event.issue.number }}
           body: |
-            Hello @${{ github.event.issue.user.login }}. In order to facilitate location and troubleshooting, we need you to provide a realistic example. Please forking these link [codesandbox](https://codesandbox.io/) or provide your GitHub repository.
+            Hello @${{ github.event.issue.user.login }}. In order to facilitate location and troubleshooting, we need you to provide a realistic example. Please forking these link [codesandbox](https://codesandbox.io/s/magical-vaughan-byzhk?file=/src/App.jsx) or provide your GitHub repository.
