@@ -4,7 +4,7 @@ import template from '@babel/template';
 import syntaxJsx from '@babel/plugin-syntax-jsx';
 import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
-import tranformVueJSX from './transform-vue-jsx';
+import transformVueJSX from './transform-vue-jsx';
 import sugarFragment from './sugar-fragment';
 
 export type State = {
@@ -48,7 +48,7 @@ export default ({ types }: typeof BabelCore) => ({
   name: 'babel-plugin-jsx',
   inherits: syntaxJsx,
   visitor: {
-    ...tranformVueJSX,
+    ...transformVueJSX,
     ...sugarFragment,
     Program: {
       enter(path: NodePath<t.Program>, state: State) {
