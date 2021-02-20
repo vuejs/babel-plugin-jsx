@@ -210,6 +210,11 @@ _withDirectives(_createVNode(\\"select\\", {
 }, [_createTextVNode(\\"c\\")])], 8, [\\"onUpdate:modelValue\\"]), [[_vModelSelect, test]]);"
 `;
 
+exports[`set pragma to custom: custom 1`] = `
+"import { createTextVNode as _createTextVNode } from \\"vue\\";
+custom(\\"div\\", null, [_createTextVNode(\\"pragma\\")]);"
+`;
+
 exports[`should keep \`import * as Vue from "vue"\`: should keep \`import * as Vue from "vue"\` 1`] = `
 "import { createVNode as _createVNode, createTextVNode as _createTextVNode } from \\"vue\\";
 import * as Vue from 'vue';
@@ -237,6 +242,15 @@ exports[`textarea: textarea 1`] = `
 _withDirectives(_createVNode(\\"textarea\\", {
   \\"onUpdate:modelValue\\": $event => test = $event
 }, null, 8, [\\"onUpdate:modelValue\\"]), [[_vModelText, test]]);"
+`;
+
+exports[`use "@jsx" comment specify pragma: use "@jsx" comment specify pragma 1`] = `
+"import { createTextVNode as _createTextVNode } from \\"vue\\";
+
+/* @jsx custom */
+custom(\\"div\\", {
+  \\"id\\": \\"custom\\"
+}, [_createTextVNode(\\"Hello\\")]);"
 `;
 
 exports[`use "model" as the prop name: use "model" as the prop name 1`] = `

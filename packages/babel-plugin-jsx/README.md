@@ -66,6 +66,14 @@ Default: `true`
 
 Whether to enable `object slots` (mentioned below the document) syntax". It might be useful in JSX, but it will add a lot of `_isSlot` condition expressions which increase your bundle size. And `v-slots` is still available even if `enableObjectSlots` is turned off.
 
+#### pragma
+
+Type: `string`
+
+Default: `createVNode`
+
+Replace the function used when compiling JSX expressions.
+
 ## Syntax
 
 ### Content
