@@ -135,18 +135,18 @@ export default ({ types }: typeof BabelCore) => ({
             });
           }
 
-          if (state.opts.pragma) {
-            state.set('createVNode', () => t.identifier(state.opts.pragma!));
+          const { opts: { pragma = '' }, file } = state;
+
+          if (pragma) {
+            state.set('createVNode', () => t.identifier(pragma));
           }
 
-          const comments = state.file.ast.comments || [];
-
-          for (let i = 0; i < comments.length; i++) {
-            const comment = comments[i];
-
-            const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
-            if (jsxMatches) {
-              state.set('createVNode', () => t.identifier(jsxMatches[1]));
+          if (file.ast.comments) {
+            for (const comment of file.ast.comments) {
+              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+              if (jsxMatches) {
+                state.set('createVNode', () => t.identifier(jsxMatches[1]));
+              }
             }
           }
         }
