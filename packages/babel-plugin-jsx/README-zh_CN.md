@@ -62,6 +62,14 @@ Default: `true`
 
 使用 `enableObjectSlots` (文档下面会提到)。虽然在 JSX 中比较好使，但是会增加一些 `_isSlot` 的运行时条件判断，这会增加你的项目体积。即使你关闭了 `enableObjectSlots`，`v-slots` 还是可以使用
 
+#### pragma
+
+Type: `string`
+
+Default: `createVNode`
+
+替换编译JSX表达式的时候使用的函数
+
 ## 表达式
 
 ### 内容

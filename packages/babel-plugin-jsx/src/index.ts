@@ -11,6 +11,7 @@ export type State = {
   get: (name: string) => any;
   set: (name: string, value: any) => any;
   opts: VueJSXPluginOptions;
+  file: BabelCore.BabelFile
 }
 
 export interface VueJSXPluginOptions {
@@ -24,6 +25,8 @@ export interface VueJSXPluginOptions {
   isCustomElement?: (tag: string) => boolean;
   /** enable object slots syntax */
   enableObjectSlots?: boolean;
+  /** Replace the function used when compiling JSX expressions */
+  pragma?: string;
 }
 
 export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
@@ -43,6 +46,8 @@ const hasJSX = (parentPath: NodePath<t.Program>) => {
 
   return fileHasJSX;
 };
+
+const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 
 export default ({ types }: typeof BabelCore) => ({
   name: 'babel-plugin-jsx',
@@ -128,6 +133,21 @@ export default ({ types }: typeof BabelCore) => ({
                 return t.memberExpression(t.identifier(sourceName), t.identifier(name));
               });
             });
+          }
+
+          const { opts: { pragma = '' }, file } = state;
+
+          if (pragma) {
+            state.set('createVNode', () => t.identifier(pragma));
+          }
+
+          if (file.ast.comments) {
+            for (const comment of file.ast.comments) {
+              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+              if (jsxMatches) {
+                state.set('createVNode', () => t.identifier(jsxMatches[1]));
+              }
+            }
           }
         }
       },
