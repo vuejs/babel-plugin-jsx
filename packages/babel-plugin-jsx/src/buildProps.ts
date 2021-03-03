@@ -81,14 +81,19 @@ const dedupeProperties = (properties: t.ObjectProperty[] = [], mergeProps?: bool
   const knownProps = new Map<string, t.ObjectProperty>();
   const deduped: t.ObjectProperty[] = [];
   properties.forEach((prop) => {
-    const { value: name } = prop.key as t.StringLiteral;
-    const existing = knownProps.get(name);
-    if (existing) {
-      if (name === 'style' || name === 'class' || name.startsWith('on')) {
-        mergeAsArray(existing, prop);
+    if (t.isStringLiteral(prop.key)) {
+      const { value: name } = prop.key;
+      const existing = knownProps.get(name);
+      if (existing) {
+        if (name === 'style' || name === 'class' || name.startsWith('on')) {
+          mergeAsArray(existing, prop);
+        }
+      } else {
+        knownProps.set(name, prop);
+        deduped.push(prop);
       }
     } else {
-      knownProps.set(name, prop);
+      // v-model target with variable
       deduped.push(prop);
     }
   });
@@ -235,42 +240,58 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
           if (['models', 'model'].includes(directiveName)) {
             values.forEach((value, index) => {
-              const argVal = (args[index] as t.StringLiteral)?.value;
-              const propName = argVal || 'modelValue';
+              const propName = args[index];
+              // v-model target with variable
+              const isIdentifierProp = t.isIdentifier(propName);
 
               // must be v-model or v-models and is a component
               if (!directive) {
                 properties.push(
-                  t.objectProperty(t.stringLiteral(propName), value as any),
+                  t.objectProperty(t.isNullLiteral(propName)
+                    ? t.stringLiteral('modelValue') : propName, value as any, isIdentifierProp),
                 );
-                dynamicPropNames.add(propName);
+                if (!isIdentifierProp) {
+                  dynamicPropNames.add((propName as t.StringLiteral)?.value || 'modelValue');
+                }
 
                 if (modifiers[index]?.size) {
                   properties.push(
                     t.objectProperty(
-                      t.stringLiteral(`${argVal || 'model'}Modifiers`),
+                      isIdentifierProp
+                        ? t.binaryExpression('+', propName, t.stringLiteral('Modifiers'))
+                        : t.stringLiteral(`${(propName as t.StringLiteral)?.value || 'model'}Modifiers`),
                       t.objectExpression(
                         [...modifiers[index]].map((modifier) => t.objectProperty(
                           t.stringLiteral(modifier),
                           t.booleanLiteral(true),
                         )),
                       ),
+                      isIdentifierProp,
                     ),
                   );
                 }
               }
 
+              const updateName = isIdentifierProp
+                ? t.binaryExpression('+', t.stringLiteral('onUpdate'), propName)
+                : t.stringLiteral(`onUpdate:${(propName as t.StringLiteral)?.value || 'modelValue'}`);
+
               properties.push(
                 t.objectProperty(
-                  t.stringLiteral(`onUpdate:${propName}`),
+                  updateName,
                   t.arrowFunctionExpression(
                     [t.identifier('$event')],
                     t.assignmentExpression('=', value as any, t.identifier('$event')),
                   ),
+                  isIdentifierProp,
                 ),
               );
 
-              dynamicPropNames.add(`onUpdate:${propName}`);
+              if (!isIdentifierProp) {
+                dynamicPropNames.add((updateName as t.StringLiteral).value);
+              } else {
+                hasDynamicKeys = true;
+              }
             });
           }
         } else {
