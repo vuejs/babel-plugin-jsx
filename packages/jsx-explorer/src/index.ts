@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-unresolved
 import * as m from 'monaco-editor';
-import { h, createApp } from 'vue';
+import { watchEffect } from 'vue';
 import { transform } from '@babel/core';
 import babelPluginJsx from '../../babel-plugin-jsx/src';
+import { initOptions, compilerOptions } from './options';
 import './index.css';
 
 declare global {
@@ -15,17 +16,6 @@ declare global {
 
 window.init = () => {
   const { monaco } = window;
-  createApp(
-    () => h('h1', null, 'Vue JSX Explorer'),
-  ).mount('#header');
-
-  // @ts-ignore
-  if (module.hot) {
-  // @ts-ignore
-    module.hot.accept('../../babel-plugin-jsx/src', () => {
-      compile();
-    });
-  }
 
   const sharedEditorOptions: m.editor.IStandaloneEditorConstructionOptions = {
     theme: 'vs-dark',
@@ -61,14 +51,15 @@ window.init = () => {
     ...sharedEditorOptions,
   });
 
-  const compile = () => {
+  const reCompile = () => {
     const src = editor.getValue();
-    localStorage.setItem('state', src);
+    const state = JSON.stringify(compilerOptions);
+    localStorage.setItem('state', state);
     window.location.hash = encodeURIComponent(src);
     console.clear();
     transform(src, {
       babelrc: false,
-      plugins: [[babelPluginJsx, { transformOn: true, optimize: true }]],
+      plugins: [[babelPluginJsx, compilerOptions]],
       ast: true,
     }, (err, result = {}) => {
       const res = result!;
@@ -87,10 +78,11 @@ window.init = () => {
     output.layout();
   });
 
-  compile();
+  initOptions();
+  watchEffect(reCompile);
 
   // update compile output when input changes
-  editor.onDidChangeModelContent(debounce(compile));
+  editor.onDidChangeModelContent(debounce(reCompile));
 };
 
 function debounce<T extends(...args: any[]) => any>(
