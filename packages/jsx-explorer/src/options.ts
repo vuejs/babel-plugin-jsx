@@ -3,6 +3,8 @@ import {
 } from 'vue';
 import { VueJSXPluginOptions } from '../../babel-plugin-jsx/src';
 
+export { VueJSXPluginOptions };
+
 export const compilerOptions: VueJSXPluginOptions = reactive({
   mergeProps: true,
   optimize: false,

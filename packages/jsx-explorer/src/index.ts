@@ -4,7 +4,7 @@ import * as m from 'monaco-editor';
 import { watchEffect } from 'vue';
 import { transform } from '@babel/core';
 import babelPluginJsx from '../../babel-plugin-jsx/src';
-import { initOptions, compilerOptions } from './options';
+import { initOptions, compilerOptions, VueJSXPluginOptions } from './options';
 import './index.css';
 
 declare global {
@@ -14,8 +14,21 @@ declare global {
   }
 }
 
+interface PersistedState {
+  src: string
+  options: VueJSXPluginOptions
+}
+
 window.init = () => {
   const { monaco } = window;
+
+  const persistedState: PersistedState = JSON.parse(
+    decodeURIComponent(window.location.hash.slice(1))
+      || localStorage.getItem('state')
+      || '{}',
+  );
+
+  Object.assign(compilerOptions, persistedState.options);
 
   const sharedEditorOptions: m.editor.IStandaloneEditorConstructionOptions = {
     theme: 'vs-dark',
@@ -37,7 +50,7 @@ window.init = () => {
   });
 
   const editor = monaco.editor.create(document.getElementById('source')!, {
-    value: decodeURIComponent(window.location.hash.slice(1)) || localStorage.getItem('state') || 'const App = () => <div>Hello World</div>',
+    value: decodeURIComponent(window.location.hash.slice(1)) || persistedState.src || 'const App = () => <div>Hello World</div>',
     language: 'typescript',
     tabSize: 2,
     ...sharedEditorOptions,
