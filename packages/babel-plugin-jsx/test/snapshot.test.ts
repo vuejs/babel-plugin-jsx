@@ -170,6 +170,28 @@ const tests: Test[] = [
       <div id="custom">Hello</div>
     `,
   },
+  {
+    name: 'v-model target value support variable',
+    from: `
+      const foo = 'foo';
+      <>
+        <A v-model={[xx, foo]} />
+        <B v-model={[xx, ['a']]} />
+        <C v-model={[xx, foo, ['a']]} />
+      </>
+    `,
+  },
+  {
+    name: 'v-models target value support variable',
+    from: `
+      const foo = 'foo';
+      <>
+        <A v-models={[[xx, foo]]} />
+        <B v-models={[[xx, ['a']]]} />
+        <C v-models={[[xx, foo, ['a']]]} />
+      </>
+    `,
+  },
 ];
 
 tests.forEach((
