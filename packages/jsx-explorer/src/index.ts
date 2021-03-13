@@ -22,11 +22,7 @@ interface PersistedState {
 window.init = () => {
   const { monaco } = window;
 
-  const persistedState: PersistedState = JSON.parse(
-    decodeURIComponent(window.location.hash.slice(1))
-      || localStorage.getItem('state')
-      || '{}',
-  );
+  const persistedState: PersistedState = JSON.parse(localStorage.getItem('state') || '{}');
 
   Object.assign(compilerOptions, persistedState.options);
 
@@ -66,7 +62,10 @@ window.init = () => {
 
   const reCompile = () => {
     const src = editor.getValue();
-    const state = JSON.stringify(compilerOptions);
+    const state = JSON.stringify({
+      src,
+      options: compilerOptions,
+    });
     localStorage.setItem('state', state);
     window.location.hash = encodeURIComponent(src);
     console.clear();

@@ -174,21 +174,17 @@ const tests: Test[] = [
     name: 'v-model target value support variable',
     from: `
       const foo = 'foo';
+
+      const a = () => 'a';
+
+      const b = { c: 'c' };
       <>
         <A v-model={[xx, foo]} />
         <B v-model={[xx, ['a']]} />
         <C v-model={[xx, foo, ['a']]} />
-      </>
-    `,
-  },
-  {
-    name: 'v-models target value support variable',
-    from: `
-      const foo = 'foo';
-      <>
-        <A v-models={[[xx, foo]]} />
-        <B v-models={[[xx, ['a']]]} />
-        <C v-models={[[xx, foo, ['a']]]} />
+        <D v-model={[xx, foo === 'foo' ? 'a' : 'b', ['a']]} />
+        <E v-model={[xx, a(), ['a']]} />
+        <F v-model={[xx, b.c, ['a']]} />
       </>
     `,
   },

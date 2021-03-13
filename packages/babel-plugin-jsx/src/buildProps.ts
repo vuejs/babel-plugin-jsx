@@ -242,22 +242,23 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             values.forEach((value, index) => {
               const propName = args[index];
               // v-model target with variable
-              const isIdentifierProp = t.isIdentifier(propName);
+              // const isIdentifierProp = t.isIdentifier(propName);
+              const isDynamic = !t.isStringLiteral(propName) && !t.isNullLiteral(propName);
 
               // must be v-model or v-models and is a component
               if (!directive) {
                 properties.push(
                   t.objectProperty(t.isNullLiteral(propName)
-                    ? t.stringLiteral('modelValue') : propName, value as any, isIdentifierProp),
+                    ? t.stringLiteral('modelValue') : propName, value as any, isDynamic),
                 );
-                if (!isIdentifierProp) {
+                if (!isDynamic) {
                   dynamicPropNames.add((propName as t.StringLiteral)?.value || 'modelValue');
                 }
 
                 if (modifiers[index]?.size) {
                   properties.push(
                     t.objectProperty(
-                      isIdentifierProp
+                      isDynamic
                         ? t.binaryExpression('+', propName, t.stringLiteral('Modifiers'))
                         : t.stringLiteral(`${(propName as t.StringLiteral)?.value || 'model'}Modifiers`),
                       t.objectExpression(
@@ -266,13 +267,13 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                           t.booleanLiteral(true),
                         )),
                       ),
-                      isIdentifierProp,
+                      isDynamic,
                     ),
                   );
                 }
               }
 
-              const updateName = isIdentifierProp
+              const updateName = isDynamic
                 ? t.binaryExpression('+', t.stringLiteral('onUpdate'), propName)
                 : t.stringLiteral(`onUpdate:${(propName as t.StringLiteral)?.value || 'modelValue'}`);
 
@@ -283,11 +284,11 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                     [t.identifier('$event')],
                     t.assignmentExpression('=', value as any, t.identifier('$event')),
                   ),
-                  isIdentifierProp,
+                  isDynamic,
                 ),
               );
 
-              if (!isIdentifierProp) {
+              if (!isDynamic) {
                 dynamicPropNames.add((updateName as t.StringLiteral).value);
               } else {
                 hasDynamicKeys = true;

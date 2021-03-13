@@ -34,7 +34,7 @@ const parseModifiers = (value: t.ArrayExpression): string[] => (
 const parseDirectives = (params: {
   name: string,
   path: NodePath<t.JSXAttribute>,
-  value: t.StringLiteral | t.Expression | null,
+  value: t.Expression | null,
   state: State,
   tag: Tag,
   isComponent: boolean
@@ -42,7 +42,7 @@ const parseDirectives = (params: {
   const {
     name, path, value, state, tag, isComponent,
   } = params;
-  const args: Array<t.StringLiteral | t.Identifier | t.NullLiteral> = [];
+  const args: Array<t.Expression | t.NullLiteral> = [];
   const vals: t.Expression[] = [];
   const modifiersSet: Set<string>[] = [];
   const underscoreModifiers = name.split('_');
@@ -77,7 +77,7 @@ const parseDirectives = (params: {
         const [first, second, third] = elements;
         let modifiers = underscoreModifiers;
 
-        if (t.isStringLiteral(second) || t.isIdentifier(second)) {
+        if (second && !t.isArrayExpression(second) && !t.isSpreadElement(second)) {
           args.push(second);
           modifiers = parseModifiers(third as t.ArrayExpression);
         } else if (t.isArrayExpression(second)) {
