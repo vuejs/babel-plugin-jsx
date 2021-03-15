@@ -49,11 +49,11 @@ const transformJSXSpreadAttribute = (
   mergeProps: boolean,
   args: (t.ObjectProperty | t.Expression | t.SpreadElement)[],
 ) => {
-  const argument = path.get('argument') as NodePath<t.ObjectExpression>;
-  const { properties } = argument.node;
+  const argument = path.get('argument') as NodePath<t.ObjectExpression | t.Identifier>;
+  const properties = t.isObjectExpression(argument.node) ? argument.node.properties : undefined;
   if (!properties) {
     if (argument.isIdentifier()) {
-      walksScope(nodePath, (argument as any).name, SlotFlags.DYNAMIC);
+      walksScope(nodePath, (argument.node as t.Identifier).name, SlotFlags.DYNAMIC);
     }
     args.push(mergeProps ? argument.node : t.spreadElement(argument.node));
   } else if (mergeProps) {
