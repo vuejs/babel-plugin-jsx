@@ -4,6 +4,7 @@ import {
   defineComponent,
   CSSProperties,
   ComponentPublicInstance,
+  Transition,
 } from 'vue';
 import { shallowMount, mount, VueWrapper } from '@vue/test-utils';
 
@@ -415,31 +416,37 @@ describe('variables outside slots', () => {
   A.inheritAttrs = false;
 
   test('internal', async () => {
-    const wrapper = mount(defineComponent({
-      data() {
-        return {
-          val: 0,
-        };
-      },
-      methods: {
-        inc() {
-          this.val += 1;
+    const wrapper = mount(
+      defineComponent({
+        data() {
+          return {
+            val: 0,
+          };
         },
-      },
-      render() {
-        const attrs = {
-          innerHTML: `${this.val}`,
-        };
-        return (
-          <A inc={this.inc}>
-            <div>
-              <textarea id="textarea" {...attrs} />
-            </div>
-            <button id="button" onClick={this.inc}>+1</button>
-          </A>
-        );
-      },
-    }));
+        methods: {
+          inc() {
+            this.val += 1;
+          },
+        },
+        render() {
+          const attrs = {
+            innerHTML: `${this.val}`,
+          };
+          return (
+            <A inc={this.inc}>
+              <div>
+                <Transition name="foo">
+                  <textarea id="textarea" {...attrs} />
+                </Transition>
+              </div>
+              <button id="button" onClick={this.inc}>
+                +1
+              </button>
+            </A>
+          );
+        },
+      }),
+    );
 
     expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
     await wrapper.get('#button').trigger('click');
@@ -466,7 +473,9 @@ describe('variables outside slots', () => {
         return (
           <A inc={this.inc}>
             <div>{textarea}</div>
-            <button id="button" onClick={this.inc}>+1</button>
+            <button id="button" onClick={this.inc}>
+              +1
+            </button>
           </A>
         );
       },
@@ -562,9 +571,7 @@ describe('should support passing object slots via JSX children', () => {
   test('single expression, function expression', () => {
     const wrapper = mount({
       render() {
-        return (
-          <A>{() => 'foo'}</A>
-        );
+        return <A>{() => 'foo'}</A>;
       },
     });
 
@@ -576,9 +583,7 @@ describe('should support passing object slots via JSX children', () => {
 
     const wrapper = mount({
       render() {
-        return (
-          <A>{foo}</A>
-        );
+        return <A>{foo}</A>;
       },
     });
 
@@ -592,13 +597,19 @@ describe('should support passing object slots via JSX children', () => {
       render() {
         return (
           <>
-            {data.map((item) => <A><span>{item}</span></A>)}
+            {data.map((item) => (
+              <A>
+                <span>{item}</span>
+              </A>
+            ))}
           </>
         );
       },
     });
 
-    expect(wrapper.html()).toBe('<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>');
+    expect(wrapper.html()).toBe(
+      '<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>',
+    );
   });
 
   test('xx', () => {
@@ -608,12 +619,16 @@ describe('should support passing object slots via JSX children', () => {
       render() {
         return (
           <>
-            {data.map((item) => <A>{() => <span>{item}</span>}</A>)}
+            {data.map((item) => (
+              <A>{() => <span>{item}</span>}</A>
+            ))}
           </>
         );
       },
     });
 
-    expect(wrapper.html()).toBe('<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>');
+    expect(wrapper.html()).toBe(
+      '<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>',
+    );
   });
 });
