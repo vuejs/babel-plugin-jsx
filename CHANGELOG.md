@@ -1,3 +1,9 @@
+## 1.0.4
+
+`2021-03-29`
+
+- 🌟 add pragma option and support @jsx annotation [#322]
+
 ## 1.0.3
 
 `2021-02-06`
