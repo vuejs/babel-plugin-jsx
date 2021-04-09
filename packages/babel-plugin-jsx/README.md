@@ -237,7 +237,7 @@ const App = {
 
 > Note: In `jsx`, _`<slot></slot>`_ should be replace with **`slots.default?.()`**
 
-template
+*.vue
 
 ```html
 <template>
