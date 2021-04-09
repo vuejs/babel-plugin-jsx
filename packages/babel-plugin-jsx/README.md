@@ -136,43 +136,6 @@ const placeholderText = "email";
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
-### Slot
-
-template
-
-```html
-<template>
-  <h1><slot>Title</slot></h1>
-  <h2><slot name="subtitle"></slot></h2>
-</template>
-```
-
-functional component
-
-```jsx
-const App = (props, { slots }) => (
-  <>
-    <h1>{ slots.default ? slots.default() : 'Title' }</h1>
-    <h2>{ slots.subtitle?.() }</h2>
-  </>
-);
-```
-
-with render
-
-```jsx
-import { defineComponent } from "vue";
-
-const App = defineComponent({
-  setup: () => () => (
-    <>
-      <h1>{ slots.default ? slots.default() : 'Title' }</h1>
-      <h2>{ slots.subtitle?.() }</h2>
-    </>
-  )
-});
-```
-
 ### Directives
 
 v-show
@@ -271,6 +234,56 @@ const App = {
 ```
 
 ### Slot
+
+> Note: In `jsx`, _`<slot></slot>`_ should be replace with **`slots.default?.()`**
+
+template
+
+```html
+<template>
+  <h1><slot>foo</slot></h1>
+  <h2><slot name="bar"></slot></h2>
+</template>
+```
+
+JSX
+
+```jsx
+import { defineComponent } from "vue";
+
+const App = defineComponent({
+  setup(props, { slots }) {
+    return () => (
+      <>
+        <h1>{ slots.default ? slots.default() : 'foo' }</h1>
+        <h2>{ slots.bar?.() }</h2>
+      </>
+    )
+  }
+});
+```
+
+if only have default slot
+
+```jsx
+const Child = (props, { slots }) => <h1>{ slots.default?.() }</h1>;
+
+// in Parent component
+<Child>bar</Child>
+```
+
+but if has named slots
+
+```jsx
+const Child = (props, { slots }) => (
+  <>
+    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
+    <h2>{ slots.bar?.() }</h2>
+  </>
+);
+```
+
+we need `v-slots` directive
 
 > Note: In `jsx`, _`v-slot`_ should be replace with **`v-slots`**
 

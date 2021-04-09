@@ -131,40 +131,6 @@ const App = () => <input type="email" />;
 const placeholderText = "email";
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
-### Slot
-
-template
-
-```html
-<template>
-  <h1><slot>Title</slot></h1>
-  <h2><slot name="subtitle"></slot></h2>
-</template>
-```
-
-函数式组件
-
-```jsx
-const App = (props, { slots }) => (
-  <>
-    <h1>{ slots.default ? slots.default() : 'Title' }</h1>
-    <h2>{ slots.subtitle?.() }</h2>
-  </>
-);
-```
-
-在 deineComponent 中使用
-
-```jsx
-import { defineComponent } from "vue";
-
-const App = defineComponent((props, { slots }) => () => (
-  <>
-    <h1>{ slots.default ? slots.default() : 'Title' }</h1>
-    <h2>{ slots.subtitle?.() }</h2>
-  </>
-));
-```
 
 ### 指令
 
@@ -264,6 +230,58 @@ const App = {
 ```
 
 ### 插槽
+
+
+> 注意: 在 `jsx` 中, 应该使用 **`slots.default?.()`** 来代替 _`<slot></slot>`_
+
+在 `*.vue` 文件中的写法
+
+```html
+<template>
+  <h1><slot>foo</slot></h1>
+  <h2><slot name="bar"></slot></h2>
+</template>
+```
+
+在 `JSX` 中的写法
+
+```jsx
+import { defineComponent } from "vue";
+
+const App = defineComponent({
+  setup(props, { slots }) {
+    return () => (
+      <>
+        <h1>{ slots.default ? slots.default() : 'foo' }</h1>
+        <h2>{ slots.bar?.() }</h2>
+      </>
+    )
+  }
+});
+```
+
+如果只有一个默认插槽的话
+
+```jsx
+// 子组件
+const Child = (props, { slots }) => <h1>{ slots.default?.() }</h1>;
+
+// 在父组件中可以写成这样
+<Child>bar</Child>
+```
+
+但如果有其他具名插槽的话
+
+```jsx
+const Child = (props, { slots }) => (
+  <>
+    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
+    <h2>{ slots.bar?.() }</h2>
+  </>
+);
+```
+
+那么我们就需要用到 `v-slots` 这个指令了
 
 > 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 _`v-slot`_
 
