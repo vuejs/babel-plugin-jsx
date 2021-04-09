@@ -136,6 +136,43 @@ const placeholderText = "email";
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
+### Slot
+
+template
+
+```html
+<template>
+  <h1><slot>Title</slot></h1>
+  <h2><slot name="subtitle"></slot></h2>
+</template>
+```
+
+functional component
+
+```jsx
+const App = (props, { slots }) => (
+  <>
+    <h1>{ slots.default ? slots.default() : 'Title' }</h1>
+    <h2>{ slots.subtitle?.() }</h2>
+  </>
+);
+```
+
+with render
+
+```jsx
+import { defineComponent } from "vue";
+
+const App = defineComponent({
+  setup: () => () => (
+    <>
+      <h1>{ slots.default ? slots.default() : 'Title' }</h1>
+      <h2>{ slots.subtitle?.() }</h2>
+    </>
+  )
+});
+```
+
 ### Directives
 
 v-show

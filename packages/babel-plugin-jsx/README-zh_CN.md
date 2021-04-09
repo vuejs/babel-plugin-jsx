@@ -131,6 +131,40 @@ const App = () => <input type="email" />;
 const placeholderText = "email";
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
+### Slot
+
+template
+
+```html
+<template>
+  <h1><slot>Title</slot></h1>
+  <h2><slot name="subtitle"></slot></h2>
+</template>
+```
+
+函数式组件
+
+```jsx
+const App = (props, { slots }) => (
+  <>
+    <h1>{ slots.default ? slots.default() : 'Title' }</h1>
+    <h2>{ slots.subtitle?.() }</h2>
+  </>
+);
+```
+
+在 deineComponent 中使用
+
+```jsx
+import { defineComponent } from "vue";
+
+const App = defineComponent((props, { slots }) => () => (
+  <>
+    <h1>{ slots.default ? slots.default() : 'Title' }</h1>
+    <h2>{ slots.subtitle?.() }</h2>
+  </>
+));
+```
 
 ### 指令
 
