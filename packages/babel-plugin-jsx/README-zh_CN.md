@@ -326,6 +326,17 @@ const App = {
           <strong>Element Plus</strong>
         </a>
       </td>
+      <td align="center">
+        <a target="_blank" href="https://github.com/leezng/vue-json-pretty">
+          <img
+            height="32"
+            style="vertical-align: -0.32em; margin-right: 8px;"
+            src="https://raw.githubusercontent.com/leezng/vue-json-pretty/master/static/logo.svg"
+          />
+          <br>
+          <strong>Vue Json Pretty</strong>
+        </a>
+      </td>
     </tr>
   </tbody>
 </table>
