@@ -234,10 +234,17 @@ const App = {
 > 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 _`v-slot`_
 
 ```jsx
+const A = (props, { slots }) => (
+  <>
+    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
+    <h2>{ slots.bar?.() }</h2>
+  </>
+);
+
 const App = {
   setup() {
     const slots = {
-      foo: () => <span>B</span>,
+      bar: () => <span>B</span>,
     };
     return () => (
       <A v-slots={slots}>
@@ -253,7 +260,7 @@ const App = {
   setup() {
     const slots = {
       default: () => <div>A</div>,
-      foo: () => <span>B</span>,
+      bar: () => <span>B</span>,
     };
     return () => <A v-slots={slots} />;
   },
@@ -267,7 +274,7 @@ const App = {
         <A>
           {{
             default: () => <div>A</div>,
-            foo: () => <span>B</span>,
+            bar: () => <span>B</span>,
           }}
         </A>
         <B>{() => "foo"}</B>
