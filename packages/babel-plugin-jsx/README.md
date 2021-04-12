@@ -235,63 +235,20 @@ const App = {
 
 ### Slot
 
-> Note: In `jsx`, _`<slot></slot>`_ should be replace with **`slots.default?.()`**
-
-*.vue
-
-```html
-<template>
-  <h1><slot>foo</slot></h1>
-  <h2><slot name="bar"></slot></h2>
-</template>
-```
-
-JSX
+> Note: In `jsx`, _`v-slot`_ should be replace with **`v-slots`**
 
 ```jsx
-import { defineComponent } from "vue";
-
-const App = defineComponent({
-  setup(props, { slots }) {
-    return () => (
-      <>
-        <h1>{ slots.default ? slots.default() : 'foo' }</h1>
-        <h2>{ slots.bar?.() }</h2>
-      </>
-    )
-  }
-});
-```
-
-if only have default slot
-
-```jsx
-const Child = (props, { slots }) => <h1>{ slots.default?.() }</h1>;
-
-// in Parent component
-<Child>bar</Child>
-```
-
-but if has named slots
-
-```jsx
-const Child = (props, { slots }) => (
+const A = (props, { slots }) => (
   <>
     <h1>{ slots.default ? slots.default() : 'foo' }</h1>
     <h2>{ slots.bar?.() }</h2>
   </>
 );
-```
 
-we need `v-slots` directive
-
-> Note: In `jsx`, _`v-slot`_ should be replace with **`v-slots`**
-
-```jsx
 const App = {
   setup() {
     const slots = {
-      foo: () => <span>B</span>,
+      bar: () => <span>B</span>,
     };
     return () => (
       <A v-slots={slots}>
@@ -307,7 +264,7 @@ const App = {
   setup() {
     const slots = {
       default: () => <div>A</div>,
-      foo: () => <span>B</span>,
+      bar: () => <span>B</span>,
     };
     return () => <A v-slots={slots} />;
   },
@@ -321,7 +278,7 @@ const App = {
         <A>
           {{
             default: () => <div>A</div>,
-            foo: () => <span>B</span>,
+            bar: () => <span>B</span>,
           }}
         </A>
         <B>{() => "foo"}</B>
