@@ -1,3 +1,9 @@
+## 1.0.5
+
+`2021-04-18`
+
+- 🐞 using v-slots without children should not be spread
+
 ## 1.0.4
 
 `2021-03-29`
