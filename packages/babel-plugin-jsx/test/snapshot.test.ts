@@ -23,7 +23,7 @@ const transpile = (
   },
 ));
 
-const tests: Test[] = [
+[
   {
     name: 'input[type="checkbox"]',
     from: '<input type="checkbox" v-model={test} />',
@@ -188,9 +188,11 @@ const tests: Test[] = [
       </>
     `,
   },
-];
-
-tests.forEach((
+  {
+    name: 'using v-slots without children should not be spread',
+    from: '<A v-slots={slots} />',
+  },
+].forEach((
   { name, from },
 ) => {
   test(

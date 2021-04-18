@@ -90,21 +90,25 @@ const transformJSXElement = (
         ---> {{ default: () => [a, b], ...slots }}
         ---> {[a, b]}
     */
-    VNodeChild = isComponent ? t.objectExpression([
-      !!children.length && t.objectProperty(
-        t.identifier('default'),
-        t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, children))),
-      ),
-      ...(slots ? (
-        t.isObjectExpression(slots)
-          ? (slots! as t.ObjectExpression).properties
-          : [t.spreadElement(slots!)]
-      ) : []),
-      optimize && t.objectProperty(
-        t.identifier('_'),
-        t.numericLiteral(slotFlag),
-      ),
-    ].filter(Boolean as any)) : t.arrayExpression(children);
+    VNodeChild = isComponent
+      ? children.length
+        ? t.objectExpression([
+          !!children.length && t.objectProperty(
+            t.identifier('default'),
+            t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, children))),
+          ),
+          ...(slots ? (
+            t.isObjectExpression(slots)
+              ? (slots! as t.ObjectExpression).properties
+              : [t.spreadElement(slots!)]
+          ) : []),
+          optimize && t.objectProperty(
+            t.identifier('_'),
+            t.numericLiteral(slotFlag),
+          ),
+        ].filter(Boolean as any))
+        : slots
+      : t.arrayExpression(children);
   } else if (children.length === 1) {
     /*
       <A>{a}</A> or <A>{() => a}</A>

@@ -262,6 +262,12 @@ _createVNode(_resolveComponent(\\"C\\"), {
 }, null, 8, [\\"model\\", \\"onUpdate:model\\"]);"
 `;
 
+exports[`using v-slots without children should not be spread: using v-slots without children should not be spread 1`] = `
+"import { createVNode as _createVNode, resolveDirective as _resolveDirective, resolveComponent as _resolveComponent } from \\"vue\\";
+
+_createVNode(_resolveComponent(\\"A\\"), null, slots);"
+`;
+
 exports[`v-model target value support variable: v-model target value support variable 1`] = `
 "import { createVNode as _createVNode, resolveComponent as _resolveComponent, Fragment as _Fragment } from \\"vue\\";
 const foo = 'foo';
