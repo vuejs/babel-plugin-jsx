@@ -242,8 +242,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             values.forEach((value, index) => {
               const propName = args[index];
               // v-model target with variable
-              // const isIdentifierProp = t.isIdentifier(propName);
-              const isDynamic = !t.isStringLiteral(propName) && !t.isNullLiteral(propName);
+              const isDynamic = propName && !t.isStringLiteral(propName) && !t.isNullLiteral(propName);
 
               // must be v-model or v-models and is a component
               if (!directive) {

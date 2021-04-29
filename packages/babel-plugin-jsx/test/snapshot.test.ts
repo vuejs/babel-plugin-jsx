@@ -140,6 +140,20 @@ const transpile = (
     `,
   },
   {
+    name: 'custom directive',
+    from: `
+      <>
+        <A v-xxx={x} />
+        <A v-xxx={[x]} />
+        <A v-xxx={[x, 'y']} />
+        <A v-xxx={[x, 'y', ['a', 'b']]} />
+        <A v-xxx={[x, ['a', 'b']]} />
+        <A v-xxx={[x, y, ['a', 'b']]} />
+        <A v-xxx={[x, y, ['a', 'b']]} />
+      </>
+    `,
+  },
+  {
     name: 'vModels',
     from: '<C v-models={[[foo, ["modifier"]], [bar, "bar", ["modifier1", "modifier2"]]]} />',
   },

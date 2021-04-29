@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
-import { State, ExcludesBoolean } from '.';
+import { State } from '.';
 
 export type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
 
@@ -24,7 +24,7 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
   return typePath ? typePath.get('value').node : null;
 };
 
-const parseModifiers = (value: t.ArrayExpression): string[] => (
+const parseModifiers = (value: any): string[] => (
   t.isArrayExpression(value)
     ? value.elements
       .map((el) => (t.isStringLiteral(el) ? el.value : ''))
@@ -64,37 +64,38 @@ const parseDirectives = (params: {
   const shouldResolve = !['html', 'text', 'model', 'models'].includes(directiveName)
     || (isVModel && !isComponent);
 
-  if (['models', 'model'].includes(directiveName)) {
-    if (t.isArrayExpression(value)) {
-      const elementsList = isVModels ? value.elements! : [value];
+  let modifiers = underscoreModifiers;
 
-      elementsList.forEach((element) => {
-        if (isVModels && !t.isArrayExpression(element)) {
-          throw new Error('You should pass a Two-dimensional Arrays to v-models');
-        }
+  if (t.isArrayExpression(value)) {
+    const elementsList = isVModels ? value.elements! : [value];
 
-        const { elements } = element as t.ArrayExpression;
-        const [first, second, third] = elements;
-        let modifiers = underscoreModifiers;
+    elementsList.forEach((element) => {
+      if (isVModels && !t.isArrayExpression(element)) {
+        throw new Error('You should pass a Two-dimensional Arrays to v-models');
+      }
 
-        if (second && !t.isArrayExpression(second) && !t.isSpreadElement(second)) {
-          args.push(second);
-          modifiers = parseModifiers(third as t.ArrayExpression);
-        } else if (t.isArrayExpression(second)) {
-          args.push(t.nullLiteral());
-          modifiers = parseModifiers(second);
-        } else {
-          // work as v-model={[value]} or v-models={[[value]]}
+      const { elements } = element as t.ArrayExpression;
+      const [first, second, third] = elements;
+
+      if (second && !t.isArrayExpression(second) && !t.isSpreadElement(second)) {
+        args.push(second);
+        modifiers = parseModifiers(third as t.ArrayExpression);
+      } else if (t.isArrayExpression(second)) {
+        if (!shouldResolve) {
           args.push(t.nullLiteral());
         }
-        modifiersSet.push(new Set(modifiers));
-        vals.push(first as t.Expression);
-      });
-    } else if (isVModel) {
-      // work as v-model={value}
-      args.push(t.nullLiteral());
-      modifiersSet.push(new Set(underscoreModifiers));
-    }
+        modifiers = parseModifiers(second);
+      } else if (!shouldResolve) {
+        // work as v-model={[value]} or v-models={[[value]]}
+        args.push(t.nullLiteral());
+      }
+      modifiersSet.push(new Set(modifiers));
+      vals.push(first as t.Expression);
+    });
+  } else if (isVModel && !shouldResolve) {
+    // work as v-model={value}
+    args.push(t.nullLiteral());
+    modifiersSet.push(new Set(underscoreModifiers));
   } else {
     modifiersSet.push(new Set(underscoreModifiers));
   }
@@ -107,7 +108,9 @@ const parseDirectives = (params: {
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
       vals[0] || value,
-      !!modifiersSet[0]?.size && t.unaryExpression('void', t.numericLiteral(0), true),
+      modifiersSet[0]?.size
+        ? args[0] || t.unaryExpression('void', t.numericLiteral(0), true)
+        : args[0],
       !!modifiersSet[0]?.size && t.objectExpression(
         [...modifiersSet[0]].map(
           (modifier) => t.objectProperty(
@@ -116,7 +119,7 @@ const parseDirectives = (params: {
           ),
         ),
       ),
-    ].filter(Boolean as any as ExcludesBoolean) : undefined,
+    ].filter(Boolean) as t.Expression[] : undefined,
   };
 };
 

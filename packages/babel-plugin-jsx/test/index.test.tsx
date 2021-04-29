@@ -257,32 +257,6 @@ describe('Transform JSX', () => {
 });
 
 describe('directive', () => {
-  test('custom', () => {
-    const calls: number[] = [];
-    const customDirective = {
-      mounted() {
-        calls.push(1);
-      },
-    };
-    const wrapper = shallowMount({
-      directives: { custom: customDirective },
-      setup() {
-        return () => (
-          <a
-            v-custom={{
-              value: 123,
-              modifiers: { modifier: true },
-              arg: 'arg',
-            }}
-          />
-        );
-      },
-    });
-    const node = wrapper.vm.$.subTree;
-    expect(calls).toEqual(expect.arrayContaining([1]));
-    expect(node.dirs).toHaveLength(1);
-  });
-
   test('vHtml', () => {
     const wrapper = shallowMount({
       setup() {

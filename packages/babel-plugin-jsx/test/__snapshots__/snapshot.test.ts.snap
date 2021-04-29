@@ -36,6 +36,24 @@ exports[`custom directive: custom directive 1`] = `
 _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"cus\\"), x]]);"
 `;
 
+exports[`custom directive: custom directive 2`] = `
+"import { withDirectives as _withDirectives, createVNode as _createVNode, resolveDirective as _resolveDirective, resolveComponent as _resolveComponent, Fragment as _Fragment } from \\"vue\\";
+
+_createVNode(_Fragment, null, [_withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x]]), _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x]]), _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x, 'y']]), _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x, 'y', {
+  a: true,
+  b: true
+}]]), _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x, void 0, {
+  a: true,
+  b: true
+}]]), _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x, y, {
+  a: true,
+  b: true
+}]]), _withDirectives(_createVNode(_resolveComponent(\\"A\\"), null, null, 512), [[_resolveDirective(\\"xxx\\"), x, y, {
+  a: true,
+  b: true
+}]])]);"
+`;
+
 exports[`disable object slot syntax with defaultSlot: defaultSlot 1`] = `
 "import { createVNode as _createVNode, resolveComponent as _resolveComponent } from \\"vue\\";
 
