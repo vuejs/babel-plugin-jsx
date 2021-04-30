@@ -108,9 +108,7 @@ const parseDirectives = (params: {
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
       vals[0] || value,
-      modifiersSet[0]?.size
-        ? args[0] || t.unaryExpression('void', t.numericLiteral(0), true)
-        : args[0],
+      args[0] || (modifiersSet[0]?.size && t.unaryExpression('void', t.numericLiteral(0), true)),
       !!modifiersSet[0]?.size && t.objectExpression(
         [...modifiersSet[0]].map(
           (modifier) => t.objectProperty(
