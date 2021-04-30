@@ -13,7 +13,7 @@ export const enum PatchFlags {
   NEED_PATCH = 1 << 9,
   DYNAMIC_SLOTS = 1 << 10,
   HOISTED = -1,
-  BAIL = -2
+  BAIL = -2,
 }
 
 // dev only flag -> name mapping

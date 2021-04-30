@@ -24,5 +24,7 @@ jobs:
             - ~/.cache/yarn
           key: v2-dependencies-{{ checksum "yarn.lock" }}
 
+      - run: yarn lint
+
       # run tests!
       - run: yarn test

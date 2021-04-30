@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
-import { State } from '.';
+import type { State } from './interface';
 
 export type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
 
@@ -108,7 +108,9 @@ const parseDirectives = (params: {
     directive: shouldResolve ? [
       resolveDirective(path, state, tag, directiveName),
       vals[0] || value,
-      args[0] || (modifiersSet[0]?.size && t.unaryExpression('void', t.numericLiteral(0), true)),
+      modifiersSet[0]?.size
+        ? args[0] || t.unaryExpression('void', t.numericLiteral(0), true)
+        : args[0],
       !!modifiersSet[0]?.size && t.objectExpression(
         [...modifiersSet[0]].map(
           (modifier) => t.objectProperty(

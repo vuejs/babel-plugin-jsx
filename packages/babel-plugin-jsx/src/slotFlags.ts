@@ -18,7 +18,7 @@ const enum SlotFlags {
    * received. This has to be refined at runtime, when the child's vnode
    * is being created (in `normalizeChildren`)
    */
-  FORWARDED = 3
+  FORWARDED = 3,
 }
 
 export default SlotFlags;
