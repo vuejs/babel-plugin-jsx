@@ -1,7 +1,7 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
-import { State } from '.';
+import type { State } from './interface';
 
 export type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
 

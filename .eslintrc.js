@@ -5,6 +5,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
+    project: './tsconfig.json',
   },
   env: {
     browser: true,
@@ -15,8 +16,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import'],
   extends: [
-    'eslint-config-airbnb-base',
-    'plugin:@typescript-eslint/recommended',
+    'airbnb-typescript/base',
   ],
   rules: {
     'no-nested-ternary': [0],
@@ -27,19 +27,8 @@ module.exports = {
     'import/no-extraneous-dependencies': [0],
     'consistent-return': [0],
     'no-bitwise': [0],
+    '@typescript-eslint/no-use-before-define': [0],
     'prefer-destructuring': [2, { array: false }],
-    'import/extensions': [0],
-    '@typescript-eslint/ban-ts-comment': [0],
-    '@typescript-eslint/explicit-module-boundary-types': [0],
-    '@typescript-eslint/no-explicit-any': [0],
-    '@typescript-eslint/no-non-null-assertion': [0],
     'max-len': [0],
-  },
-  settings: {
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      },
-    },
   },
 };

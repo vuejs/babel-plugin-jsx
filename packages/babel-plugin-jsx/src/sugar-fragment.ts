@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
-import { State } from '.';
+import type { State } from './interface';
 import { createIdentifier, FRAGMENT } from './utils';
 
 const transformFragment = (
