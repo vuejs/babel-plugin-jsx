@@ -1,3 +1,9 @@
+## 1.0.6
+
+`2021-05-02`
+
+- 🐞 fix wrong compilation result of custom directives
+
 ## 1.0.5
 
 `2021-04-18`
