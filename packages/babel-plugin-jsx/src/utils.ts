@@ -51,7 +51,7 @@ export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>, state: Sta
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
 
   if (state.opts.isCustomElement && state.opts.isCustomElement(tag)) {
-    return false
+    return false;
   }
 
   return shouldTransformedToSlots(tag) && !htmlTags.includes(tag) && !svgTags.includes(tag);
