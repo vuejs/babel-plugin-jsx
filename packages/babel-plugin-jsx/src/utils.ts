@@ -41,7 +41,7 @@ export const shouldTransformedToSlots = (tag: string) => !(tag.endsWith(FRAGMENT
  * @param path JSXOpeningElement
  * @returns boolean
  */
-export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean => {
+export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>, state: State): boolean => {
   const namePath = path.get('name');
 
   if (namePath.isJSXMemberExpression()) {
@@ -49,6 +49,10 @@ export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>): boolean =
   }
 
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
+
+  if (state.opts.isCustomElement && state.opts.isCustomElement(tag)) {
+    return false;
+  }
 
   return shouldTransformedToSlots(tag) && !htmlTags.includes(tag) && !svgTags.includes(tag);
 };

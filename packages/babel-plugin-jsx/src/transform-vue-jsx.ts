@@ -46,7 +46,7 @@ const getJSXAttributeValue = (
 
 const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   const tag = getTag(path, state);
-  const isComponent = checkIsComponent(path.get('openingElement'));
+  const isComponent = checkIsComponent(path.get('openingElement'), state);
   const props = path.get('openingElement').get('attributes');
   const directives: t.ArrayExpression[] = [];
   const dynamicPropNames = new Set<string>();
