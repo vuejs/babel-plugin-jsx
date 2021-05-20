@@ -304,3 +304,17 @@ pragmaTests.forEach(({
     },
   );
 });
+
+const isCustomElementTests = [{
+  name: 'isCustomElement',
+  from: '<foo><span>foo</span></foo>'
+}]
+
+isCustomElementTests.forEach(({name, from }) => {
+  test(
+    name,
+    async () => {
+      expect(await transpile(from, { isCustomElement: tag => tag === 'foo' })).toMatchSnapshot(name);
+    }
+  )
+})

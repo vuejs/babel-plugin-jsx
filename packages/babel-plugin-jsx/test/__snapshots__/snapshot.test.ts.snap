@@ -115,6 +115,12 @@ _withDirectives(_createVNode(\\"input\\", {
 }, null, 8, [\\"onUpdate:modelValue\\"]), [[_vModelText, test]]);"
 `;
 
+exports[`isCustomElement: isCustomElement 1`] = `
+"import { createVNode as _createVNode, createTextVNode as _createTextVNode } from \\"vue\\";
+
+_createVNode(\\"foo\\", null, [_createVNode(\\"span\\", null, [_createTextVNode(\\"foo\\")])]);"
+`;
+
 exports[`named import specifier \`Keep Alive\`: named import specifier \`Keep Alive\` 1`] = `
 "import { createVNode as _createVNode, createTextVNode as _createTextVNode } from \\"vue\\";
 import { KeepAlive } from 'vue';
