@@ -5,6 +5,14 @@ module.exports = {
   ],
   plugins: [
     /* eslint-disable-next-line global-require */
-    [require('./dist/index.js'), { optimize: true, isCustomElement: (tag) => /^x-/.test(tag) }],
+    [
+      !process.env.MODE
+        ? require('./dist/index.js')
+        : require('./dist/vue-jsx.min.js'),
+      {
+        optimize: true,
+        isCustomElement: (tag) => /^x-/.test(tag)
+      },
+    ],
   ],
 };
