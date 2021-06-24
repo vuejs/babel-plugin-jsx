@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc && rollup -c rollup.config.js",
     "lint": "eslint 'src/*.ts'",
-    "test": "yarn build && jest --coverage",
+    "test": "yarn build && jest --coverage && jest --clearCache && MODE=umd jest --coverage",
     "prepublishOnly": "yarn build"
   },
   "bugs": {
