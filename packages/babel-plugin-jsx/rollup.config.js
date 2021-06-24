@@ -4,12 +4,14 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: `dist/babel-plugin-transform-vue-jsx-next.min.js`,
+      file: `dist/vue-jsx.min.js`,
       format: 'umd',
-      name: `babel-plugin-transform-vue-jsx-next`,
+      name: `vue-jsx`,
     },
   ],
   plugins: [
-    esbuild(),
+    esbuild({
+      minify: true,
+    }),
   ],
 }

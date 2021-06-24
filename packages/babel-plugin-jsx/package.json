@@ -6,6 +6,7 @@
   "homepage": "https://github.com/vuejs/jsx-next/tree/dev/packages/babel-plugin-jsx#readme",
   "license": "MIT",
   "main": "dist/index.js",
+  "unpkg": "dist/vue-jsx.min.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/jsx-next.git"
