@@ -20,9 +20,11 @@ import {
 import SlotFlags from './slotFlags';
 import { PatchFlags } from './patchFlags';
 import parseDirectives from './parseDirectives';
-import type { State, ExcludesBoolean, Slots } from './interface';
+import type { State, Slots } from './interface';
 
 const xlinkRE = /^xlink([A-Z])/;
+
+type ExcludesBoolean = <T>(x: T | false | true) => x is T;
 
 const getJSXAttributeValue = (
   path: NodePath<t.JSXAttribute>,

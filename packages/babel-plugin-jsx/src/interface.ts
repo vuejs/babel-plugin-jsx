@@ -24,5 +24,3 @@ export interface VueJSXPluginOptions {
   /** Replace the function used when compiling JSX expressions */
   pragma?: string;
 }
-
-export type ExcludesBoolean = <T>(x: T | false | true) => x is T;
