@@ -11,7 +11,7 @@
     "url": "git+https://github.com/vuejs/jsx-next.git"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "lint": "eslint 'src/*.ts'",
     "test": "yarn build && jest --coverage",
     "prepublishOnly": "yarn build"
