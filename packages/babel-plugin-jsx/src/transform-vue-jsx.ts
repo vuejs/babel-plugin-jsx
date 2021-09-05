@@ -78,7 +78,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   let hasDynamicKeys = false;
 
   const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] = [];
-  const { mergeProps = true } = state.opts;
+  const { mergeProps = true, optimize = false } = state.opts;
   props
     .forEach((prop) => {
       if (prop.isJSXAttribute()) {
@@ -286,6 +286,22 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       propsExpression = (properties[0] as unknown as t.SpreadElement).argument;
     } else {
       propsExpression = t.objectExpression(dedupeProperties(properties, mergeProps));
+      if (optimize) {
+        if (hasClassBinding) {
+          const klass = (propsExpression.properties as t.ObjectProperty[])
+            .find((prop) => 'value' in prop.key && prop.key.value === 'class');
+          if (klass?.type === 'ObjectProperty') {
+            klass.value = t.callExpression(createIdentifier(state, 'normalizeClass'), [klass.value as any]);
+          }
+        }
+        if (hasStyleBinding) {
+          const style = (propsExpression.properties as t.ObjectProperty[])
+            .find((prop) => 'value' in prop.key && prop.key.value === 'style');
+          if (style?.type === 'ObjectProperty') {
+            style.value = t.callExpression(createIdentifier(state, 'normalizeStyle'), [style.value as any]);
+          }
+        }
+      }
     }
   }
 
@@ -478,16 +494,21 @@ const transformJSXElement = (
     }
   }
 
-  const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
-    tag,
-    props,
-    VNodeChild || t.nullLiteral(),
-    !!patchFlag && optimize && t.numericLiteral(patchFlag),
-    !!dynamicPropNames.size && optimize
+  const createVNode = t.callExpression(
+    optimize
+      ? createIdentifier(state, isComponent ? 'createVNode' : 'createElementVNode')
+      : createIdentifier(state, 'createVNode'),
+    [
+      tag,
+      props,
+      VNodeChild || t.nullLiteral(),
+      !!patchFlag && optimize && t.numericLiteral(patchFlag),
+      !!dynamicPropNames.size && optimize
     && t.arrayExpression(
       [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name)),
     ),
-  ].filter(Boolean as unknown as ExcludesBoolean));
+    ].filter(Boolean as unknown as ExcludesBoolean),
+  );
 
   if (!directives.length) {
     return createVNode;
