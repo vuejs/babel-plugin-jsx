@@ -8,7 +8,7 @@ const devServerOptions = {
   inline: true,
   open: true,
   hot: true,
-  overlay: true,
+  overlay: false,
 };
 
 const server = new WebpackDevServer(compiler, devServerOptions);
