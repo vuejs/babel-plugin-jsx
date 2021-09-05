@@ -13,7 +13,7 @@ const patchFlagExpect = (
   flag: number,
   dynamic: string[] | null,
 ) => {
-  const { patchFlag, dynamicProps } = wrapper.vm.$.subTree;
+  const { patchFlag, dynamicProps } = wrapper.vm.$.subTree as any;
 
   expect(patchFlag).toBe(flag);
   expect(dynamicProps).toEqual(dynamic);
@@ -260,7 +260,8 @@ describe('directive', () => {
   test('vHtml', () => {
     const wrapper = shallowMount({
       setup() {
-        return () => <h1 v-html="<div>foo</div>"></h1>;
+        const html = '<div>foo</div>';
+        return () => <h1 v-html={ html }></h1>;
       },
     });
     expect(wrapper.html()).toBe('<h1><div>foo</div></h1>');

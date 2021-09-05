@@ -40,16 +40,33 @@ const parseDirectives = (params: {
   isComponent: boolean
 }) => {
   const {
-    name, path, value, state, tag, isComponent,
+    path, value, state, tag, isComponent,
   } = params;
   const args: Array<t.Expression | t.NullLiteral> = [];
   const vals: t.Expression[] = [];
   const modifiersSet: Set<string>[] = [];
-  const underscoreModifiers = name.split('_');
-  const directiveName: string = underscoreModifiers.shift()
-    ?.replace(/^v/, '')
+
+  let directiveName;
+  let directiveArgument;
+  let directiveModifiers;
+  if ('namespace' in path.node.name) {
+    [directiveName, directiveArgument] = params.name.split(':');
+    directiveName = path.node.name.namespace.name;
+    directiveArgument = path.node.name.name.name;
+    directiveModifiers = directiveArgument.split('_').slice(1);
+  } else {
+    const underscoreModifiers = params.name.split('_');
+    directiveName = underscoreModifiers.shift() || '';
+    directiveModifiers = underscoreModifiers;
+  }
+  directiveName = directiveName
+    .replace(/^v/, '')
     .replace(/^-/, '')
-    .replace(/^\S/, (s: string) => s.toLowerCase()) || '';
+    .replace(/^\S/, (s: string) => s.toLowerCase());
+
+  if (directiveArgument) {
+    args.push(t.stringLiteral(directiveArgument));
+  }
 
   const isVModels = directiveName === 'models';
   const isVModel = directiveName === 'model';
@@ -64,7 +81,7 @@ const parseDirectives = (params: {
   const shouldResolve = !['html', 'text', 'model', 'models'].includes(directiveName)
     || (isVModel && !isComponent);
 
-  let modifiers = underscoreModifiers;
+  let modifiers = directiveModifiers;
 
   if (t.isArrayExpression(value)) {
     const elementsList = isVModels ? value.elements! : [value];
@@ -95,9 +112,9 @@ const parseDirectives = (params: {
   } else if (isVModel && !shouldResolve) {
     // work as v-model={value}
     args.push(t.nullLiteral());
-    modifiersSet.push(new Set(underscoreModifiers));
+    modifiersSet.push(new Set(directiveModifiers));
   } else {
-    modifiersSet.push(new Set(underscoreModifiers));
+    modifiersSet.push(new Set(directiveModifiers));
   }
 
   return {

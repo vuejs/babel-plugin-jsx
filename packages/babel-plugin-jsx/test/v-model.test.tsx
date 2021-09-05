@@ -230,3 +230,39 @@ test('underscore modifier should work in custom component', async () => {
   await wrapper.trigger('click');
   expect(wrapper.html()).toBe('<div>6</div>');
 });
+
+test('Named model', async () => {
+  const Child = defineComponent({
+    emits: ['update:value'],
+    props: {
+      value: {
+        type: Number,
+        default: 0,
+      },
+    },
+    setup(props, { emit }) {
+      const handleClick = () => {
+        emit('update:value', 2);
+      };
+      return () => (
+        <div onClick={ handleClick }>{ props.value }</div>
+      );
+    },
+  });
+
+  const wrapper = mount({
+    data: () => ({
+      foo: 0,
+    }),
+    render() {
+      return <Child v-model:value={ this.foo } />;
+    },
+  });
+
+  expect(wrapper.html()).toBe('<div>0</div>');
+  wrapper.vm.$data.foo += 1;
+  await wrapper.vm.$nextTick();
+  expect(wrapper.html()).toBe('<div>1</div>');
+  await wrapper.trigger('click');
+  expect(wrapper.html()).toBe('<div>2</div>');
+});
