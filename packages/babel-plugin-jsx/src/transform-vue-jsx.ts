@@ -288,16 +288,16 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       propsExpression = t.objectExpression(dedupeProperties(properties, mergeProps));
       if (optimize) {
         if (hasClassBinding) {
-          const klass = (propsExpression.properties as t.ObjectProperty[])
-            .find((prop) => 'value' in prop.key && prop.key.value === 'class');
-          if (klass?.type === 'ObjectProperty') {
+          const klass = propsExpression.properties
+            .find((prop) => t.isObjectProperty(prop) && t.isStringLiteral(prop.key) && prop.key.value === 'class');
+          if (t.isObjectProperty(klass)) {
             klass.value = t.callExpression(createIdentifier(state, 'normalizeClass'), [klass.value as any]);
           }
         }
         if (hasStyleBinding) {
-          const style = (propsExpression.properties as t.ObjectProperty[])
-            .find((prop) => 'value' in prop.key && prop.key.value === 'style');
-          if (style?.type === 'ObjectProperty') {
+          const style = propsExpression.properties
+            .find((prop) => t.isObjectProperty(prop) && t.isStringLiteral(prop.key) && prop.key.value === 'style');
+          if (t.isObjectProperty(style)) {
             style.value = t.callExpression(createIdentifier(state, 'normalizeStyle'), [style.value as any]);
           }
         }
