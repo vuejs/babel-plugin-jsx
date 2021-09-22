@@ -37,7 +37,7 @@
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.4",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.2",
     "@types/svg-tags": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
