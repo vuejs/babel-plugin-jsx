@@ -1,3 +1,9 @@
+## 1.1.0
+
+`2021-09-30`
+
+- 🌟 feat: allow string arguments on directives [#496]
+
 ## 1.0.6
 
 `2021-05-02`
