@@ -14,9 +14,9 @@ Install the plugin with:
 npm install @vue/babel-plugin-jsx -D
 ```
 
-Then add the plugin to .babelrc:
+Then add the plugin to your babel config:
 
-```js
+```json
 {
   "plugins": ["@vue/babel-plugin-jsx"]
 }
@@ -138,7 +138,7 @@ const App = () => <input type="email" placeholder={placeholderText} />;
 
 ### Directives
 
-v-show
+#### v-show
 
 ```jsx
 const App = {
@@ -151,12 +151,16 @@ const App = {
 };
 ```
 
-v-model
+#### v-model
 
 > Note: You should pass the second param as string for using `arg`.
 
 ```jsx
 <input v-model={val} />
+```
+
+```jsx
+<input v-model:argument={val} />
 ```
 
 ```jsx
@@ -179,7 +183,7 @@ h(A, {
 });
 ```
 
-v-models
+#### v-models (Not recommended since v1.1.0)
 
 > Note: You should pass a Two-dimensional Arrays to v-models.
 
@@ -222,7 +226,18 @@ h(A, {
 });
 ```
 
-custom directive
+#### custom directive
+
+Recommended when using string arguments
+
+```jsx
+const App = {
+  directives: { custom: customDirective },
+  setup() {
+    return () => <a v-custom:arg={val} />;
+  },
+};
+```
 
 ```jsx
 const App = {

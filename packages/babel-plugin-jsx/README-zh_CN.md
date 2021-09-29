@@ -134,7 +134,7 @@ const App = () => <input type="email" placeholder={placeholderText} />;
 
 ### 指令
 
-v-show
+#### v-show
 
 ```jsx
 const App = {
@@ -147,12 +147,16 @@ const App = {
 };
 ```
 
-v-model
+#### v-model
 
 > 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
 ```jsx
 <input v-model={val} />
+```
+
+```jsx
+<input v-model:argument={val} />
 ```
 
 ```jsx
@@ -175,7 +179,7 @@ h(A, {
 });
 ```
 
-v-models
+#### v-models (从 1.1.0 开始不推荐使用)
 
 > 注意: 你应该传递一个二维数组给 v-models。
 
@@ -219,6 +223,17 @@ h(A, {
 ```
 
 自定义指令
+
+只有 argument 的时候推荐使用
+
+```jsx
+const App = {
+  directives: { custom: customDirective },
+  setup() {
+    return () => <a v-custom:arg={val} />;
+  },
+};
+```
 
 ```jsx
 const App = {
@@ -284,7 +299,7 @@ const App = {
 };
 ```
 
-### 在 TypeSript 中使用
+### 在 TypeScript 中使用
 
 `tsconfig.json`:
 
