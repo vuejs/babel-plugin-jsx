@@ -32,7 +32,8 @@ export const isDirective = (src: string): boolean => src.startsWith('v-')
  * @param tag string
  * @returns boolean
  */
-export const shouldTransformedToSlots = (tag: string) => !(tag.endsWith(FRAGMENT) || tag === KEEP_ALIVE);
+// if _Fragment is already imported, it will end with number
+export const shouldTransformedToSlots = (tag: string) => !(tag.match(RegExp(`^_?${FRAGMENT}\\d*$`)) || tag === KEEP_ALIVE);
 
 /**
  * Check if a Node is a component
