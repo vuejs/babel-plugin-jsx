@@ -318,3 +318,21 @@ isCustomElementTests.forEach(({name, from }) => {
     }
   )
 })
+
+const fragmentTests = [{
+  name: '_Fragment already imported',
+  from: `
+      import _Fragment from 'example'
+      const Root1=() => <>root1</>
+      const Root2=() => <Fragment>root2</Fragment>
+      `
+}];
+
+fragmentTests.forEach(({ name, from}) => {
+  test(
+    name,
+    async () => {
+      expect(await transpile(from)).toMatchSnapshot(name);
+    },
+  );
+});

@@ -7,8 +7,6 @@ import {
   Transition,
 } from 'vue';
 import { shallowMount, mount, VueWrapper } from '@vue/test-utils';
-import { transformSync } from '@babel/core';
-import pluginJsx from '../src/index';
 
 const patchFlagExpect = (
   wrapper: VueWrapper<ComponentPublicInstance>,
@@ -97,17 +95,6 @@ describe('Transform JSX', () => {
     });
 
     expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
-  });
-
-  test('_Fragment already imported', () => {
-    const code = `
-      import _Fragment from 'example'
-      const Root1=() => <>root1</>
-      const Root2=() => <Fragment>root2</Fragment>
-      `;
-    const result = transformSync(code, { plugins: [pluginJsx], babelrc: false, configFile: false });
-    expect(result?.code).toMatch('const Root1 = () => _createVNode(_Fragment2, null, [_createTextVNode("root1")]);');
-    expect(result?.code).toMatch('const Root2 = () => _createVNode(_Fragment2, null, [_createTextVNode("root2")]);');
   });
 
   test('nested component', () => {
