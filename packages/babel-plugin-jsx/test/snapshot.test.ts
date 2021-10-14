@@ -322,7 +322,7 @@ isCustomElementTests.forEach(({name, from }) => {
 const fragmentTests = [{
   name: '_Fragment already imported',
   from: `
-      import _Fragment from 'example'
+      import {Fragment as _Fragment} from 'vue'
       const Root1=() => <>root1</>
       const Root2=() => <Fragment>root2</Fragment>
       `
