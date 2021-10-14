@@ -6,7 +6,7 @@ import { Fragment as _Fragment } from 'vue';
 
 const Root1 = () => _createVNode(_Fragment2, null, [_createTextVNode(\\"root1\\")]);
 
-const Root2 = () => _createVNode(_Fragment2, null, [_createTextVNode(\\"root2\\")]);"
+const Root2 = () => _createVNode(_Fragment, null, [_createTextVNode(\\"root2\\")]);"
 `;
 
 exports[`MereProps Order: MereProps Order 1`] = `
