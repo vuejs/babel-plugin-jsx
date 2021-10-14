@@ -1,6 +1,5 @@
 import { transform } from '@babel/core';
 import JSX, { VueJSXPluginOptions } from '../src';
-import {compileTemplate} from '@vue/compiler-sfc';
 
 interface Test {
   name: string;
@@ -323,9 +322,10 @@ isCustomElementTests.forEach(({name, from }) => {
 const fragmentTests = [{
   name: '_Fragment already imported',
   from: `
+      import _Fragment from 'example'
       const Root1=() => <>root1</>
       const Root2=() => <Fragment>root2</Fragment>
-      ${compileTemplate({source:'<Root1/><Root2/>',filename: 'a.vue',id: 'a.vue'}).code}`
+      `
 }];
 
 fragmentTests.forEach(({ name, from}) => {

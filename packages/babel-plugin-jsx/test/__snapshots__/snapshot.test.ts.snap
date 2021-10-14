@@ -1,22 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`_Fragment already imported: _Fragment already imported 1`] = `
-"import { createVNode as _createVNode2, createTextVNode as _createTextVNode, Fragment as _Fragment2 } from \\"vue\\";
+"import { createVNode as _createVNode, createTextVNode as _createTextVNode, Fragment as _Fragment2 } from \\"vue\\";
+import _Fragment from 'example';
 
-const Root1 = () => _createVNode2(_Fragment2, null, [_createTextVNode(\\"root1\\")]);
+const Root1 = () => _createVNode(_Fragment2, null, [_createTextVNode(\\"root1\\")]);
 
-const Root2 = () => _createVNode2(_Fragment2, null, [_createTextVNode(\\"root2\\")]);
-
-import { resolveComponent as _resolveComponent, createVNode as _createVNode, Fragment as _Fragment, openBlock as _openBlock, createElementBlock as _createElementBlock } from \\"vue\\";
-export function render(_ctx, _cache) {
-  const _component_Root1 = _resolveComponent(\\"Root1\\");
-
-  const _component_Root2 = _resolveComponent(\\"Root2\\");
-
-  return _openBlock(), _createElementBlock(_Fragment, null, [_createVNode(_component_Root1), _createVNode(_component_Root2)], 64
-  /* STABLE_FRAGMENT */
-  );
-}"
+const Root2 = () => _createVNode(_Fragment2, null, [_createTextVNode(\\"root2\\")]);"
 `;
 
 exports[`MereProps Order: MereProps Order 1`] = `
