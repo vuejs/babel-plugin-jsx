@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`_Fragment already imported: _Fragment already imported 1`] = `
+"import { createVNode as _createVNode, createTextVNode as _createTextVNode, Fragment as _Fragment2 } from \\"vue\\";
+import { Fragment as _Fragment } from 'vue';
+
+const Root1 = () => _createVNode(_Fragment2, null, [_createTextVNode(\\"root1\\")]);
+
+const Root2 = () => _createVNode(_Fragment, null, [_createTextVNode(\\"root2\\")]);"
+`;
+
 exports[`MereProps Order: MereProps Order 1`] = `
 "import { createVNode as _createVNode, mergeProps as _mergeProps, createTextVNode as _createTextVNode } from \\"vue\\";
 

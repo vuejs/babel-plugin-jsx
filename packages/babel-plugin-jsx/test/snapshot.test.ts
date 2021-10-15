@@ -318,3 +318,21 @@ isCustomElementTests.forEach(({name, from }) => {
     }
   )
 })
+
+const fragmentTests = [{
+  name: '_Fragment already imported',
+  from: `
+      import { Fragment as _Fragment } from 'vue'
+      const Root1 = () => <>root1</>
+      const Root2 = () => <_Fragment>root2</_Fragment>
+      `
+}];
+
+fragmentTests.forEach(({ name, from}) => {
+  test(
+    name,
+    async () => {
+      expect(await transpile(from)).toMatchSnapshot(name);
+    },
+  );
+});
