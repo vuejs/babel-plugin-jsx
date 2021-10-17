@@ -1,3 +1,9 @@
+## 1.1.1
+
+`2021-10-17`
+
+- 🐞 fix: wrong compilation result when _Fragment is imported (#518)
+
 ## 1.1.0
 
 `2021-09-30`
