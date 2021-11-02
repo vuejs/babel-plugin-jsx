@@ -69,7 +69,7 @@ Type: `string`
 
 Default: `createVNode`
 
-替换编译JSX表达式的时候使用的函数
+替换编译 JSX 表达式的时候使用的函数
 
 ## 表达式
 
@@ -168,7 +168,7 @@ const App = {
 <A v-model={[val, "argument", ["modifier"]]} />
 ```
 
-会变编译成：
+会编译成：
 
 ```js
 h(A, {
@@ -206,7 +206,7 @@ h(A, {
 />
 ```
 
-会变编译成：
+会编译成：
 
 ```js
 h(A, {
@@ -223,7 +223,7 @@ h(A, {
 });
 ```
 
-自定义指令
+#### 自定义指令
 
 只有 argument 的时候推荐使用
 
@@ -312,7 +312,7 @@ const App = {
 }
 ```
 
-## 谁在用
+## 谁在使用
 
 <table>
   <tbody>
