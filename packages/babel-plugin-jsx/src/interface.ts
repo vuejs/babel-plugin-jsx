@@ -23,4 +23,6 @@ export interface VueJSXPluginOptions {
   enableObjectSlots?: boolean;
   /** Replace the function used when compiling JSX expressions */
   pragma?: string;
+  /** enable $stable hint optimization avoid child component render */
+  slotStable?: boolean
 }

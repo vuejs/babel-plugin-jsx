@@ -71,6 +71,14 @@ Default: `createVNode`
 
 替换编译JSX表达式的时候使用的函数
 
+#### slotStable
+
+Type: `boolean`
+
+Default: `false`
+
+启用slot优化. [详见](https://juejin.cn/post/6913855965792043021#heading-24)
+
 ## 表达式
 
 ### 内容

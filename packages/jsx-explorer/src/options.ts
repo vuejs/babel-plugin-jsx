@@ -10,6 +10,7 @@ export const compilerOptions: VueJSXPluginOptions = reactive({
   optimize: false,
   transformOn: false,
   enableObjectSlots: true,
+  slotStable: true,
 });
 
 const App = {
@@ -73,13 +74,26 @@ const App = {
           h('li', [
             h('input', {
               type: 'checkbox',
-              id: 'transformOn',
+              id: 'enableObjectSlots',
               checked: compilerOptions.enableObjectSlots,
               onChange(e: Event) {
                 compilerOptions.enableObjectSlots = (e.target as HTMLInputElement).checked;
               },
             }),
             h('label', { for: 'enableObjectSlots' }, 'enableObjectSlots'),
+          ]),
+
+          // slotStable
+          h('li', [
+            h('input', {
+              type: 'checkbox',
+              id: 'slotStable',
+              checked: compilerOptions.slotStable,
+              onChange(e: Event) {
+                compilerOptions.slotStable = (e.target as HTMLInputElement).checked;
+              },
+            }),
+            h('label', { for: 'slotStable' }, 'slotStable'),
           ]),
         ]),
       ]),

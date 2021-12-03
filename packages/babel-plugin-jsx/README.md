@@ -75,6 +75,14 @@ Default: `createVNode`
 
 Replace the function used when compiling JSX expressions.
 
+#### slotStable
+
+Type: `boolean`
+
+Default: `false`
+
+enable slot hint flag. [detail link](https://juejin.cn/post/6913855965792043021#heading-24)
+
 ## Syntax
 
 ### Content

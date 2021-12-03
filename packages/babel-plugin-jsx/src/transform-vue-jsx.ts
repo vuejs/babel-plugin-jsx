@@ -478,6 +478,17 @@ const transformJSXElement = (
     }
   }
 
+  // add $stable hint
+  if (VNodeChild && t.isObjectExpression(VNodeChild) && state.opts.slotStable) {
+    const has$stable = VNodeChild.properties.find((node) => t.isObjectProperty(node) && t.isIdentifier(node.key) && node.key.name === '$stable');
+    if (!has$stable) {
+      VNodeChild.properties.push(t.objectProperty(
+        t.identifier('$stable'),
+        t.booleanLiteral(true),
+      ));
+    }
+  }
+
   const createVNode = t.callExpression(createIdentifier(state, 'createVNode'), [
     tag,
     props,

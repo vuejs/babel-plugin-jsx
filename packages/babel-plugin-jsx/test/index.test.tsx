@@ -19,6 +19,14 @@ const patchFlagExpect = (
   expect(dynamicProps).toEqual(dynamic);
 };
 
+const $stableHintExpect = (
+  wrapper: VueWrapper<ComponentPublicInstance>,
+  stable: boolean,
+) => {
+  const { children: { $stable } } = wrapper.vm.$.subTree as any;
+  expect($stable).toBe(stable);
+};
+
 describe('Transform JSX', () => {
   test('should render with render function', () => {
     const wrapper = shallowMount({
@@ -607,3 +615,38 @@ describe('should support passing object slots via JSX children', () => {
     );
   });
 });
+
+describe('should add $stable property in slots via JSX children', () => {
+  const A = defineComponent({
+    setup(props, { slots }) {
+      return () => <div>{slots.default?.()}</div>;
+    }
+  });
+
+  test('string slots', () => {
+    const wrapper = shallowMount({
+      setup() {
+        return () => <A><div>1111</div></A>;
+      }
+    })
+    $stableHintExpect(wrapper, true);
+  });
+
+  test('object slots', () => {
+    const wrapper = shallowMount({
+      setup() {
+        return () => <A>{{default: () => <span>1111</span>}}</A>;
+      }
+    })
+    $stableHintExpect(wrapper, true);
+  });
+
+  test('stable false', () => {
+    const wrapper = shallowMount({
+      setup() {
+        return () => <A>{{default: () => <span>1111</span>, $stable: false }}</A>;
+      }
+    })
+    $stableHintExpect(wrapper, false);
+  });
+})
