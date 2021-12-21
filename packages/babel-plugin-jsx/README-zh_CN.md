@@ -282,7 +282,7 @@ const App = {
   },
 };
 
-// or
+// 或者，当 `enableObjectSlots` 不是 `false` 时，您可以使用对象插槽
 const App = {
   setup() {
     return () => (
