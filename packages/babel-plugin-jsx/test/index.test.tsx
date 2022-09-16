@@ -132,6 +132,27 @@ describe('Transform JSX', () => {
     expect(wrapper.classes().sort()).toEqual(['a', 'b'].sort());
   });
 
+  test('Multiline class outputs', () => {
+    const wrapper = shallowMount({
+      render() {
+        return (
+          // @ts-ignore
+          <div
+            class="
+              foo  
+              	baz
+              bar
+            "
+          >
+            Hello World
+          </div>
+        );
+      },
+    });
+
+    expect(wrapper.classes().sort()).toEqual(['foo', 'baz', 'bar'].sort());
+  });
+
   test('Merge style', () => {
     const propsA = {
       style: {
