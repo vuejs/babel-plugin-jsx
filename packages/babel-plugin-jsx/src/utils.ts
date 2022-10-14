@@ -51,7 +51,7 @@ export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>, state: Sta
 
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
 
-  return !state.opts.isCustomElement?.(tag) && shouldTransformedToSlots(tag) && !htmlTags.includes(tag) && !svgTags.includes(tag);
+  return !state.opts.isCustomElement?.(tag) && shouldTransformedToSlots(tag) && !htmlTags.includes(tag as htmlTags.htmlTags) && !svgTags.includes(tag);
 };
 
 /**
@@ -86,7 +86,7 @@ export const getTag = (
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
-    if (!htmlTags.includes(name) && !svgTags.includes(name)) {
+    if (!htmlTags.includes(name as htmlTags.htmlTags) && !svgTags.includes(name)) {
       return (name === FRAGMENT
         ? createIdentifier(state, FRAGMENT)
         : path.scope.hasBinding(name)
