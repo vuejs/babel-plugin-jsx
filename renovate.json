@@ -8,5 +8,5 @@
   ],
   "rangeStrategy": "bump",
   "labels": ["dependencies"],
-  "ignoreDeps": ["@types/node"]
+  "ignoreDeps": ["@types/node", "@vue/test-utils"]
 }
