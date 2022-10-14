@@ -39,21 +39,26 @@ export default ({ types }: typeof BabelCore) => ({
       enter(path: NodePath<t.Program>, state: State) {
         if (hasJSX(path)) {
           const importNames = [
-            'createVNode',
             'Fragment',
+            'createElementVNode',
+            'createTextVNode',
+            'createVNode',
+            'guardReactiveProps',
+            'isVNode',
+            'mergeProps',
+            'normalizeClass',
+            'normalizeProps',
+            'normalizeStyle',
             'resolveComponent',
-            'withDirectives',
-            'vShow',
+            'resolveDirective',
+            'vModelCheckbox',
+            'vModelDynamic',
+            'vModelRadio',
             'vModelSelect',
             'vModelText',
-            'vModelCheckbox',
-            'vModelRadio',
             'vModelText',
-            'vModelDynamic',
-            'resolveDirective',
-            'mergeProps',
-            'createTextVNode',
-            'isVNode',
+            'vShow',
+            'withDirectives',
           ];
           if (isModule(path)) {
             // import { createVNode } from "vue";
