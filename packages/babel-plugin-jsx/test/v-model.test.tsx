@@ -10,8 +10,8 @@ test('input[type="checkbox"] should work', async () => {
     },
     render() {
       return <input type="checkbox" v-model={this.test} />;
-    },
-  });
+    }
+  }, { attachTo: document.body });
 
   expect(wrapper.vm.$el.checked).toBe(true);
   wrapper.vm.test = false;
@@ -36,7 +36,7 @@ test('input[type="radio"] should work', async () => {
         </>
       );
     },
-  });
+  }, { attachTo: document.body });
 
   const [a, b] = wrapper.vm.$.subTree.children as VNode[];
 

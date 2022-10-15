@@ -7,5 +7,6 @@
     ":semanticCommitTypeAll(chore)"
   ],
   "rangeStrategy": "bump",
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "ignoreDeps": ["@types/node", "@vue/test-utils"]
 }

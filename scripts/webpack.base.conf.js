@@ -26,6 +26,11 @@ module.exports = {
           'style-loader', 'css-loader',
         ],
       },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
+      }
     ],
   },
   plugins: [
@@ -35,7 +40,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.js', '.mjs'],
   },
   node: {
     fs: 'empty',
