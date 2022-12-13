@@ -30,7 +30,7 @@
     "@babel/traverse": "^7.19.4",
     "@babel/types": "^7.19.4",
     "@vue/babel-helper-vue-transform-on": "^1.0.2",
-    "camelcase": "^6.3.0",
+    "camelcase": "^7.0.1",
     "html-tags": "^3.2.0",
     "svg-tags": "^1.0.0"
   },
