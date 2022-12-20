@@ -251,7 +251,7 @@ const App = {
 
 ### Slot
 
-> Note: In `jsx`, _`v-slot`_ should be replace with **`v-slots`**
+> Note: In `jsx`, _`v-slot`_ should be replaced with **`v-slots`**
 
 ```jsx
 const A = (props, { slots }) => (
