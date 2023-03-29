@@ -158,7 +158,8 @@ _createVNode(_resolveComponent(\\"A\\"), null, {
 exports[`passing object slots via JSX children single expression, function expression: single expression, function expression 1`] = `
 "import { createVNode as _createVNode, resolveComponent as _resolveComponent } from \\"vue\\";
 _createVNode(_resolveComponent(\\"A\\"), null, {
-  default: () => \\"foo\\"
+  default: () => \\"foo\\",
+  _: 1
 });"
 `;
 

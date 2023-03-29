@@ -459,7 +459,11 @@ const transformJSXElement = (
           t.identifier('default'),
           child,
         ),
-      ]);
+        optimize && t.objectProperty(
+          t.identifier('_'),
+          t.numericLiteral(slotFlag),
+        ) as any,
+      ].filter(Boolean));
     } else if (t.isObjectExpression(child)) {
       VNodeChild = t.objectExpression([
         ...child.properties,
@@ -472,9 +476,13 @@ const transformJSXElement = (
       VNodeChild = isComponent ? t.objectExpression([
         t.objectProperty(
           t.identifier('default'),
-          t.arrowFunctionExpression([], t.arrayExpression([child])),
+          t.arrowFunctionExpression([], child),
         ),
-      ]) : t.arrayExpression([child]);
+        optimize && t.objectProperty(
+          t.identifier('_'),
+          t.numericLiteral(slotFlag),
+        ) as any,
+      ].filter(Boolean)) : t.arrayExpression([child]);
     }
   }
 
