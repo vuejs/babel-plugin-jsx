@@ -153,12 +153,36 @@ exports[`override props single > single 1`] = `
 _createVNode("div", a, null);"
 `;
 
+exports[`passing object slots via JSX children directive in slot > directive in slot 1`] = `
+"import { Fragment as _Fragment, resolveDirective as _resolveDirective, createVNode as _createVNode, withDirectives as _withDirectives, resolveComponent as _resolveComponent } from "vue";
+_createVNode(_Fragment, null, [_createVNode(_resolveComponent("A"), null, {
+  default: () => [_withDirectives(_createVNode("div", null, null, 512), [[_resolveDirective("xxx")]]), foo]
+}), _createVNode(_resolveComponent("A"), null, {
+  default: () => [_createVNode(_resolveComponent("B"), null, {
+    default: () => [_withDirectives(_createVNode("div", null, null, 512), [[_resolveDirective("xxx")]]), foo]
+  })]
+})]);"
+`;
+
 exports[`passing object slots via JSX children multiple expressions > multiple expressions 1`] = `
 "import { resolveComponent as _resolveComponent, createVNode as _createVNode } from "vue";
 _createVNode(_resolveComponent("A"), null, {
   default: () => [foo, bar],
   _: 1
 });"
+`;
+
+exports[`passing object slots via JSX children no directive in slot > no directive in slot 1`] = `
+"import { Fragment as _Fragment, createVNode as _createVNode, resolveComponent as _resolveComponent } from "vue";
+_createVNode(_Fragment, null, [_createVNode(_resolveComponent("A"), null, {
+  default: () => [_createVNode("div", null, null), foo],
+  _: 1
+}), _createVNode(_resolveComponent("A"), null, {
+  default: () => [_createVNode(_resolveComponent("B"), null, {
+    default: () => [_createVNode("div", null, null), foo],
+    _: 1
+  })]
+})]);"
 `;
 
 exports[`passing object slots via JSX children single expression, function expression > single expression, function expression 1`] = `

@@ -255,6 +255,28 @@ const slotsTests: Test[] = [
       <A>{foo()}</A>;
     `,
   },
+  {
+    name: 'no directive in slot',
+    from: `
+      <>
+        <A><div />{foo}</A>
+        <A>
+          <B><div />{foo}</B>
+        </A>
+      </>
+    `,
+  },
+  {
+    name: 'directive in slot',
+    from: `
+      <>
+        <A><div v-xxx />{foo}</A>
+        <A>
+          <B><div v-xxx />{foo}</B>
+        </A>
+      </>
+    `,
+  },
 ];
 
 slotsTests.forEach(({ name, from }) => {
