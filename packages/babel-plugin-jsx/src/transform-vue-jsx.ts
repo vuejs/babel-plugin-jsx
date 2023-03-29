@@ -369,7 +369,18 @@ const transformJSXElement = (
 
   const { optimize = false } = state.opts;
 
-  const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
+  // #541 - directives can't be resolved in optimized slots
+  // all parents should be deoptimized
+  if (directives.length) {
+    let currentPath = path;
+    while (currentPath.parentPath?.isJSXElement()) {
+      currentPath = currentPath.parentPath;
+      currentPath.setData('slotFlag', 0);
+    }
+  }
+
+  const slotFlag = path.getData('slotFlag') ?? SlotFlags.STABLE;
+  const optimizeSlots = optimize && slotFlag !== 0;
   let VNodeChild;
 
   if (children.length > 1 || slots) {
@@ -390,7 +401,7 @@ const transformJSXElement = (
               ? (slots! as t.ObjectExpression).properties
               : [t.spreadElement(slots!)]
           ) : []),
-          optimize && t.objectProperty(
+          optimizeSlots && t.objectProperty(
             t.identifier('_'),
             t.numericLiteral(slotFlag),
           ),
@@ -408,7 +419,7 @@ const transformJSXElement = (
         t.identifier('default'),
         t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, [child]))),
       ),
-      optimize && t.objectProperty(
+      optimizeSlots && t.objectProperty(
         t.identifier('_'),
         t.numericLiteral(slotFlag),
       ) as any,
@@ -435,7 +446,7 @@ const transformJSXElement = (
           t.objectProperty(
             t.identifier('default'),
             t.arrowFunctionExpression([], t.arrayExpression(buildIIFE(path, [slotId]))),
-          ), optimize && t.objectProperty(
+          ), optimizeSlots && t.objectProperty(
             t.identifier('_'),
             t.numericLiteral(slotFlag),
           ) as any,
@@ -463,7 +474,7 @@ const transformJSXElement = (
     } else if (t.isObjectExpression(child)) {
       VNodeChild = t.objectExpression([
         ...child.properties,
-        optimize && t.objectProperty(
+        optimizeSlots && t.objectProperty(
           t.identifier('_'),
           t.numericLiteral(slotFlag),
         ),
