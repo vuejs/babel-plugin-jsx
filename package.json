@@ -4,9 +4,9 @@
     "packages/*"
   ],
   "scripts": {
-    "publish": "lerna publish",
-    "test": "lerna run test",
-    "lint": "lerna run lint",
+    "publish": "pnpm -r publish",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint",
     "dev": "node scripts/dev.js",
     "site": "node scripts/site.js"
   },
@@ -19,8 +19,7 @@
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
-    "eslint-plugin-import": "^2.26.0",
-    "lerna": "^3.22.1"
+    "eslint-plugin-import": "^2.26.0"
   },
   "resolutions": {
     "@types/node": "18.8.0"
