@@ -16,12 +16,11 @@
     "jsx"
   ],
   "devDependencies": {
+    "@types/node": "^20.3.1",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
-    "eslint-plugin-import": "^2.26.0"
-  },
-  "resolutions": {
-    "@types/node": "18.8.0"
+    "eslint-plugin-import": "^2.26.0",
+    "typescript": "^5.1.3"
   }
 }

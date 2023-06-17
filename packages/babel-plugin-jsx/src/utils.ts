@@ -196,7 +196,7 @@ export const walksScope = (path: NodePath, name: string, slotFlag: SlotFlags): v
 
 export const buildIIFE = (path: NodePath<t.JSXElement>, children: t.Expression[]) => {
   const { parentPath } = path;
-  if (t.isAssignmentExpression(parentPath)) {
+  if (parentPath.isAssignmentExpression()) {
     const { left } = parentPath.node as t.AssignmentExpression;
     if (t.isIdentifier(left)) {
       return children.map((child) => {

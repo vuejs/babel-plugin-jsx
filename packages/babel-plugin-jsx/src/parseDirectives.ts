@@ -14,10 +14,10 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
   const typePath = path
     .get('attributes')
     .find((attribute) => {
-      if (!t.isJSXAttribute(attribute)) {
+      if (!attribute.isJSXAttribute()) {
         return false;
       }
-      return t.isJSXIdentifier(attribute.get('name'))
+      return attribute.get('name').isJSXIdentifier()
         && (attribute.get('name') as NodePath<t.JSXIdentifier>).node.name === 'type';
     }) as NodePath<t.JSXAttribute> | undefined;
 
@@ -70,7 +70,7 @@ const parseDirectives = (params: {
 
   const isVModels = directiveName === 'models';
   const isVModel = directiveName === 'model';
-  if (isVModel && !t.isJSXExpressionContainer(path.get('value'))) {
+  if (isVModel && !path.get('value').isJSXExpressionContainer()) {
     throw new Error('You have to use JSX Expression inside your v-model');
   }
 

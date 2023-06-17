@@ -336,8 +336,8 @@ const getChildren = (
 
       return expression;
     }
-    if (t.isJSXSpreadChild(path)) {
-      return transformJSXSpreadChild(path as NodePath<t.JSXSpreadChild>);
+    if (path.isJSXSpreadChild()) {
+      return transformJSXSpreadChild(path);
     }
     if (path.isCallExpression()) {
       return (path as NodePath<t.CallExpression>).node;
