@@ -3,9 +3,9 @@ import { watchEffect } from 'vue'
 import { transform } from '@babel/core'
 import babelPluginJsx from '@vue/babel-plugin-jsx'
 import {
-  initOptions,
-  compilerOptions,
   type VueJSXPluginOptions,
+  compilerOptions,
+  initOptions,
 } from './options'
 import './index.css'
 

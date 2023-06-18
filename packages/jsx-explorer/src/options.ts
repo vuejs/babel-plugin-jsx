@@ -1,4 +1,4 @@
-import { h, reactive, createApp } from 'vue'
+import { createApp, h, reactive } from 'vue'
 import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
 
 export { VueJSXPluginOptions }

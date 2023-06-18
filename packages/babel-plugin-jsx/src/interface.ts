@@ -1,5 +1,5 @@
-import * as t from '@babel/types'
-import * as BabelCore from '@babel/core'
+import type * as t from '@babel/types'
+import type * as BabelCore from '@babel/core'
 
 export type Slots = t.Identifier | t.ObjectExpression | null
 

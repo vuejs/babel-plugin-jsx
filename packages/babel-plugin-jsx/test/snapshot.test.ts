@@ -1,5 +1,5 @@
 import { transform } from '@babel/core'
-import JSX, { VueJSXPluginOptions } from '../src'
+import JSX, { type VueJSXPluginOptions } from '../src'
 
 interface Test {
   name: string

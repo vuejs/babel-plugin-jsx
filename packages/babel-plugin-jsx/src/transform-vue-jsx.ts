@@ -1,27 +1,27 @@
 import * as t from '@babel/types'
-import { NodePath } from '@babel/traverse'
+import { type NodePath } from '@babel/traverse'
 // @ts-expect-error
 import { addDefault } from '@babel/helper-module-imports'
 import {
+  buildIIFE,
+  checkIsComponent,
   createIdentifier,
+  dedupeProperties,
+  getJSXAttributeName,
+  getTag,
+  isConstant,
+  isDirective,
+  isOn,
+  transformJSXExpressionContainer,
+  transformJSXSpreadAttribute,
   transformJSXSpreadChild,
   transformJSXText,
-  transformJSXExpressionContainer,
   walksScope,
-  buildIIFE,
-  isDirective,
-  checkIsComponent,
-  getTag,
-  getJSXAttributeName,
-  isOn,
-  isConstant,
-  dedupeProperties,
-  transformJSXSpreadAttribute,
 } from './utils'
 import SlotFlags from './slotFlags'
 import { PatchFlags } from './patchFlags'
 import parseDirectives from './parseDirectives'
-import type { State, Slots } from './interface'
+import type { Slots, State } from './interface'
 
 const xlinkRE = /^xlink([A-Z])/
 
@@ -384,10 +384,7 @@ const getChildren = (
       throw new Error(`getChildren: ${path.type} is not supported`)
     })
     .filter(
-      ((value: any) =>
-        value !== undefined &&
-        value !== null &&
-        !t.isJSXEmptyExpression(value)) as any
+      ((value: any) => value != null && !t.isJSXEmptyExpression(value)) as any
     )
 
 const transformJSXElement = (

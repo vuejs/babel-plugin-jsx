@@ -1,14 +1,14 @@
 import * as t from '@babel/types'
-import * as BabelCore from '@babel/core'
+import type * as BabelCore from '@babel/core'
 import template from '@babel/template'
 // @ts-expect-error
 import syntaxJsx from '@babel/plugin-syntax-jsx'
 // @ts-expect-error
-import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports'
-import { NodePath } from '@babel/traverse'
+import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports'
+import { type NodePath } from '@babel/traverse'
 import transformVueJSX from './transform-vue-jsx'
 import sugarFragment from './sugar-fragment'
-import type { VueJSXPluginOptions, State } from './interface'
+import type { State, VueJSXPluginOptions } from './interface'
 
 export { VueJSXPluginOptions }
 

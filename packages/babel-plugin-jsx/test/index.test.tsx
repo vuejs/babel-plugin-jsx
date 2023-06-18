@@ -1,12 +1,12 @@
 import {
+  type CSSProperties,
+  type ComponentPublicInstance,
+  Transition,
+  defineComponent,
   reactive,
   ref,
-  defineComponent,
-  CSSProperties,
-  ComponentPublicInstance,
-  Transition,
 } from 'vue'
-import { shallowMount, mount, VueWrapper } from '@vue/test-utils'
+import { type VueWrapper, mount, shallowMount } from '@vue/test-utils'
 
 const patchFlagExpect = (
   wrapper: VueWrapper<ComponentPublicInstance>,
@@ -125,7 +125,7 @@ describe('Transform JSX', () => {
   test('Merge class', () => {
     const wrapper = shallowMount({
       setup() {
-        // @ts-ignore
+        // @ts-expect-error
         return () => <div class="a" {...{ class: 'b' }} />
       },
     })

@@ -1,7 +1,7 @@
 import * as t from '@babel/types'
 import htmlTags from 'html-tags'
 import svgTags from 'svg-tags'
-import { NodePath } from '@babel/traverse'
+import { type NodePath } from '@babel/traverse'
 import type { State } from './interface'
 import SlotFlags from './slotFlags'
 
