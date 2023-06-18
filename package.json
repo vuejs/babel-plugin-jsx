@@ -3,9 +3,7 @@
   "scripts": {
     "publish": "pnpm -r publish",
     "test": "vitest",
-    "lint": "pnpm -r run lint",
-    "dev": "node scripts/dev.js",
-    "site": "node scripts/site.js"
+    "lint": "pnpm -r run lint"
   },
   "license": "MIT",
   "keywords": [
