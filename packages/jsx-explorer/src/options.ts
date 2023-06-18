@@ -76,7 +76,7 @@ const App = {
           h('li', [
             h('input', {
               type: 'checkbox',
-              id: 'transformOn',
+              id: 'enableObjectSlots',
               checked: compilerOptions.enableObjectSlots,
               onChange(e: Event) {
                 compilerOptions.enableObjectSlots = (
