@@ -1,16 +1,14 @@
-import {
-  h, reactive, createApp,
-} from 'vue';
-import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx';
+import { h, reactive, createApp } from 'vue'
+import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
 
-export { VueJSXPluginOptions };
+export { VueJSXPluginOptions }
 
 export const compilerOptions: VueJSXPluginOptions = reactive({
   mergeProps: true,
   optimize: false,
   transformOn: false,
   enableObjectSlots: true,
-});
+})
 
 const App = {
   setup() {
@@ -22,13 +20,12 @@ const App = {
           href: 'https://app.netlify.com/sites/vue-next-jsx-explorer/deploys',
           target: '_blank',
         },
-        'History',
+        'History'
       ),
 
       h('div', { id: 'options-wrapper' }, [
         h('div', { id: 'options-label' }, 'Options ↘'),
         h('ul', { id: 'options' }, [
-
           // mergeProps
           h('li', [
             h('input', {
@@ -37,7 +34,9 @@ const App = {
               name: 'mergeProps',
               checked: compilerOptions.mergeProps,
               onChange(e: Event) {
-                compilerOptions.mergeProps = (e.target as HTMLInputElement).checked;
+                compilerOptions.mergeProps = (
+                  e.target as HTMLInputElement
+                ).checked
               },
             }),
             h('label', { for: 'mergeProps' }, 'mergeProps'),
@@ -50,7 +49,9 @@ const App = {
               id: 'optimize',
               checked: compilerOptions.optimize,
               onChange(e: Event) {
-                compilerOptions.optimize = (e.target as HTMLInputElement).checked;
+                compilerOptions.optimize = (
+                  e.target as HTMLInputElement
+                ).checked
               },
             }),
             h('label', { for: 'optimize' }, 'optimize'),
@@ -63,7 +64,9 @@ const App = {
               id: 'transformOn',
               checked: compilerOptions.transformOn,
               onChange(e: Event) {
-                compilerOptions.transformOn = (e.target as HTMLInputElement).checked;
+                compilerOptions.transformOn = (
+                  e.target as HTMLInputElement
+                ).checked
               },
             }),
             h('label', { for: 'transformOn' }, 'transformOn'),
@@ -76,17 +79,19 @@ const App = {
               id: 'transformOn',
               checked: compilerOptions.enableObjectSlots,
               onChange(e: Event) {
-                compilerOptions.enableObjectSlots = (e.target as HTMLInputElement).checked;
+                compilerOptions.enableObjectSlots = (
+                  e.target as HTMLInputElement
+                ).checked
               },
             }),
             h('label', { for: 'enableObjectSlots' }, 'enableObjectSlots'),
           ]),
         ]),
       ]),
-    ];
+    ]
   },
-};
+}
 
 export function initOptions() {
-  createApp(App).mount(document.getElementById('header')!);
+  createApp(App).mount(document.getElementById('header')!)
 }
