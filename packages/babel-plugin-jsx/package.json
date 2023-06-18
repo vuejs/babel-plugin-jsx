@@ -1,21 +1,22 @@
 {
   "name": "@vue/babel-plugin-jsx",
   "version": "1.1.1",
-  "description": "Babel plugin for Vue 3.0 JSX",
+  "description": "Babel plugin for Vue 3 JSX",
   "author": "Amour1688 <lcz_1996@foxmail.com>",
   "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-jsx#readme",
   "license": "MIT",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx.git"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "watch": "rm -rf dist && tsc --watch",
+    "build": "tsup",
+    "watch": "tsup --watch",
     "lint": "eslint 'src/*.ts'",
-    "test": "yarn build && jest --coverage",
-    "prepublishOnly": "yarn build"
+    "test": "pnpm build && jest --coverage",
+    "prepublishOnly": "pnpm build"
   },
   "bugs": {
     "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
