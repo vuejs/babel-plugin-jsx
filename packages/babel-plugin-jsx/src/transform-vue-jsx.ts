@@ -1,5 +1,6 @@
 import * as t from '@babel/types';
 import { NodePath } from '@babel/traverse';
+// @ts-expect-error
 import { addDefault } from '@babel/helper-module-imports';
 import {
   createIdentifier,

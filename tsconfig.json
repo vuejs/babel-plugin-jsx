@@ -1,20 +1,6 @@
 {
-  "compilerOptions": {
-    "sourceMap": true,
-    "target": "es2015",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowJs": true,
-    "strict": true,
-    "noUnusedLocals": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "removeComments": false,
-    "jsx": "preserve",
-    "lib": ["esnext", "dom"],
-    "types": ["node"]
-  },
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {},
   "include": ["packages/*/src"],
   "references": [{ "path": "./tsconfig.test.json" }]
 }

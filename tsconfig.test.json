@@ -1,20 +1,9 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "sourceMap": true,
-    "target": "es2015",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowJs": true,
-    "strict": true,
-    "noUnusedLocals": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "removeComments": false,
-    "jsx": "preserve",
-    "lib": ["esnext", "dom"],
-    "types": ["node", "vitest/globals"]
+    "types": ["vitest/globals"],
+    "skipLibCheck": true
   },
-  "include": ["packages/*/test"]
+  "include": ["packages/*/src", "packages/*/test"]
 }

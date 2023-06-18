@@ -1,7 +1,9 @@
 import * as t from '@babel/types';
 import * as BabelCore from '@babel/core';
 import template from '@babel/template';
+// @ts-expect-error
 import syntaxJsx from '@babel/plugin-syntax-jsx';
+// @ts-expect-error
 import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import transformVueJSX from './transform-vue-jsx';
