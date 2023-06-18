@@ -13,7 +13,10 @@
     "removeComments": false,
     "jsx": "preserve",
     "types": ["vitest/globals"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
+    }
   },
   "include": ["packages/*/src", "packages/*/test"]
 }
