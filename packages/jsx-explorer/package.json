@@ -11,7 +11,7 @@
     "@babel/core": "^7.22.5",
     "@vue/babel-plugin-jsx": "workspace:*",
     "monaco-editor": "^0.39.0",
-    "vue": "3.3.4"
+    "vue": "^3.3.4"
   },
   "devDependencies": {
     "vite-plugin-monaco-editor": "^1.1.0",

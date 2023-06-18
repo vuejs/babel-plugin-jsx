@@ -102,7 +102,7 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       '@vue/runtime-dom':
-        specifier: 3.3.4
+        specifier: ^3.3.4
         version: 3.3.4
       '@vue/test-utils':
         specifier: ^2.3.2
@@ -111,7 +111,7 @@ importers:
         specifier: ^0.13.11
         version: 0.13.11
       vue:
-        specifier: 3.3.4
+        specifier: ^3.3.4
         version: 3.3.4
 
   packages/jsx-explorer:
@@ -126,7 +126,7 @@ importers:
         specifier: ^0.39.0
         version: 0.39.0
       vue:
-        specifier: 3.3.4
+        specifier: ^3.3.4
         version: 3.3.4
     devDependencies:
       vite-plugin-monaco-editor:

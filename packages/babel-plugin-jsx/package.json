@@ -14,8 +14,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "watch": "tsup --watch",
-    "prepublishOnly": "pnpm build"
+    "watch": "tsup --watch"
   },
   "bugs": {
     "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
@@ -40,10 +39,10 @@
     "@types/babel__template": "^7.4.1",
     "@types/babel__traverse": "^7.20.1",
     "@types/svg-tags": "^1.0.0",
-    "@vue/runtime-dom": "3.3.4",
+    "@vue/runtime-dom": "^3.3.4",
     "@vue/test-utils": "^2.3.2",
     "regenerator-runtime": "^0.13.11",
-    "vue": "3.3.4"
+    "vue": "^3.3.4"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0"
