@@ -1,6 +1,19 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {},
-  "include": ["packages/*/src"],
-  "references": [{ "path": "./tsconfig.test.json" }]
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "jsx": "preserve",
+    "types": ["vitest/globals"],
+    "skipLibCheck": true
+  },
+  "include": ["packages/*/src", "packages/*/test"]
 }
