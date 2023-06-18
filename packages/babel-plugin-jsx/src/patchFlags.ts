@@ -31,4 +31,4 @@ export const PatchFlagNames = {
   [PatchFlags.NEED_PATCH]: 'NEED_PATCH',
   [PatchFlags.HOISTED]: 'HOISTED',
   [PatchFlags.BAIL]: 'BAIL',
-}
+};

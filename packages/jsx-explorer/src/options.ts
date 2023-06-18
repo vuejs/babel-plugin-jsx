@@ -1,14 +1,14 @@
-import { createApp, h, reactive } from 'vue'
-import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
+import { createApp, h, reactive } from 'vue';
+import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx';
 
-export { VueJSXPluginOptions }
+export { VueJSXPluginOptions };
 
 export const compilerOptions: VueJSXPluginOptions = reactive({
   mergeProps: true,
   optimize: false,
   transformOn: false,
   enableObjectSlots: true,
-})
+});
 
 const App = {
   setup() {
@@ -36,7 +36,7 @@ const App = {
               onChange(e: Event) {
                 compilerOptions.mergeProps = (
                   e.target as HTMLInputElement
-                ).checked
+                ).checked;
               },
             }),
             h('label', { for: 'mergeProps' }, 'mergeProps'),
@@ -51,7 +51,7 @@ const App = {
               onChange(e: Event) {
                 compilerOptions.optimize = (
                   e.target as HTMLInputElement
-                ).checked
+                ).checked;
               },
             }),
             h('label', { for: 'optimize' }, 'optimize'),
@@ -66,7 +66,7 @@ const App = {
               onChange(e: Event) {
                 compilerOptions.transformOn = (
                   e.target as HTMLInputElement
-                ).checked
+                ).checked;
               },
             }),
             h('label', { for: 'transformOn' }, 'transformOn'),
@@ -81,17 +81,17 @@ const App = {
               onChange(e: Event) {
                 compilerOptions.enableObjectSlots = (
                   e.target as HTMLInputElement
-                ).checked
+                ).checked;
               },
             }),
             h('label', { for: 'enableObjectSlots' }, 'enableObjectSlots'),
           ]),
         ]),
       ]),
-    ]
+    ];
   },
-}
+};
 
 export function initOptions() {
-  createApp(App).mount(document.getElementById('header')!)
+  createApp(App).mount(document.getElementById('header')!);
 }

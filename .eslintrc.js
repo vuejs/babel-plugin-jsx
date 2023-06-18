@@ -1,4 +1,4 @@
-const { builtinModules } = require('node:module')
+const { builtinModules } = require('node:module');
 
 module.exports = {
   root: true,
@@ -57,4 +57,4 @@ module.exports = {
       },
     ],
   },
-}
+};

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import MonacoEditorPlugin from 'vite-plugin-monaco-editor'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { defineConfig } from 'vite';
+import MonacoEditorPlugin from 'vite-plugin-monaco-editor';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
   plugins: [
@@ -11,4 +11,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+});

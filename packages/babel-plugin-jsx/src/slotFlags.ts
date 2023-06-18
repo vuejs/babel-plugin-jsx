@@ -21,4 +21,4 @@ const enum SlotFlags {
   FORWARDED = 3,
 }
 
-export default SlotFlags
+export default SlotFlags;

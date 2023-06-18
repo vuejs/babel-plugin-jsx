@@ -1,27 +1,27 @@
-import * as monaco from 'monaco-editor'
-import { watchEffect } from 'vue'
-import { transform } from '@babel/core'
-import babelPluginJsx from '@vue/babel-plugin-jsx'
+import * as monaco from 'monaco-editor';
+import { watchEffect } from 'vue';
+import { transform } from '@babel/core';
+import babelPluginJsx from '@vue/babel-plugin-jsx';
 import {
   type VueJSXPluginOptions,
   compilerOptions,
   initOptions,
-} from './options'
-import './index.css'
+} from './options';
+import './index.css';
 
-main()
+main();
 
 interface PersistedState {
-  src: string
-  options: VueJSXPluginOptions
+  src: string;
+  options: VueJSXPluginOptions;
 }
 
 function main() {
   const persistedState: PersistedState = JSON.parse(
     localStorage.getItem('state') || '{}'
-  )
+  );
 
-  Object.assign(compilerOptions, persistedState.options)
+  Object.assign(compilerOptions, persistedState.options);
 
   const sharedEditorOptions: monaco.editor.IStandaloneEditorConstructionOptions =
     {
@@ -34,14 +34,14 @@ function main() {
       minimap: {
         enabled: false,
       },
-    }
+    };
 
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     allowJs: true,
     allowNonTsExtensions: true,
     jsx: monaco.languages.typescript.JsxEmit.Preserve,
     target: monaco.languages.typescript.ScriptTarget.Latest,
-  })
+  });
 
   const editor = monaco.editor.create(document.getElementById('source')!, {
     value:
@@ -51,7 +51,7 @@ function main() {
     language: 'typescript',
     tabSize: 2,
     ...sharedEditorOptions,
-  })
+  });
 
   const output = monaco.editor.create(document.getElementById('output')!, {
     value: '',
@@ -59,17 +59,17 @@ function main() {
     readOnly: true,
     tabSize: 2,
     ...sharedEditorOptions,
-  })
+  });
 
   const reCompile = () => {
-    const src = editor.getValue()
+    const src = editor.getValue();
     const state = JSON.stringify({
       src,
       options: compilerOptions,
-    })
-    localStorage.setItem('state', state)
-    window.location.hash = encodeURIComponent(src)
-    console.clear()
+    });
+    localStorage.setItem('state', state);
+    window.location.hash = encodeURIComponent(src);
+    console.clear();
     transform(
       src,
       {
@@ -78,39 +78,39 @@ function main() {
         ast: true,
       },
       (err, result = {}) => {
-        const res = result!
+        const res = result!;
         if (!err) {
-          console.log('AST', res.ast!)
-          output.setValue(res.code!)
+          console.log('AST', res.ast!);
+          output.setValue(res.code!);
         } else {
-          output.setValue(err.message!)
+          output.setValue(err.message!);
         }
       }
-    )
-  }
+    );
+  };
 
   // handle resize
   window.addEventListener('resize', () => {
-    editor.layout()
-    output.layout()
-  })
+    editor.layout();
+    output.layout();
+  });
 
-  initOptions()
-  watchEffect(reCompile)
+  initOptions();
+  watchEffect(reCompile);
 
   // update compile output when input changes
-  editor.onDidChangeModelContent(debounce(reCompile))
+  editor.onDidChangeModelContent(debounce(reCompile));
 }
 
 function debounce<T extends (...args: any[]) => any>(fn: T, delay = 300): T {
-  let prevTimer: number | null = null
+  let prevTimer: number | null = null;
   return ((...args: any[]) => {
     if (prevTimer) {
-      clearTimeout(prevTimer)
+      clearTimeout(prevTimer);
     }
     prevTimer = window.setTimeout(() => {
-      fn(...args)
-      prevTimer = null
-    }, delay)
-  }) as any
+      fn(...args);
+      prevTimer = null;
+    }, delay);
+  }) as any;
 }
