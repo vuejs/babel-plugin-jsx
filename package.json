@@ -2,11 +2,12 @@
   "private": true,
   "packageManager": "pnpm@8.6.2",
   "scripts": {
-    "publish": "pnpm -r publish",
+    "build": "pnpm run -r build",
     "test": "vitest",
     "lint": "eslint --cache .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "release": "pnpm -r publish"
   },
   "license": "MIT",
   "keywords": [
