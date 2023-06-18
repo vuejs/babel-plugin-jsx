@@ -94,7 +94,7 @@ describe('Transform JSX', () => {
       },
     });
 
-    expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
+    expect(wrapper.html()).toBe('<div>123</div>\n<div>456</div>');
   });
 
   test('nested component', () => {
@@ -264,7 +264,7 @@ describe('directive', () => {
         return () => <h1 v-html={ html }></h1>;
       },
     });
-    expect(wrapper.html()).toBe('<h1><div>foo</div></h1>');
+    expect(wrapper.html()).toBe('<h1>\n  <div>foo</div>\n</h1>');
   });
 
   test('vText', () => {
@@ -582,9 +582,15 @@ describe('should support passing object slots via JSX children', () => {
       },
     });
 
-    expect(wrapper.html()).toBe(
-      '<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>',
-    );
+    expect(wrapper.html()).toMatchInlineSnapshot(
+    `
+      "<span><span>A</span>
+      <!----></span>
+      <span><span>B</span>
+      <!----></span>
+      <span><span>C</span>
+      <!----></span>"
+    `);
   });
 
   test('xx', () => {
@@ -602,8 +608,14 @@ describe('should support passing object slots via JSX children', () => {
       },
     });
 
-    expect(wrapper.html()).toBe(
-      '<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>',
-    );
+    expect(wrapper.html()).toMatchInlineSnapshot(
+    `
+      "<span><span>A</span>
+      <!----></span>
+      <span><span>B</span>
+      <!----></span>
+      <span><span>C</span>
+      <!----></span>"
+    `);
   });
 });

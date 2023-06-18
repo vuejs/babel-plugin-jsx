@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "composite": true,
     "sourceMap": true,
     "target": "es2015",
     "module": "ESNext",
@@ -13,8 +14,7 @@
     "removeComments": false,
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["packages/*/src"],
-  "references": [{ "path": "./tsconfig.test.json" }]
+  "include": ["packages/*/test"]
 }
