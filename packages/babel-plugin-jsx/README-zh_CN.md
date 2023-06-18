@@ -78,7 +78,7 @@ Default: `createVNode`
 函数式组件
 
 ```jsx
-const App = () => <div></div>;
+const App = () => <div></div>
 ```
 
 在 render 中使用
@@ -86,27 +86,25 @@ const App = () => <div></div>;
 ```jsx
 const App = {
   render() {
-    return <div>Vue 3.0</div>;
+    return <div>Vue 3.0</div>
   },
-};
+}
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from "vue";
+import { withModifiers, defineComponent } from 'vue'
 
 const App = defineComponent({
   setup() {
-    const count = ref(0);
+    const count = ref(0)
 
     const inc = () => {
-      count.value++;
-    };
+      count.value++
+    }
 
-    return () => (
-      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
-    );
+    return () => <div onClick={withModifiers(inc, ['self'])}>{count.value}</div>
   },
-});
+})
 ```
 
 Fragment
@@ -117,20 +115,20 @@ const App = () => (
     <span>I'm</span>
     <span>Fragment</span>
   </>
-);
+)
 ```
 
 ### Attributes / Props
 
 ```jsx
-const App = () => <input type="email" />;
+const App = () => <input type="email" />
 ```
 
 动态绑定:
 
 ```jsx
-const placeholderText = "email";
-const App = () => <input type="email" placeholder={placeholderText} />;
+const placeholderText = 'email'
+const App = () => <input type="email" placeholder={placeholderText} />
 ```
 
 ### 指令
@@ -140,12 +138,12 @@ const App = () => <input type="email" placeholder={placeholderText} />;
 ```jsx
 const App = {
   data() {
-    return { visible: true };
+    return { visible: true }
   },
   render() {
-    return <input v-show={this.visible} />;
+    return <input v-show={this.visible} />
   },
-};
+}
 ```
 
 #### v-model
@@ -161,11 +159,11 @@ const App = {
 ```
 
 ```jsx
-<input v-model={[val, ["modifier"]]} />
+<input v-model={[val, ['modifier']]} />
 ```
 
 ```jsx
-<A v-model={[val, "argument", ["modifier"]]} />
+<A v-model={[val, 'argument', ['modifier']]} />
 ```
 
 会编译成：
@@ -176,8 +174,8 @@ h(A, {
   argumentModifiers: {
     modifier: true,
   },
-  "onUpdate:argument": ($event) => (val = $event),
-});
+  'onUpdate:argument': ($event) => (val = $event),
+})
 ```
 
 #### v-models (从 1.1.0 开始不推荐使用)
@@ -185,14 +183,14 @@ h(A, {
 > 注意: 你应该传递一个二维数组给 v-models。
 
 ```jsx
-<A v-models={[[foo], [bar, "bar"]]} />
+<A v-models={[[foo], [bar, 'bar']]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, "foo"],
-    [bar, "bar"],
+    [foo, 'foo'],
+    [bar, 'bar'],
   ]}
 />
 ```
@@ -200,8 +198,8 @@ h(A, {
 ```jsx
 <A
   v-models={[
-    [foo, ["modifier"]],
-    [bar, "bar", ["modifier"]],
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
   ]}
 />
 ```
@@ -214,13 +212,13 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  "onUpdate:modelValue": ($event) => (foo = $event),
+  'onUpdate:modelValue': ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  "onUpdate:bar": ($event) => (bar = $event),
-});
+  'onUpdate:bar': ($event) => (bar = $event),
+})
 ```
 
 #### 自定义指令
@@ -231,18 +229,18 @@ h(A, {
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => <a v-custom:arg={val} />;
+    return () => <a v-custom:arg={val} />
   },
-};
+}
 ```
 
 ```jsx
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
+    return () => <a v-custom={[val, 'arg', ['a', 'b']]} />
   },
-};
+}
 ```
 
 ### 插槽
@@ -252,23 +250,23 @@ const App = {
 ```jsx
 const A = (props, { slots }) => (
   <>
-    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
-    <h2>{ slots.bar?.() }</h2>
+    <h1>{slots.default ? slots.default() : 'foo'}</h1>
+    <h2>{slots.bar?.()}</h2>
   </>
-);
+)
 
 const App = {
   setup() {
     const slots = {
       bar: () => <span>B</span>,
-    };
+    }
     return () => (
       <A v-slots={slots}>
         <div>A</div>
       </A>
-    );
+    )
   },
-};
+}
 
 // or
 
@@ -277,10 +275,10 @@ const App = {
     const slots = {
       default: () => <div>A</div>,
       bar: () => <span>B</span>,
-    };
-    return () => <A v-slots={slots} />;
+    }
+    return () => <A v-slots={slots} />
   },
-};
+}
 
 // 或者，当 `enableObjectSlots` 不是 `false` 时，您可以使用对象插槽
 const App = {
@@ -293,11 +291,11 @@ const App = {
             bar: () => <span>B</span>,
           }}
         </A>
-        <B>{() => "foo"}</B>
+        <B>{() => 'foo'}</B>
       </>
-    );
+    )
   },
-};
+}
 ```
 
 ### 在 TypeScript 中使用

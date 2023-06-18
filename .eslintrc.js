@@ -14,9 +14,7 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import'],
-  extends: [
-    'airbnb-typescript/base',
-  ],
+  extends: ['airbnb-typescript/base'],
   rules: {
     'no-nested-ternary': [0],
     'no-param-reassign': [0],
@@ -30,4 +28,4 @@ module.exports = {
     'prefer-destructuring': [2, { array: false }],
     'max-len': [0],
   },
-};
+}
