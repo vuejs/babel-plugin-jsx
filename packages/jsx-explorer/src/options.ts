@@ -1,7 +1,7 @@
 import {
   h, reactive, createApp,
 } from 'vue';
-import { VueJSXPluginOptions } from '../../babel-plugin-jsx/src';
+import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx';
 
 export { VueJSXPluginOptions };
 
