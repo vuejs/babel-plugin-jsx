@@ -17,7 +17,7 @@ const App = {
       h(
         'a',
         {
-          href: 'https://app.netlify.com/sites/vue-next-jsx-explorer/deploys',
+          href: 'https://app.netlify.com/sites/vue-jsx-explorer/deploys',
           target: '_blank',
         },
         'History'
