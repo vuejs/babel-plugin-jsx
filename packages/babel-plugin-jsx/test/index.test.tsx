@@ -234,8 +234,8 @@ describe('Transform JSX', () => {
     const wrapper = shallowMount({
       setup() {
         return () => (
-          <a
-            href="huhu"
+          <button
+            type="button"
             {...data}
             class={{ c: true }}
             onClick={() => calls.push(4)}
@@ -246,7 +246,7 @@ describe('Transform JSX', () => {
     });
 
     expect(wrapper.attributes('id')).toBe('hehe');
-    expect(wrapper.attributes('href')).toBe('huhu');
+    expect(wrapper.attributes('type')).toBe('button');
     expect(wrapper.text()).toBe('2');
     expect(wrapper.classes()).toEqual(expect.arrayContaining(['a', 'b', 'c']));
 
