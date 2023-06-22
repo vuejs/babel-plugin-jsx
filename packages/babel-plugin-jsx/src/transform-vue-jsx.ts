@@ -86,13 +86,11 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
         const attributeValue = getJSXAttributeValue(prop, state);
 
-        if (name === 'class' && attributeValue?.type === 'StringLiteral') {
-          const normalizedClassName = attributeValue.value
+        if (attributeValue?.type === 'StringLiteral') {
+          attributeValue.value = attributeValue.value
             .trim()
             .replace(/r?\n|\r/g, '')
             .replace(/\s\s+/g, ' ');
-
-          attributeValue.value = normalizedClassName;
         }
 
         if (!isConstant(attributeValue) || name === 'ref') {

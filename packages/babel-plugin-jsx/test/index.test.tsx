@@ -132,7 +132,7 @@ describe('Transform JSX', () => {
     expect(wrapper.classes().sort()).toEqual(['a', 'b'].sort());
   });
 
-  test('Multiline class outputs', () => {
+  test('Multiline string attributes outputs', () => {
     const wrapper = shallowMount({
       render() {
         return (
@@ -141,6 +141,10 @@ describe('Transform JSX', () => {
             class="
               foo  
               	baz
+              bar
+            "
+            data-string="
+              foo
               bar
             "
           >
