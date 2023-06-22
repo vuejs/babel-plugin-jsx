@@ -1,9 +1,13 @@
 import * as t from '@babel/types';
-import { NodePath } from '@babel/traverse';
+import { type NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
 import type { State } from './interface';
 
-export type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression;
+export type Tag =
+  | t.Identifier
+  | t.MemberExpression
+  | t.StringLiteral
+  | t.CallExpression;
 
 /**
  * Get JSX element type
@@ -11,37 +15,35 @@ export type Tag = t.Identifier | t.MemberExpression | t.StringLiteral | t.CallEx
  * @param path Path<JSXOpeningElement>
  */
 const getType = (path: NodePath<t.JSXOpeningElement>) => {
-  const typePath = path
-    .get('attributes')
-    .find((attribute) => {
-      if (!t.isJSXAttribute(attribute)) {
-        return false;
-      }
-      return t.isJSXIdentifier(attribute.get('name'))
-        && (attribute.get('name') as NodePath<t.JSXIdentifier>).node.name === 'type';
-    }) as NodePath<t.JSXAttribute> | undefined;
+  const typePath = path.get('attributes').find((attribute) => {
+    if (!attribute.isJSXAttribute()) {
+      return false;
+    }
+    return (
+      attribute.get('name').isJSXIdentifier() &&
+      (attribute.get('name') as NodePath<t.JSXIdentifier>).node.name === 'type'
+    );
+  }) as NodePath<t.JSXAttribute> | undefined;
 
   return typePath ? typePath.get('value').node : null;
 };
 
-const parseModifiers = (value: any): string[] => (
+const parseModifiers = (value: any): string[] =>
   t.isArrayExpression(value)
     ? value.elements
-      .map((el) => (t.isStringLiteral(el) ? el.value : ''))
-      .filter(Boolean)
-    : []);
+        .map((el) => (t.isStringLiteral(el) ? el.value : ''))
+        .filter(Boolean)
+    : [];
 
 const parseDirectives = (params: {
-  name: string,
-  path: NodePath<t.JSXAttribute>,
-  value: t.Expression | null,
-  state: State,
-  tag: Tag,
-  isComponent: boolean
+  name: string;
+  path: NodePath<t.JSXAttribute>;
+  value: t.Expression | null;
+  state: State;
+  tag: Tag;
+  isComponent: boolean;
 }) => {
-  const {
-    path, value, state, tag, isComponent,
-  } = params;
+  const { path, value, state, tag, isComponent } = params;
   const args: Array<t.Expression | t.NullLiteral> = [];
   const vals: t.Expression[] = [];
   const modifiersSet: Set<string>[] = [];
@@ -70,7 +72,7 @@ const parseDirectives = (params: {
 
   const isVModels = directiveName === 'models';
   const isVModel = directiveName === 'model';
-  if (isVModel && !t.isJSXExpressionContainer(path.get('value'))) {
+  if (isVModel && !path.get('value').isJSXExpressionContainer()) {
     throw new Error('You have to use JSX Expression inside your v-model');
   }
 
@@ -78,8 +80,9 @@ const parseDirectives = (params: {
     throw new Error('v-models can only use in custom components');
   }
 
-  const shouldResolve = !['html', 'text', 'model', 'models'].includes(directiveName)
-    || (isVModel && !isComponent);
+  const shouldResolve =
+    !['html', 'text', 'model', 'models'].includes(directiveName) ||
+    (isVModel && !isComponent);
 
   let modifiers = directiveModifiers;
 
@@ -94,7 +97,11 @@ const parseDirectives = (params: {
       const { elements } = element as t.ArrayExpression;
       const [first, second, third] = elements;
 
-      if (second && !t.isArrayExpression(second) && !t.isSpreadElement(second)) {
+      if (
+        second &&
+        !t.isArrayExpression(second) &&
+        !t.isSpreadElement(second)
+      ) {
         args.push(second);
         modifiers = parseModifiers(third as t.ArrayExpression);
       } else if (t.isArrayExpression(second)) {
@@ -122,21 +129,21 @@ const parseDirectives = (params: {
     modifiers: modifiersSet,
     values: vals.length ? vals : [value],
     args,
-    directive: shouldResolve ? [
-      resolveDirective(path, state, tag, directiveName),
-      vals[0] || value,
-      modifiersSet[0]?.size
-        ? args[0] || t.unaryExpression('void', t.numericLiteral(0), true)
-        : args[0],
-      !!modifiersSet[0]?.size && t.objectExpression(
-        [...modifiersSet[0]].map(
-          (modifier) => t.objectProperty(
-            t.identifier(modifier),
-            t.booleanLiteral(true),
-          ),
-        ),
-      ),
-    ].filter(Boolean) as t.Expression[] : undefined,
+    directive: shouldResolve
+      ? ([
+          resolveDirective(path, state, tag, directiveName),
+          vals[0] || value,
+          modifiersSet[0]?.size
+            ? args[0] || t.unaryExpression('void', t.numericLiteral(0), true)
+            : args[0],
+          !!modifiersSet[0]?.size &&
+            t.objectExpression(
+              [...modifiersSet[0]].map((modifier) =>
+                t.objectProperty(t.identifier(modifier), t.booleanLiteral(true))
+              )
+            ),
+        ].filter(Boolean) as t.Expression[])
+      : undefined,
   };
 };
 
@@ -144,7 +151,7 @@ const resolveDirective = (
   path: NodePath<t.JSXAttribute>,
   state: State,
   tag: Tag,
-  directiveName: string,
+  directiveName: string
 ) => {
   if (directiveName === 'show') {
     return createIdentifier(state, 'vShow');
@@ -177,11 +184,9 @@ const resolveDirective = (
     }
     return modelToUse;
   }
-  return t.callExpression(
-    createIdentifier(state, 'resolveDirective'), [
-      t.stringLiteral(directiveName),
-    ],
-  );
+  return t.callExpression(createIdentifier(state, 'resolveDirective'), [
+    t.stringLiteral(directiveName),
+  ]);
 };
 
 export default parseDirectives;

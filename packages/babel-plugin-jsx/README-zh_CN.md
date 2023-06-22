@@ -1,6 +1,6 @@
 # Vue 3 Babel JSX 插件
 
-[![CircleCI](https://circleci.com/gh/vuejs/babel-plugin-jsx.svg?style=svg)](https://circleci.com/gh/vuejs/vue-next) [![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
+[![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
 [![issues-helper](https://img.shields.io/badge/Issues%20Manage%20By-issues--helper-orange?style=flat-square)](https://github.com/actions-cool/issues-helper)
 
 以 JSX 的方式来编写 Vue 代码
@@ -92,7 +92,7 @@ const App = {
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from "vue";
+import { withModifiers, defineComponent } from 'vue';
 
 const App = defineComponent({
   setup() {
@@ -103,7 +103,7 @@ const App = defineComponent({
     };
 
     return () => (
-      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
+      <div onClick={withModifiers(inc, ['self'])}>{count.value}</div>
     );
   },
 });
@@ -129,7 +129,7 @@ const App = () => <input type="email" />;
 动态绑定:
 
 ```jsx
-const placeholderText = "email";
+const placeholderText = 'email';
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
@@ -161,11 +161,11 @@ const App = {
 ```
 
 ```jsx
-<input v-model={[val, ["modifier"]]} />
+<input v-model={[val, ['modifier']]} />
 ```
 
 ```jsx
-<A v-model={[val, "argument", ["modifier"]]} />
+<A v-model={[val, 'argument', ['modifier']]} />
 ```
 
 会编译成：
@@ -176,7 +176,7 @@ h(A, {
   argumentModifiers: {
     modifier: true,
   },
-  "onUpdate:argument": ($event) => (val = $event),
+  'onUpdate:argument': ($event) => (val = $event),
 });
 ```
 
@@ -185,14 +185,14 @@ h(A, {
 > 注意: 你应该传递一个二维数组给 v-models。
 
 ```jsx
-<A v-models={[[foo], [bar, "bar"]]} />
+<A v-models={[[foo], [bar, 'bar']]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, "foo"],
-    [bar, "bar"],
+    [foo, 'foo'],
+    [bar, 'bar'],
   ]}
 />
 ```
@@ -200,8 +200,8 @@ h(A, {
 ```jsx
 <A
   v-models={[
-    [foo, ["modifier"]],
-    [bar, "bar", ["modifier"]],
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
   ]}
 />
 ```
@@ -214,12 +214,12 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  "onUpdate:modelValue": ($event) => (foo = $event),
+  'onUpdate:modelValue': ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  "onUpdate:bar": ($event) => (bar = $event),
+  'onUpdate:bar': ($event) => (bar = $event),
 });
 ```
 
@@ -240,7 +240,7 @@ const App = {
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
+    return () => <a v-custom={[val, 'arg', ['a', 'b']]} />;
   },
 };
 ```
@@ -252,8 +252,8 @@ const App = {
 ```jsx
 const A = (props, { slots }) => (
   <>
-    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
-    <h2>{ slots.bar?.() }</h2>
+    <h1>{slots.default ? slots.default() : 'foo'}</h1>
+    <h2>{slots.bar?.()}</h2>
   </>
 );
 
@@ -293,7 +293,7 @@ const App = {
             bar: () => <span>B</span>,
           }}
         </A>
-        <B>{() => "foo"}</B>
+        <B>{() => 'foo'}</B>
       </>
     );
   },

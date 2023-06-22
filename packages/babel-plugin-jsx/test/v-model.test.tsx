@@ -1,17 +1,20 @@
-import { shallowMount, mount } from '@vue/test-utils';
-import { defineComponent, VNode } from '@vue/runtime-dom';
+import { mount, shallowMount } from '@vue/test-utils';
+import { type VNode, defineComponent } from '@vue/runtime-dom';
 
 test('input[type="checkbox"] should work', async () => {
-  const wrapper = shallowMount({
-    data() {
-      return {
-        test: true,
-      };
+  const wrapper = shallowMount(
+    {
+      data() {
+        return {
+          test: true,
+        };
+      },
+      render() {
+        return <input type="checkbox" v-model={this.test} />;
+      },
     },
-    render() {
-      return <input type="checkbox" v-model={this.test} />;
-    }
-  }, { attachTo: document.body });
+    { attachTo: document.body }
+  );
 
   expect(wrapper.vm.$el.checked).toBe(true);
   wrapper.vm.test = false;
@@ -24,19 +27,22 @@ test('input[type="checkbox"] should work', async () => {
 });
 
 test('input[type="radio"] should work', async () => {
-  const wrapper = shallowMount({
-    data: () => ({
-      test: '1',
-    }),
-    render() {
-      return (
-        <>
-          <input type="radio" value="1" v-model={this.test} name="test" />
-          <input type="radio" value="2" v-model={this.test} name="test" />
-        </>
-      );
+  const wrapper = shallowMount(
+    {
+      data: () => ({
+        test: '1',
+      }),
+      render() {
+        return (
+          <>
+            <input type="radio" value="1" v-model={this.test} name="test" />
+            <input type="radio" value="2" v-model={this.test} name="test" />
+          </>
+        );
+      },
     },
-  }, { attachTo: document.body });
+    { attachTo: document.body }
+  );
 
   const [a, b] = wrapper.vm.$.subTree.children as VNode[];
 
@@ -244,9 +250,7 @@ test('Named model', async () => {
       const handleClick = () => {
         emit('update:value', 2);
       };
-      return () => (
-        <div onClick={ handleClick }>{ props.value }</div>
-      );
+      return () => <div onClick={handleClick}>{props.value}</div>;
     },
   });
 
@@ -255,7 +259,7 @@ test('Named model', async () => {
       foo: 0,
     }),
     render() {
-      return <Child v-model:value={ this.foo } />;
+      return <Child v-model:value={this.foo} />;
     },
   });
 

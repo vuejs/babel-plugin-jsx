@@ -1,6 +1,6 @@
-# Babel Plugin JSX for Vue 3.0
+# Babel Plugin JSX for Vue 3
 
-[![CircleCI](https://circleci.com/gh/vuejs/babel-plugin-jsx.svg?style=svg)](https://circleci.com/gh/vuejs/babel-plugin-jsx) [![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
+[![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
 [![issues-helper](https://img.shields.io/badge/Issues%20Manage%20By-issues--helper-blueviolet?style=flat-square)](https://github.com/actions-cool/issues-helper)
 
 To add Vue JSX support.
@@ -96,7 +96,7 @@ const App = {
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from "vue";
+import { withModifiers, defineComponent } from 'vue';
 
 const App = defineComponent({
   setup() {
@@ -107,7 +107,7 @@ const App = defineComponent({
     };
 
     return () => (
-      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
+      <div onClick={withModifiers(inc, ['self'])}>{count.value}</div>
     );
   },
 });
@@ -133,7 +133,7 @@ const App = () => <input type="email" />;
 with a dynamic binding:
 
 ```jsx
-const placeholderText = "email";
+const placeholderText = 'email';
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
@@ -165,11 +165,11 @@ const App = {
 ```
 
 ```jsx
-<input v-model={[val, ["modifier"]]} />
+<input v-model={[val, ['modifier']]} />
 ```
 
 ```jsx
-<A v-model={[val, "argument", ["modifier"]]} />
+<A v-model={[val, 'argument', ['modifier']]} />
 ```
 
 Will compile to:
@@ -180,7 +180,7 @@ h(A, {
   argumentModifiers: {
     modifier: true,
   },
-  "onUpdate:argument": ($event) => (val = $event),
+  'onUpdate:argument': ($event) => (val = $event),
 });
 ```
 
@@ -189,14 +189,14 @@ h(A, {
 > Note: You should pass a Two-dimensional Arrays to v-models.
 
 ```jsx
-<A v-models={[[foo], [bar, "bar"]]} />
+<A v-models={[[foo], [bar, 'bar']]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, "foo"],
-    [bar, "bar"],
+    [foo, 'foo'],
+    [bar, 'bar'],
   ]}
 />
 ```
@@ -204,8 +204,8 @@ h(A, {
 ```jsx
 <A
   v-models={[
-    [foo, ["modifier"]],
-    [bar, "bar", ["modifier"]],
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
   ]}
 />
 ```
@@ -218,12 +218,12 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  "onUpdate:modelValue": ($event) => (foo = $event),
+  'onUpdate:modelValue': ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  "onUpdate:bar": ($event) => (bar = $event),
+  'onUpdate:bar': ($event) => (bar = $event),
 });
 ```
 
@@ -244,7 +244,7 @@ const App = {
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
+    return () => <a v-custom={[val, 'arg', ['a', 'b']]} />;
   },
 };
 ```
@@ -256,8 +256,8 @@ const App = {
 ```jsx
 const A = (props, { slots }) => (
   <>
-    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
-    <h2>{ slots.bar?.() }</h2>
+    <h1>{slots.default ? slots.default() : 'foo'}</h1>
+    <h2>{slots.bar?.()}</h2>
   </>
 );
 
@@ -297,7 +297,7 @@ const App = {
             bar: () => <span>B</span>,
           }}
         </A>
-        <B>{() => "foo"}</B>
+        <B>{() => 'foo'}</B>
       </>
     );
   },

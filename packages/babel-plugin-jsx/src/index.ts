@@ -1,12 +1,14 @@
 import * as t from '@babel/types';
-import * as BabelCore from '@babel/core';
+import type * as BabelCore from '@babel/core';
 import template from '@babel/template';
+// @ts-expect-error
 import syntaxJsx from '@babel/plugin-syntax-jsx';
-import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports';
-import { NodePath } from '@babel/traverse';
+// @ts-expect-error
+import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports';
+import { type NodePath } from '@babel/traverse';
 import transformVueJSX from './transform-vue-jsx';
 import sugarFragment from './sugar-fragment';
-import type { VueJSXPluginOptions, State } from './interface';
+import type { State, VueJSXPluginOptions } from './interface';
 
 export { VueJSXPluginOptions };
 
@@ -77,7 +79,7 @@ export default ({ types }: typeof BabelCore) => ({
                   return importMap.runtimeIsSlot;
                 }
                 const { name: isVNodeName } = state.get(
-                  'isVNode',
+                  'isVNode'
                 )() as t.Identifier;
                 const isSlot = path.scope.generateUidIdentifier('isSlot');
                 const ast = template.ast`
@@ -119,21 +121,24 @@ export default ({ types }: typeof BabelCore) => ({
                 }
                 const isSlot = path.scope.generateUidIdentifier('isSlot');
                 const { object: objectName } = state.get(
-                  'isVNode',
+                  'isVNode'
                 )() as t.MemberExpression;
                 const ast = template.ast`
                   function ${isSlot.name}(s) {
-                    return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${(objectName as t.Identifier).name}.isVNode(s));
+                    return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${
+                      (objectName as t.Identifier).name
+                    }.isVNode(s));
                   }
                 `;
 
                 const nodePaths = path.get('body') as NodePath[];
                 const lastImport = nodePaths
                   .filter(
-                    (p) => p.isVariableDeclaration()
-                      && p.node.declarations.some(
-                        (d) => (d.id as t.Identifier)?.name === sourceName.name,
-                      ),
+                    (p) =>
+                      p.isVariableDeclaration() &&
+                      p.node.declarations.some(
+                        (d) => (d.id as t.Identifier)?.name === sourceName.name
+                      )
                   )
                   .pop();
                 if (lastImport) {
@@ -169,17 +174,18 @@ export default ({ types }: typeof BabelCore) => ({
 
         body
           .filter(
-            (nodePath) => t.isImportDeclaration(nodePath.node)
-              && nodePath.node.source.value === 'vue',
+            (nodePath) =>
+              t.isImportDeclaration(nodePath.node) &&
+              nodePath.node.source.value === 'vue'
           )
           .forEach((nodePath) => {
             const { specifiers } = nodePath.node as t.ImportDeclaration;
             let shouldRemove = false;
             specifiers.forEach((specifier) => {
               if (
-                !specifier.loc
-                && t.isImportSpecifier(specifier)
-                && t.isIdentifier(specifier.imported)
+                !specifier.loc &&
+                t.isImportSpecifier(specifier) &&
+                t.isIdentifier(specifier.imported)
               ) {
                 specifiersMap.set(specifier.imported.name, specifier);
                 shouldRemove = true;
@@ -191,12 +197,12 @@ export default ({ types }: typeof BabelCore) => ({
           });
 
         const specifiers = [...specifiersMap.keys()].map(
-          (imported) => specifiersMap.get(imported)!,
+          (imported) => specifiersMap.get(imported)!
         );
         if (specifiers.length) {
           path.unshiftContainer(
             'body',
-            t.importDeclaration(specifiers, t.stringLiteral('vue')),
+            t.importDeclaration(specifiers, t.stringLiteral('vue'))
           );
         }
       },
