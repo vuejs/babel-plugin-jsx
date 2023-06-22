@@ -40,7 +40,7 @@
     "@types/babel__traverse": "^7.20.1",
     "@types/svg-tags": "^1.0.0",
     "@vue/runtime-dom": "^3.3.4",
-    "@vue/test-utils": "^2.3.2",
+    "@vue/test-utils": "^2.4.0",
     "regenerator-runtime": "^0.13.11",
     "vue": "^3.3.4"
   },
