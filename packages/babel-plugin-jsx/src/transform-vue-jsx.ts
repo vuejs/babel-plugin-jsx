@@ -79,7 +79,6 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
   const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] =
     [];
   const { mergeProps = true } = state.opts;
-
   props.forEach((prop) => {
     if (prop.isJSXAttribute()) {
       let name = getJSXAttributeName(prop);
@@ -89,8 +88,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       if (attributeValue?.type === 'StringLiteral') {
         attributeValue.value = attributeValue.value
           .trim()
-          .replace(/r?\n|\r/g, '')
-          .replace(/\s\s+/g, ' ');
+          .replace(/r?\n|\r/g, '');
       }
 
       if (!isConstant(attributeValue) || name === 'ref') {
