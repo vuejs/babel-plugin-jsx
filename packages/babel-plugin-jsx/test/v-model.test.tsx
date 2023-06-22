@@ -3,7 +3,7 @@ import { type VNode, defineComponent } from '@vue/runtime-dom';
 
 test('input[type="checkbox"] should work', async () => {
   const wrapper = shallowMount(
-    {
+    defineComponent({
       data() {
         return {
           test: true,
@@ -12,7 +12,7 @@ test('input[type="checkbox"] should work', async () => {
       render() {
         return <input type="checkbox" v-model={this.test} />;
       },
-    },
+    }),
     { attachTo: document.body }
   );
 
@@ -28,7 +28,7 @@ test('input[type="checkbox"] should work', async () => {
 
 test('input[type="radio"] should work', async () => {
   const wrapper = shallowMount(
-    {
+    defineComponent({
       data: () => ({
         test: '1',
       }),
@@ -40,7 +40,7 @@ test('input[type="radio"] should work', async () => {
           </>
         );
       },
-    },
+    }),
     { attachTo: document.body }
   );
 
@@ -58,20 +58,22 @@ test('input[type="radio"] should work', async () => {
 });
 
 test('select should work with value bindings', async () => {
-  const wrapper = shallowMount({
-    data: () => ({
-      test: 2,
-    }),
-    render() {
-      return (
-        <select v-model={this.test}>
-          <option value="1">a</option>
-          <option value={2}>b</option>
-          <option value={3}>c</option>
-        </select>
-      );
-    },
-  });
+  const wrapper = shallowMount(
+    defineComponent({
+      data: () => ({
+        test: 2,
+      }),
+      render() {
+        return (
+          <select v-model={this.test}>
+            <option value="1">a</option>
+            <option value={2}>b</option>
+            <option value={3}>c</option>
+          </select>
+        );
+      },
+    })
+  );
 
   const el = wrapper.vm.$el;
 
@@ -92,14 +94,16 @@ test('select should work with value bindings', async () => {
 });
 
 test('textarea should update value both ways', async () => {
-  const wrapper = shallowMount({
-    data: () => ({
-      test: 'b',
-    }),
-    render() {
-      return <textarea v-model={this.test} />;
-    },
-  });
+  const wrapper = shallowMount(
+    defineComponent({
+      data: () => ({
+        test: 'b',
+      }),
+      render() {
+        return <textarea v-model={this.test} />;
+      },
+    })
+  );
   const el = wrapper.vm.$el;
 
   expect(el.value).toBe('b');
@@ -112,14 +116,16 @@ test('textarea should update value both ways', async () => {
 });
 
 test('input[type="text"] should update value both ways', async () => {
-  const wrapper = shallowMount({
-    data: () => ({
-      test: 'b',
-    }),
-    render() {
-      return <input v-model={this.test} />;
-    },
-  });
+  const wrapper = shallowMount(
+    defineComponent({
+      data: () => ({
+        test: 'b',
+      }),
+      render() {
+        return <input v-model={this.test} />;
+      },
+    })
+  );
   const el = wrapper.vm.$el;
 
   expect(el.value).toBe('b');
@@ -132,14 +138,16 @@ test('input[type="text"] should update value both ways', async () => {
 });
 
 test('input[type="text"] .lazy modifier', async () => {
-  const wrapper = shallowMount({
-    data: () => ({
-      test: 'b',
-    }),
-    render() {
-      return <input v-model={[this.test, ['lazy']]} />;
-    },
-  });
+  const wrapper = shallowMount(
+    defineComponent({
+      data: () => ({
+        test: 'b',
+      }),
+      render() {
+        return <input v-model={[this.test, ['lazy']]} />;
+      },
+    })
+  );
   const el = wrapper.vm.$el;
 
   expect(el.value).toBe('b');
@@ -153,17 +161,19 @@ test('input[type="text"] .lazy modifier', async () => {
 });
 
 test('dynamic type should work', async () => {
-  const wrapper = shallowMount({
-    data() {
-      return {
-        test: true,
-        type: 'checkbox',
-      };
-    },
-    render() {
-      return <input type={this.type} v-model={this.test} />;
-    },
-  });
+  const wrapper = shallowMount(
+    defineComponent({
+      data() {
+        return {
+          test: true,
+          type: 'checkbox',
+        };
+      },
+      render() {
+        return <input type={this.type} v-model={this.test} />;
+      },
+    })
+  );
 
   expect(wrapper.vm.$el.checked).toBe(true);
   wrapper.vm.test = false;
@@ -172,14 +182,16 @@ test('dynamic type should work', async () => {
 });
 
 test('underscore modifier should work', async () => {
-  const wrapper = shallowMount({
-    data: () => ({
-      test: 'b',
-    }),
-    render() {
-      return <input v-model_lazy={this.test} />;
-    },
-  });
+  const wrapper = shallowMount(
+    defineComponent({
+      data: () => ({
+        test: 'b',
+      }),
+      render() {
+        return <input v-model_lazy={this.test} />;
+      },
+    })
+  );
   const el = wrapper.vm.$el;
 
   expect(el.value).toBe('b');
@@ -218,16 +230,18 @@ test('underscore modifier should work in custom component', async () => {
     },
   });
 
-  const wrapper = mount({
-    data() {
-      return {
-        foo: 1,
-      };
-    },
-    render() {
-      return <Child v-model_double={this.foo} />;
-    },
-  });
+  const wrapper = mount(
+    defineComponent({
+      data() {
+        return {
+          foo: 1,
+        };
+      },
+      render() {
+        return <Child v-model_double={this.foo} />;
+      },
+    })
+  );
 
   expect(wrapper.html()).toBe('<div>2</div>');
   wrapper.vm.$data.foo += 1;
@@ -254,14 +268,16 @@ test('Named model', async () => {
     },
   });
 
-  const wrapper = mount({
-    data: () => ({
-      foo: 0,
-    }),
-    render() {
-      return <Child v-model:value={this.foo} />;
-    },
-  });
+  const wrapper = mount(
+    defineComponent({
+      data: () => ({
+        foo: 0,
+      }),
+      render() {
+        return <Child v-model:value={this.foo} />;
+      },
+    })
+  );
 
   expect(wrapper.html()).toBe('<div>0</div>');
   wrapper.vm.$data.foo += 1;

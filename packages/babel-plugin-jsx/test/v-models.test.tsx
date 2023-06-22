@@ -15,16 +15,18 @@ test('single value binding should work', async () => {
     },
   });
 
-  const wrapper = mount({
-    data() {
-      return {
-        foo: 1,
-      };
-    },
-    render() {
-      return <Child v-models={[[this.foo, 'foo']]} />;
-    },
-  });
+  const wrapper = mount(
+    defineComponent({
+      data() {
+        return {
+          foo: 1,
+        };
+      },
+      render() {
+        return <Child v-models={[[this.foo, 'foo']]} />;
+      },
+    })
+  );
 
   expect(wrapper.html()).toBe('<div>1</div>');
   wrapper.vm.$data.foo += 1;
@@ -54,24 +56,26 @@ test('multiple values binding should work', async () => {
     },
   });
 
-  const wrapper = mount({
-    data() {
-      return {
-        foo: 1,
-        bar: 0,
-      };
-    },
-    render() {
-      return (
-        <Child
-          v-models={[
-            [this.foo, 'foo'],
-            [this.bar, 'bar'],
-          ]}
-        />
-      );
-    },
-  });
+  const wrapper = mount(
+    defineComponent({
+      data() {
+        return {
+          foo: 1,
+          bar: 0,
+        };
+      },
+      render() {
+        return (
+          <Child
+            v-models={[
+              [this.foo, 'foo'],
+              [this.bar, 'bar'],
+            ]}
+          />
+        );
+      },
+    })
+  );
 
   expect(wrapper.html()).toBe('<div>1,0</div>');
   wrapper.vm.$data.foo += 1;
@@ -106,16 +110,18 @@ test('modifier should work', async () => {
     },
   });
 
-  const wrapper = mount({
-    data() {
-      return {
-        foo: 1,
-      };
-    },
-    render() {
-      return <Child v-models={[[this.foo, 'foo', ['double']]]} />;
-    },
-  });
+  const wrapper = mount(
+    defineComponent({
+      data() {
+        return {
+          foo: 1,
+        };
+      },
+      render() {
+        return <Child v-models={[[this.foo, 'foo', ['double']]]} />;
+      },
+    })
+  );
 
   expect(wrapper.html()).toBe('<div>2</div>');
   wrapper.vm.$data.foo += 1;
