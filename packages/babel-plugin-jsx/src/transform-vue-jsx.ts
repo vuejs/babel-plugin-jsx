@@ -86,6 +86,13 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
       const attributeValue = getJSXAttributeValue(prop, state);
 
+      if (attributeValue?.type === 'StringLiteral') {
+        attributeValue.value = attributeValue.value
+          .trim()
+          .replace(/r?\n|\r/g, '')
+          .replace(/\s\s+/g, ' ');
+      }
+
       if (!isConstant(attributeValue) || name === 'ref') {
         if (
           !isComponent &&
