@@ -1,42 +1,40 @@
-/* eslint-disable no-console */
-// eslint-disable-next-line import/no-unresolved
-import * as m from 'monaco-editor';
+import * as monaco from 'monaco-editor';
 import { watchEffect } from 'vue';
 import { transform } from '@babel/core';
-import babelPluginJsx from '../../babel-plugin-jsx/src';
-import { initOptions, compilerOptions, VueJSXPluginOptions } from './options';
+import babelPluginJsx from '@vue/babel-plugin-jsx';
+import {
+  type VueJSXPluginOptions,
+  compilerOptions,
+  initOptions,
+} from './options';
 import './index.css';
 
-declare global {
-  interface Window {
-    monaco: typeof m
-    init: () => void
-  }
-}
+main();
 
 interface PersistedState {
-  src: string
-  options: VueJSXPluginOptions
+  src: string;
+  options: VueJSXPluginOptions;
 }
 
-window.init = () => {
-  const { monaco } = window;
-
-  const persistedState: PersistedState = JSON.parse(localStorage.getItem('state') || '{}');
+function main() {
+  const persistedState: PersistedState = JSON.parse(
+    localStorage.getItem('state') || '{}'
+  );
 
   Object.assign(compilerOptions, persistedState.options);
 
-  const sharedEditorOptions: m.editor.IStandaloneEditorConstructionOptions = {
-    theme: 'vs-dark',
-    fontSize: 14,
-    wordWrap: 'on',
-    scrollBeyondLastLine: false,
-    renderWhitespace: 'selection',
-    contextmenu: false,
-    minimap: {
-      enabled: false,
-    },
-  };
+  const sharedEditorOptions: monaco.editor.IStandaloneEditorConstructionOptions =
+    {
+      theme: 'vs-dark',
+      fontSize: 14,
+      wordWrap: 'on',
+      scrollBeyondLastLine: false,
+      renderWhitespace: 'selection',
+      contextmenu: false,
+      minimap: {
+        enabled: false,
+      },
+    };
 
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     allowJs: true,
@@ -46,7 +44,10 @@ window.init = () => {
   });
 
   const editor = monaco.editor.create(document.getElementById('source')!, {
-    value: decodeURIComponent(window.location.hash.slice(1)) || persistedState.src || 'const App = () => <div>Hello World</div>',
+    value:
+      decodeURIComponent(window.location.hash.slice(1)) ||
+      persistedState.src ||
+      'const App = () => <div>Hello World</div>',
     language: 'typescript',
     tabSize: 2,
     ...sharedEditorOptions,
@@ -69,19 +70,23 @@ window.init = () => {
     localStorage.setItem('state', state);
     window.location.hash = encodeURIComponent(src);
     console.clear();
-    transform(src, {
-      babelrc: false,
-      plugins: [[babelPluginJsx, compilerOptions]],
-      ast: true,
-    }, (err, result = {}) => {
-      const res = result!;
-      if (!err) {
-        console.log('AST', res.ast!);
-        output.setValue(res.code!);
-      } else {
-        output.setValue(err.message!);
+    transform(
+      src,
+      {
+        babelrc: false,
+        plugins: [[babelPluginJsx, compilerOptions]],
+        ast: true,
+      },
+      (err, result = {}) => {
+        const res = result!;
+        if (!err) {
+          console.log('AST', res.ast!);
+          output.setValue(res.code!);
+        } else {
+          output.setValue(err.message!);
+        }
       }
-    });
+    );
   };
 
   // handle resize
@@ -95,11 +100,9 @@ window.init = () => {
 
   // update compile output when input changes
   editor.onDidChangeModelContent(debounce(reCompile));
-};
+}
 
-function debounce<T extends(...args: any[]) => any>(
-  fn: T,
-  delay = 300): T {
+function debounce<T extends (...args: any[]) => any>(fn: T, delay = 300): T {
   let prevTimer: number | null = null;
   return ((...args: any[]) => {
     if (prevTimer) {

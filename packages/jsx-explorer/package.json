@@ -2,18 +2,19 @@
   "name": "@vue/jsx-explorer",
   "version": "1.1.0",
   "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "monaco-editor": "^0.27.0"
+    "@babel/core": "^7.22.5",
+    "@vue/babel-plugin-jsx": "workspace:*",
+    "monaco-editor": "^0.39.0",
+    "vue": "^3.3.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "css-loader": "^3.5.3",
-    "html-webpack-plugin": "^4.5.2",
-    "style-loader": "^1.2.1",
-    "ts-loader": "^8.3.0",
-    "typescript": "^4.4.2",
-    "vue": "3.2.26",
-    "webpack": "^4.46.0",
-    "webpack-dev-server": "^3.11.2"
+    "vite-plugin-monaco-editor": "^1.1.0",
+    "vite-plugin-node-polyfills": "^0.9.0"
   }
 }

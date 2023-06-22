@@ -1,0 +1,25 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:base',
+    'schedule:weekly',
+    'group:allNonMajor',
+    ':semanticCommitTypeAll(chore)',
+  ],
+  labels: ['dependencies'],
+  pin: false,
+  rangeStrategy: 'bump',
+  node: false,
+  packageRules: [
+    {
+      depTypeList: ['peerDependencies'],
+      enabled: false,
+    },
+  ],
+  ignoreDeps: [
+    'typescript',
+
+    // Pure ESM
+    'camelcase',
+  ],
+}
