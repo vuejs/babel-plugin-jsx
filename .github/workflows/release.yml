@@ -31,9 +31,6 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
-      - name: PNPM build
-        run: pnpm run build
-
       - name: Publish to NPM
         run: pnpm -r publish --access public --no-git-checks
         env:
