@@ -1,4 +1,4 @@
-// https://github.com/vuejs/vue-next/blob/master/packages/shared/src/slotFlags.ts
+// https://github.com/vuejs/core/blob/main/packages/shared/src/slotFlags.ts
 const enum SlotFlags {
   /**
    * Stable slots that only reference slot props or context state. The slot
