@@ -7,8 +7,7 @@
     "lint": "eslint --cache .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "release": "bumpp -r",
-    "prepublishOnly": "npm run build"
+    "release": "bumpp -r"
   },
   "license": "MIT",
   "keywords": [
