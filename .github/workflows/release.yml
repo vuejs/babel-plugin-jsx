@@ -36,6 +36,7 @@ jobs:
         run: pnpm i
 
       - name: Publish to NPM
-        run: pnpm -r publish --provenance --access public --no-git-checks
+        run: pnpm -r publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_CONFIG_PROVENANCE: true

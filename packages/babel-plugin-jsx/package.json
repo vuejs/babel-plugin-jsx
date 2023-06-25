@@ -10,7 +10,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vuejs/babel-plugin-jsx.git"
+    "url": "git+https://github.com/vuejs/babel-plugin-jsx"
   },
   "scripts": {
     "build": "tsup",
