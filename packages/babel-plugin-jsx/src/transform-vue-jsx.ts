@@ -36,7 +36,7 @@ const getJSXAttributeValue = (
     return transformJSXElement(valuePath, state);
   }
   if (valuePath.isStringLiteral()) {
-    return valuePath.node;
+    return transformJSXText(valuePath);
   }
   if (valuePath.isJSXExpressionContainer()) {
     return transformJSXExpressionContainer(valuePath);

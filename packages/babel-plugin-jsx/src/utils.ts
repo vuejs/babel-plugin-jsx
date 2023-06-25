@@ -138,7 +138,7 @@ export const getJSXAttributeName = (path: NodePath<t.JSXAttribute>): string => {
  * @returns StringLiteral | null
  */
 export const transformJSXText = (
-  path: NodePath<t.JSXText>
+  path: NodePath<t.JSXText | t.StringLiteral>
 ): t.StringLiteral | null => {
   const { node } = path;
   const lines = node.value.split(/\r\n|\n|\r/);
