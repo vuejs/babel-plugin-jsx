@@ -254,6 +254,15 @@ describe('Transform JSX', () => {
 
     expect(calls).toEqual(expect.arrayContaining([3, 4]));
   });
+
+  test('empty string', () => {
+    const wrapper = shallowMount({
+      setup() {
+        return () => <h1 title=""></h1>;
+      },
+    });
+    expect(wrapper.html()).toBe('<h1 title=""></h1>');
+  });
 });
 
 describe('directive', () => {

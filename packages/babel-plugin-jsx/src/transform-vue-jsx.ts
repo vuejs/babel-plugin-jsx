@@ -16,6 +16,7 @@ import {
   transformJSXSpreadAttribute,
   transformJSXSpreadChild,
   transformJSXText,
+  transformText,
   walksScope,
 } from './utils';
 import SlotFlags from './slotFlags';
@@ -36,7 +37,7 @@ const getJSXAttributeValue = (
     return transformJSXElement(valuePath, state);
   }
   if (valuePath.isStringLiteral()) {
-    return transformJSXText(valuePath);
+    return t.stringLiteral(transformText(valuePath.node.value));
   }
   if (valuePath.isJSXExpressionContainer()) {
     return transformJSXExpressionContainer(valuePath);

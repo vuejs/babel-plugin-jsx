@@ -140,8 +140,12 @@ export const getJSXAttributeName = (path: NodePath<t.JSXAttribute>): string => {
 export const transformJSXText = (
   path: NodePath<t.JSXText | t.StringLiteral>
 ): t.StringLiteral | null => {
-  const { node } = path;
-  const lines = node.value.split(/\r\n|\n|\r/);
+  const str = transformText(path.node.value);
+  return str !== '' ? t.stringLiteral(str) : null;
+};
+
+export const transformText = (text: string) => {
+  const lines = text.split(/\r\n|\n|\r/);
 
   let lastNonEmptyLine = 0;
 
@@ -182,7 +186,7 @@ export const transformJSXText = (
     }
   }
 
-  return str !== '' ? t.stringLiteral(str) : null;
+  return str;
 };
 
 /**
