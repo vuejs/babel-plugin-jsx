@@ -3,6 +3,9 @@ import { babel } from '@rollup/plugin-babel';
 import Jsx from './packages/babel-plugin-jsx/src';
 
 export default defineConfig({
+  esbuild: {
+    jsx: 'preserve',
+  },
   plugins: [
     babel({
       babelHelpers: 'bundled',

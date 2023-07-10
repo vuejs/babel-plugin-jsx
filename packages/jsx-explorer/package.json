@@ -8,9 +8,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/core": "^7.22.5",
+    "@babel/core": "^7.22.8",
     "@vue/babel-plugin-jsx": "workspace:*",
-    "monaco-editor": "^0.39.0",
+    "monaco-editor": "^0.40.0",
     "vue": "^3.3.4"
   },
   "devDependencies": {
