@@ -34,8 +34,8 @@
     "svg-tags": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
+    "@babel/core": "^7.22.9",
+    "@babel/preset-env": "^7.22.9",
     "@types/babel__template": "^7.4.1",
     "@types/babel__traverse": "^7.20.1",
     "@types/svg-tags": "^1.0.0",
