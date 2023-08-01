@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ES2015", "DOM", "DOM.Iterable"],
@@ -10,13 +9,14 @@
     "noUnusedLocals": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "removeComments": false,
     "jsx": "preserve",
     "types": ["vitest/globals"],
     "skipLibCheck": true,
     "paths": {
       "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
-    }
+    },
+    "noEmit": true,
+    "incremental": true
   },
   "include": ["packages/*/src", "packages/*/test"]
 }

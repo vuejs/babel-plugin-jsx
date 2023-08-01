@@ -1,10 +1,10 @@
 import * as t from '@babel/types';
-import { type NodePath } from '@babel/traverse';
+import { type NodePath, type Visitor } from '@babel/traverse';
 import type { State } from './interface';
 import { FRAGMENT, createIdentifier } from './utils';
 
 const transformFragment = (
-  path: NodePath<t.JSXElement>,
+  path: NodePath<t.JSXFragment>,
   Fragment: t.JSXIdentifier | t.JSXMemberExpression
 ) => {
   const children = path.get('children') || [];
@@ -16,9 +16,9 @@ const transformFragment = (
   );
 };
 
-export default {
+const visitor: Visitor<State> = {
   JSXFragment: {
-    enter(path: NodePath<t.JSXElement>, state: State) {
+    enter(path, state) {
       const fragmentCallee = createIdentifier(state, FRAGMENT);
       path.replaceWith(
         transformFragment(
@@ -34,3 +34,5 @@ export default {
     },
   },
 };
+
+export default visitor;

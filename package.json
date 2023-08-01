@@ -6,7 +6,7 @@
     "test": "vitest",
     "lint": "eslint --cache .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "release": "bumpp -r"
   },
   "license": "MIT",

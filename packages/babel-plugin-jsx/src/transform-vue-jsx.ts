@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import { type NodePath } from '@babel/traverse';
+import { type NodePath, type Visitor } from '@babel/traverse';
 // @ts-expect-error
 import { addDefault } from '@babel/helper-module-imports';
 import {
@@ -559,10 +559,12 @@ const transformJSXElement = (
   ]);
 };
 
-export default {
+const visitor: Visitor<State> = {
   JSXElement: {
-    exit(path: NodePath<t.JSXElement>, state: State) {
+    exit(path, state) {
       path.replaceWith(transformJSXElement(path, state));
     },
   },
 };
+
+export default visitor;

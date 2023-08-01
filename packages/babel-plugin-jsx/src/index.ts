@@ -31,14 +31,14 @@ const hasJSX = (parentPath: NodePath<t.Program>) => {
 
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 
-export default ({ types }: typeof BabelCore) => ({
+export default ({ types }: typeof BabelCore): BabelCore.PluginObj<State> => ({
   name: 'babel-plugin-jsx',
   inherits: syntaxJsx,
   visitor: {
     ...transformVueJSX,
     ...sugarFragment,
     Program: {
-      enter(path: NodePath<t.Program>, state: State) {
+      enter(path, state) {
         if (hasJSX(path)) {
           const importNames = [
             'createVNode',
@@ -168,7 +168,7 @@ export default ({ types }: typeof BabelCore) => ({
           }
         }
       },
-      exit(path: NodePath<t.Program>) {
+      exit(path) {
         const body = path.get('body') as NodePath[];
         const specifiersMap = new Map<string, t.ImportSpecifier>();
 
