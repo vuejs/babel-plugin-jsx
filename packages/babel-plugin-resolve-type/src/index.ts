@@ -90,7 +90,7 @@ export default ({
         filename: filename,
         source: file.code,
         options: this.compileOptions || {},
-        ast: file.ast.program.body as any,
+        ast: file.ast.program.body,
         error(msg, node) {
           throw new Error(
             `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(
