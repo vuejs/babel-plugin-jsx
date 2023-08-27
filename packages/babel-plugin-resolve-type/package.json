@@ -33,7 +33,7 @@
     "@vue/compiler-sfc": "link:/Users/kevin/Developer/open-source/vue/vue-core/packages/compiler-sfc"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.9",
+    "@babel/core": "^7.22.11",
     "@types/babel__code-frame": "^7.0.3",
     "@types/babel__helper-module-imports": "^7.18.0",
     "vue": "^3.3.4"
