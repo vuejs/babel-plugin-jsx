@@ -1,5 +1,6 @@
 import type * as t from '@babel/types';
 import type * as BabelCore from '@babel/core';
+import { type Options } from '@vue/babel-plugin-resolve-type';
 
 export type Slots = t.Identifier | t.ObjectExpression | null;
 
@@ -23,4 +24,8 @@ export interface VueJSXPluginOptions {
   enableObjectSlots?: boolean;
   /** Replace the function used when compiling JSX expressions */
   pragma?: string;
+  /**
+   * enabled by default
+   */
+  resolveType?: Options | boolean;
 }

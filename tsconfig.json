@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ES2015", "DOM", "DOM.Iterable"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,
@@ -15,7 +15,8 @@
     "paths": {
       "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
     },
-    "noEmit": true
+    "noEmit": true,
+    "customConditions": ["dev"]
   },
   "include": ["packages/*/src", "packages/*/test"]
 }

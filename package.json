@@ -1,5 +1,6 @@
 {
   "name": "vue-jsx-monorepo",
+  "version": "1.2.0-alpha.0",
   "private": true,
   "packageManager": "pnpm@8.7.6",
   "scripts": {
@@ -16,6 +17,7 @@
     "jsx"
   ],
   "devDependencies": {
+    "@babel/plugin-syntax-typescript": "^7.22.5",
     "@rollup/plugin-babel": "^6.0.3",
     "@types/babel__core": "^7.20.2",
     "@types/node": "^20.7.0",
@@ -31,6 +33,5 @@
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vitest": "^0.34.5"
-  },
-  "version": "1.1.5"
+  }
 }

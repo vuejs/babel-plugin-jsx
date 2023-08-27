@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`resolve type > runtime props > basic 1`] = `
+"import { createVNode as _createVNode } from \\"vue\\";
+interface Props {
+  foo?: string;
+}
+const App = defineComponent((props: Props) => _createVNode(\\"div\\", null, null), {
+  props: {
+    foo: {
+      type: String,
+      required: false
+    }
+  },
+  name: \\"App\\"
+});"
+`;
