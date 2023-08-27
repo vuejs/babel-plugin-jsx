@@ -8,6 +8,13 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx"
@@ -30,7 +37,7 @@
     "@babel/helper-module-imports": "^7.22.5",
     "@babel/parser": "^7.22.11",
     "@babel/plugin-syntax-typescript": "^7.22.5",
-    "@vue/compiler-sfc": "link:/Users/kevin/Developer/open-source/vue/vue-core/packages/compiler-sfc"
+    "@vue/compiler-sfc": "^3.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.22.11",

@@ -129,8 +129,8 @@ importers:
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.20)
       '@vue/compiler-sfc':
-        specifier: link:/Users/kevin/Developer/open-source/vue/vue-core/packages/compiler-sfc
-        version: link:../../../vue-core/packages/compiler-sfc
+        specifier: ^3.3.4
+        version: 3.3.4
     devDependencies:
       '@babel/core':
         specifier: ^7.22.11

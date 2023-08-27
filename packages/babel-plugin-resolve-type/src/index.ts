@@ -38,7 +38,7 @@ export default ({
     const props = comp.params[0];
     if (!props) return;
 
-    if (props.type === 'AssignmentPattern' && 'typeAnnotation' in props.left) {
+    if (props.type === 'AssignmentPattern') {
       ctx!.propsTypeDecl = getTypeAnnotation(props.left);
       ctx!.propsRuntimeDefaults = props.right;
     } else {
