@@ -15,8 +15,7 @@
     "paths": {
       "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
     },
-    "noEmit": true,
-    "incremental": true
+    "noEmit": true
   },
   "include": ["packages/*/src", "packages/*/test"]
 }
