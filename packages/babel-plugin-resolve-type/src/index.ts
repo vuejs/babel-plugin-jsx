@@ -3,17 +3,13 @@ import { parseExpression } from '@babel/parser';
 // @ts-expect-error no dts
 import typescript from '@babel/plugin-syntax-typescript';
 import {
-  type SFCScriptCompileOptions,
   type SimpleTypeResolveContext,
+  type SimpleTypeResolveOptions,
   extractRuntimeEmits,
   extractRuntimeProps,
 } from '@vue/compiler-sfc';
 import { codeFrameColumns } from '@babel/code-frame';
 import { addNamed } from '@babel/helper-module-imports';
-
-export interface Options {
-  compileOptions?: SFCScriptCompileOptions;
-}
 
 function getTypeAnnotation(node: BabelCore.types.Node) {
   if (
@@ -27,7 +23,7 @@ function getTypeAnnotation(node: BabelCore.types.Node) {
 
 export default ({
   types: t,
-}: typeof BabelCore): BabelCore.PluginObj<Options> => {
+}: typeof BabelCore): BabelCore.PluginObj<SimpleTypeResolveOptions> => {
   let ctx: SimpleTypeResolveContext | undefined;
   let helpers: Set<string> | undefined;
 
@@ -89,7 +85,7 @@ export default ({
       ctx = {
         filename: filename,
         source: file.code,
-        options: this.compileOptions || {},
+        options: this || {},
         ast: file.ast.program.body,
         error(msg, node) {
           throw new Error(
@@ -115,7 +111,6 @@ export default ({
         getString(node) {
           return file.code.slice(node.start!, node.end!);
         },
-        bindingMetadata: Object.create(null),
         propsTypeDecl: undefined,
         propsRuntimeDefaults: undefined,
         propsDestructuredBindings: {},
