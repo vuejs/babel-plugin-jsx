@@ -1,0 +1,41 @@
+{
+  "name": "@vue/babel-plugin-resolve-type",
+  "version": "0.0.0",
+  "description": "Babel plugin for resolving Vue types",
+  "author": "三咲智子 <sxzz@sxzz.moe>",
+  "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-resolve-type#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/babel-plugin-jsx"
+  },
+  "scripts": {
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "bugs": {
+    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "@babel/core": "^7.0.0-0"
+  },
+  "dependencies": {
+    "@babel/code-frame": "^7.22.10",
+    "@babel/helper-module-imports": "^7.22.5",
+    "@babel/parser": "^7.22.11",
+    "@babel/plugin-syntax-typescript": "^7.22.5",
+    "@vue/compiler-sfc": "link:/Users/kevin/Developer/open-source/vue/vue-core/packages/compiler-sfc"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.9",
+    "@types/babel__code-frame": "^7.0.3",
+    "@types/babel__helper-module-imports": "^7.18.0",
+    "vue": "^3.3.4"
+  }
+}
