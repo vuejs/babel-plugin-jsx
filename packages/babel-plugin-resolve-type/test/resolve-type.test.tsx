@@ -2,7 +2,9 @@ import { transformAsync } from '@babel/core';
 import ResolveType from '../src';
 
 async function transform(code: string): Promise<string> {
-  const result = await transformAsync(code, { plugins: [ResolveType] });
+  const result = await transformAsync(code, {
+    plugins: [[ResolveType, { isTSX: true }]],
+  });
   return result!.code!;
 }
 
@@ -71,5 +73,17 @@ describe('resolve type', () => {
       );
       expect(result).toMatchSnapshot();
     });
+  });
+
+  test('w/ tsx', async () => {
+    const result = await transform(
+      `
+      import { type SetupContext, defineComponent } from 'vue';
+      const Comp = defineComponent(() => {
+        return () => <div/ >;
+      });
+      `
+    );
+    expect(result).toMatchSnapshot();
   });
 });

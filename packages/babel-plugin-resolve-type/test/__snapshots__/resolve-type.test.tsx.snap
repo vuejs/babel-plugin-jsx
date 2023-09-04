@@ -80,3 +80,10 @@ defineComponent((props: {
   }
 });"
 `;
+
+exports[`resolve type > w/ tsx 1`] = `
+"import { type SetupContext, defineComponent } from 'vue';
+const Comp = defineComponent(() => {
+  return () => <div />;
+}, {});"
+`;
