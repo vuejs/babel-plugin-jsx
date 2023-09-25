@@ -1,8 +1,76 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`resolve type > defineComponent scope > fake 1`] = `
+"const defineComponent = () => {};
+defineComponent((props: {
+  msg?: string;
+}) => {
+  return () => <div />;
+});"
+`;
+
+exports[`resolve type > defineComponent scope > import sub-package 1`] = `
+"import { defineComponent } from 'vue/dist/vue.esm-bundler';
+defineComponent((props: {
+  msg?: string;
+}) => {
+  return () => <div />;
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: false
+    }
+  }
+});"
+`;
+
+exports[`resolve type > defineComponent scope > w/o import 1`] = `
+"defineComponent((props: {
+  msg?: string;
+}) => {
+  return () => <div />;
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: false
+    }
+  }
+});"
+`;
+
+exports[`resolve type > infer component name > identifier options 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, {
+  name: \\"Foo\\",
+  ...opts
+});"
+`;
+
+exports[`resolve type > infer component name > no options 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, {
+  name: \\"Foo\\"
+});"
+`;
+
+exports[`resolve type > infer component name > object options 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, {
+  name: \\"Foo\\",
+  foo: 'bar'
+});"
+`;
+
+exports[`resolve type > infer component name > rest param 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, ...args);"
+`;
+
 exports[`resolve type > runtime emits > basic 1`] = `
 "import { type SetupContext, defineComponent } from 'vue';
-const Comp = defineComponent((props, {
+defineComponent((props, {
   emit
 }: SetupContext<{
   change(val: string): void;
@@ -83,7 +151,7 @@ defineComponent((props: {
 
 exports[`resolve type > w/ tsx 1`] = `
 "import { type SetupContext, defineComponent } from 'vue';
-const Comp = defineComponent(() => {
+defineComponent(() => {
   return () => <div />;
 }, {});"
 `;

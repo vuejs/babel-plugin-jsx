@@ -60,7 +60,7 @@ describe('resolve type', () => {
       const result = await transform(
         `
         import { type SetupContext, defineComponent } from 'vue';
-        const Comp = defineComponent(
+        defineComponent(
           (
             props,
             { emit }: SetupContext<{ change(val: string): void; click(): void }>
@@ -79,11 +79,90 @@ describe('resolve type', () => {
     const result = await transform(
       `
       import { type SetupContext, defineComponent } from 'vue';
-      const Comp = defineComponent(() => {
+      defineComponent(() => {
         return () => <div/ >;
       });
       `
     );
     expect(result).toMatchSnapshot();
+  });
+
+  describe('defineComponent scope', () => {
+    test('fake', async () => {
+      const result = await transform(
+        `
+        const defineComponent = () => {};
+        defineComponent((props: { msg?: string }) => {
+          return () => <div/ >;
+        });
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('w/o import', async () => {
+      const result = await transform(
+        `
+        defineComponent((props: { msg?: string }) => {
+          return () => <div/ >;
+        });
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('import sub-package', async () => {
+      const result = await transform(
+        `
+        import { defineComponent } from 'vue/dist/vue.esm-bundler';
+        defineComponent((props: { msg?: string }) => {
+          return () => <div/ >;
+        });
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('infer component name', () => {
+    test('no options', async () => {
+      const result = await transform(
+        `
+        import { defineComponent } from 'vue';
+        const Foo = defineComponent(() => {})
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('object options', async () => {
+      const result = await transform(
+        `
+        import { defineComponent } from 'vue';
+        const Foo = defineComponent(() => {}, { foo: 'bar' })
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('identifier options', async () => {
+      const result = await transform(
+        `
+        import { defineComponent } from 'vue';
+        const Foo = defineComponent(() => {}, opts)
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('rest param', async () => {
+      const result = await transform(
+        `
+        import { defineComponent } from 'vue';
+        const Foo = defineComponent(() => {}, ...args)
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
   });
 });
