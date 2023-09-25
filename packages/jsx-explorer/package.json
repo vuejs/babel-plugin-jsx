@@ -8,12 +8,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/core": "^7.22.17",
+    "@babel/core": "^7.22.20",
     "@vue/babel-plugin-jsx": "workspace:*",
-    "monaco-editor": "^0.41.0",
+    "monaco-editor": "^0.43.0",
     "vue": "^3.3.4"
   },
   "devDependencies": {
-    "vite-plugin-node-polyfills": "^0.13.0"
+    "vite-plugin-node-polyfills": "^0.14.1"
   }
 }
