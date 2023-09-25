@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@babel/plugin-syntax-typescript':
+        specifier: ^7.22.5
+        version: 7.22.5(@babel/core@7.22.20)
       '@rollup/plugin-babel':
         specifier: ^6.0.3
         version: 6.0.3(@babel/core@7.22.20)(@types/babel__core@7.20.2)
@@ -61,6 +64,9 @@ importers:
       '@babel/helper-module-imports':
         specifier: ^7.22.15
         version: 7.22.15
+      '@babel/helper-plugin-utils':
+        specifier: ^7.22.5
+        version: 7.22.5
       '@babel/plugin-syntax-jsx':
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.20)
@@ -76,6 +82,9 @@ importers:
       '@vue/babel-helper-vue-transform-on':
         specifier: workspace:^
         version: link:../babel-helper-vue-transform-on
+      '@vue/babel-plugin-resolve-type':
+        specifier: workspace:^
+        version: link:../babel-plugin-resolve-type
       camelcase:
         specifier: ^6.3.0
         version: 6.3.0
@@ -92,6 +101,9 @@ importers:
       '@babel/preset-env':
         specifier: ^7.22.20
         version: 7.22.20(@babel/core@7.22.20)
+      '@types/babel__helper-plugin-utils':
+        specifier: ^7.10.1
+        version: 7.10.1
       '@types/babel__template':
         specifier: ^7.4.2
         version: 7.4.2
@@ -122,6 +134,9 @@ importers:
       '@babel/helper-module-imports':
         specifier: ^7.22.5
         version: 7.22.15
+      '@babel/helper-plugin-utils':
+        specifier: ^7.22.5
+        version: 7.22.5
       '@babel/parser':
         specifier: ^7.22.11
         version: 7.22.16
@@ -132,15 +147,15 @@ importers:
       '@babel/core':
         specifier: ^7.22.11
         version: 7.22.20
-      '@babel/plugin-syntax-typescript':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.22.20)
       '@types/babel__code-frame':
         specifier: ^7.0.3
         version: 7.0.3
       '@types/babel__helper-module-imports':
         specifier: ^7.18.0
         version: 7.18.0
+      '@types/babel__helper-plugin-utils':
+        specifier: ^7.10.1
+        version: 7.10.1
       vue:
         specifier: ^3.3.4
         version: 3.3.4
@@ -1795,6 +1810,12 @@ packages:
     dependencies:
       '@types/babel__core': 7.20.1
       '@types/babel__traverse': 7.20.2
+    dev: true
+
+  /@types/babel__helper-plugin-utils@7.10.1:
+    resolution: {integrity: sha512-6RaT7i6r2rT6ouIDZ2Cd6dPkq4wn1F8pLyDO+7wPVsL1dodvORiZORImaD6j9FBcHjPGuERE0hhtwkuPNXsO0A==}
+    dependencies:
+      '@types/babel__core': 7.20.2
     dev: true
 
   /@types/babel__template@7.4.2:

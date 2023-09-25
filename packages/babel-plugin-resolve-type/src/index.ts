@@ -8,10 +8,11 @@ import {
 } from '@vue/compiler-sfc';
 import { codeFrameColumns } from '@babel/code-frame';
 import { addNamed } from '@babel/helper-module-imports';
+import { declare } from '@babel/helper-plugin-utils';
 
-export default ({
-  types: t,
-}: typeof BabelCore): BabelCore.PluginObj<SimpleTypeResolveOptions> => {
+export { SimpleTypeResolveOptions as Options };
+
+export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
   let ctx: SimpleTypeResolveContext | undefined;
   let helpers: Set<string> | undefined;
 
@@ -23,7 +24,7 @@ export default ({
       ctx = {
         filename: filename,
         source: file.code,
-        options: this || {},
+        options,
         ast: file.ast.program.body,
         error(msg, node) {
           throw new Error(
@@ -178,7 +179,7 @@ export default ({
       t.objectProperty(t.identifier('emits'), ast)
     );
   }
-};
+});
 
 function getTypeAnnotation(node: BabelCore.types.Node) {
   if (

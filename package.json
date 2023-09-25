@@ -15,6 +15,7 @@
     "jsx"
   ],
   "devDependencies": {
+    "@babel/plugin-syntax-typescript": "^7.22.5",
     "@rollup/plugin-babel": "^6.0.3",
     "@types/babel__core": "^7.20.2",
     "@types/node": "^20.6.5",
