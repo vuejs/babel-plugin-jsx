@@ -1,7 +1,5 @@
 import type * as BabelCore from '@babel/core';
 import { parseExpression } from '@babel/parser';
-// @ts-expect-error no dts
-import typescript from '@babel/plugin-syntax-typescript';
 import {
   type SimpleTypeResolveContext,
   type SimpleTypeResolveOptions,
@@ -19,7 +17,6 @@ export default ({
 
   return {
     name: 'babel-plugin-resolve-type',
-    inherits: typescript,
     pre(file) {
       const filename = file.opts.filename || 'unknown.js';
       helpers = new Set();

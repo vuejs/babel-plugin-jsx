@@ -125,9 +125,6 @@ importers:
       '@babel/parser':
         specifier: ^7.22.11
         version: 7.22.16
-      '@babel/plugin-syntax-typescript':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.22.20)
       '@vue/compiler-sfc':
         specifier: npm:@vue/compiler-sfc-canary@minor
         version: /@vue/compiler-sfc-canary@3.20230925.0-minor.0
@@ -135,6 +132,9 @@ importers:
       '@babel/core':
         specifier: ^7.22.11
         version: 7.22.20
+      '@babel/plugin-syntax-typescript':
+        specifier: ^7.22.5
+        version: 7.22.5(@babel/core@7.22.20)
       '@types/babel__code-frame':
         specifier: ^7.0.3
         version: 7.0.3
@@ -682,7 +682,7 @@ packages:
     dependencies:
       '@babel/core': 7.22.20
       '@babel/helper-plugin-utils': 7.22.5
-    dev: false
+    dev: true
 
   /@babel/plugin-syntax-unicode-sets-regex@7.18.6(@babel/core@7.22.20):
     resolution: {integrity: sha512-727YkEAPwSIQTv5im8QHz3upqp92JTWhidIC81Tdx4VJYIte/VndKf1qKrfnnhPLiPghStWfvC/iFaMCQu7Nqg==}
