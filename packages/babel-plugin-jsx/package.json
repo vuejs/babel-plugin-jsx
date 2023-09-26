@@ -38,7 +38,6 @@
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.22.20",
-    "@types/babel__helper-plugin-utils": "^7.10.1",
     "@types/babel__template": "^7.4.2",
     "@types/babel__traverse": "^7.20.2",
     "@types/svg-tags": "^1.0.0",

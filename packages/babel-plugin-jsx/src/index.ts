@@ -3,7 +3,6 @@ import type * as BabelCore from '@babel/core';
 import template from '@babel/template';
 // @ts-expect-error
 import syntaxJsx from '@babel/plugin-syntax-jsx';
-// @ts-expect-error
 import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports';
 import { type NodePath, type Visitor } from '@babel/traverse';
 import ResolveType from '@vue/babel-plugin-resolve-type';
@@ -71,7 +70,10 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
               ];
               if (isModule(path)) {
                 // import { createVNode } from "vue";
-                const importMap: Record<string, t.Identifier> = {};
+                const importMap: Record<
+                  string,
+                  t.MemberExpression | t.Identifier
+                > = {};
                 importNames.forEach((name) => {
                   state.set(name, () => {
                     if (importMap[name]) {

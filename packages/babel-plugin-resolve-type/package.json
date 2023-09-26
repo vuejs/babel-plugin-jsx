@@ -43,8 +43,6 @@
   "devDependencies": {
     "@babel/core": "^7.22.11",
     "@types/babel__code-frame": "^7.0.3",
-    "@types/babel__helper-module-imports": "^7.18.0",
-    "@types/babel__helper-plugin-utils": "^7.10.1",
     "vue": "^3.3.4"
   }
 }
