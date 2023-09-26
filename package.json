@@ -25,6 +25,7 @@
     "@types/node": "^20.7.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@vitest/coverage-v8": "^0.34.5",
+    "@vue/babel-plugin-jsx": "workspace:*",
     "bumpp": "^9.2.0",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",

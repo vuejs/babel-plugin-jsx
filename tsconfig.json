@@ -17,6 +17,5 @@
     },
     "noEmit": true,
     "customConditions": ["dev"]
-  },
-  "include": ["packages/*/src", "packages/*/test"]
+  }
 }

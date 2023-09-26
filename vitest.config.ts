@@ -1,8 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import { babel } from '@rollup/plugin-babel';
-import Jsx from './packages/babel-plugin-jsx/src';
+import Jsx from '@vue/babel-plugin-jsx';
 
 export default defineConfig({
+  resolve: {
+    conditions: ['dev'],
+  },
   esbuild: {
     jsx: 'preserve',
   },

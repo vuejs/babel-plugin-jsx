@@ -32,6 +32,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^0.34.5
         version: 0.34.5(vitest@0.34.5)
+      '@vue/babel-plugin-jsx':
+        specifier: workspace:*
+        version: link:packages/babel-plugin-jsx
       bumpp:
         specifier: ^9.2.0
         version: 9.2.0
