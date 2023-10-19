@@ -26,7 +26,7 @@
     "@babel/helper-module-imports": "^7.22.15",
     "@babel/plugin-syntax-jsx": "^7.22.5",
     "@babel/template": "^7.22.15",
-    "@babel/traverse": "^7.23.0",
+    "@babel/traverse": "^7.23.2",
     "@babel/types": "^7.23.0",
     "@vue/babel-helper-vue-transform-on": "workspace:^",
     "camelcase": "^6.3.0",
