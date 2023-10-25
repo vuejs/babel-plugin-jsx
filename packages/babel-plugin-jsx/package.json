@@ -34,15 +34,15 @@
     "svg-tags": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.0",
-    "@babel/preset-env": "^7.22.20",
-    "@types/babel__template": "^7.4.2",
-    "@types/babel__traverse": "^7.20.2",
-    "@types/svg-tags": "^1.0.0",
-    "@vue/runtime-dom": "^3.3.4",
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "@types/babel__template": "^7.4.3",
+    "@types/babel__traverse": "^7.20.3",
+    "@types/svg-tags": "^1.0.1",
+    "@vue/runtime-dom": "^3.3.7",
     "@vue/test-utils": "^2.4.1",
     "regenerator-runtime": "^0.14.0",
-    "vue": "^3.3.4"
+    "vue": "^3.3.7"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0"
