@@ -18,7 +18,7 @@
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.4",
     "@types/babel__core": "^7.20.3",
-    "@types/node": "^20.8.8",
+    "@types/node": "^20.8.9",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@vitest/coverage-v8": "^0.34.6",
     "bumpp": "^9.2.0",
