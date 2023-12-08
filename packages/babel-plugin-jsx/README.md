@@ -325,7 +325,7 @@ const App = {
         <a target="_blank" href="https://www.antdv.com/">
           <img
             width="32"
-            src="https://qn.antdv.com/logo.png"
+            src="https://www.antdv.com/assets/logo.1ef800a8.svg"
           />
           <br>
           <strong>Ant Design Vue</strong>
