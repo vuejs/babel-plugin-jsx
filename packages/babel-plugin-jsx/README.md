@@ -325,7 +325,7 @@ const App = {
         <a target="_blank" href="https://www.antdv.com/">
           <img
             width="32"
-            src="https://www.antdv.com/assets/logo.1ef800a8.svg"
+            src="https://github.com/vuejs/babel-plugin-jsx/assets/6481596/8d604d42-fe5f-4450-af87-97999537cd21"
           />
           <br>
           <strong>Ant Design Vue</strong>
