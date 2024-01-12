@@ -166,10 +166,14 @@ const App = {
 
 ```jsx
 <input v-model={[val, ['modifier']]} />
+// Or
+<input v-model_modifier={val} />
 ```
 
 ```jsx
 <A v-model={[val, 'argument', ['modifier']]} />
+// Or
+<input v-model:argument_modifier={val} />
 ```
 
 Will compile to:

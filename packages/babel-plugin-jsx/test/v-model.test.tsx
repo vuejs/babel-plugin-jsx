@@ -286,3 +286,48 @@ test('Named model', async () => {
   await wrapper.trigger('click');
   expect(wrapper.html()).toBe('<div>2</div>');
 });
+
+test('named model and underscore modifier should work in custom component', async () => {
+  const Child = defineComponent({
+    emits: ['update:value'],
+    props: {
+      value: {
+        type: Number,
+        default: 0,
+      },
+      valueModifiers: {
+        default: () => ({ double: false }),
+      },
+    },
+    setup(props, { emit }) {
+      const handleClick = () => {
+        emit('update:value', 3);
+      };
+      return () => (
+        <div onClick={handleClick}>
+          {props.valueModifiers.double ? props.value * 2 : props.value}
+        </div>
+      );
+    },
+  });
+
+  const wrapper = mount(
+    defineComponent({
+      data() {
+        return {
+          foo: 1,
+        };
+      },
+      render() {
+        return <Child v-model:value_double={this.foo} />;
+      },
+    })
+  );
+
+  expect(wrapper.html()).toBe('<div>2</div>');
+  wrapper.vm.$data.foo += 1;
+  await wrapper.vm.$nextTick();
+  expect(wrapper.html()).toBe('<div>4</div>');
+  await wrapper.trigger('click');
+  expect(wrapper.html()).toBe('<div>6</div>');
+});

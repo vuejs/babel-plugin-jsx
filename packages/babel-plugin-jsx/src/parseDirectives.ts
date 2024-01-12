@@ -67,7 +67,7 @@ const parseDirectives = (params: {
     .replace(/^\S/, (s: string) => s.toLowerCase());
 
   if (directiveArgument) {
-    args.push(t.stringLiteral(directiveArgument));
+    args.push(t.stringLiteral(directiveArgument.split('_')[0]));
   }
 
   const isVModels = directiveName === 'models';
