@@ -10,6 +10,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "jsx": "preserve",
+    "jsxImportSource": "vue",
     "types": ["vitest/globals"],
     "skipLibCheck": true,
     "paths": {
