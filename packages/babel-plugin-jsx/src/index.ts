@@ -1,8 +1,8 @@
 import * as t from '@babel/types';
 import type * as BabelCore from '@babel/core';
-import template from '@babel/template';
+import _template from '@babel/template';
 // @ts-expect-error
-import syntaxJsx from '@babel/plugin-syntax-jsx';
+import _syntaxJsx from '@babel/plugin-syntax-jsx';
 // @ts-expect-error
 import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports';
 import { type NodePath } from '@babel/traverse';
@@ -31,9 +31,17 @@ const hasJSX = (parentPath: NodePath<t.Program>) => {
 
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 
+/* #__NO_SIDE_EFFECTS__ */
+function interopDefault(m: any) {
+  return m.default || m;
+}
+
+const syntaxJsx = /*#__PURE__*/ interopDefault(_syntaxJsx);
+const template = /*#__PURE__*/ interopDefault(_template);
+
 export default ({ types }: typeof BabelCore): BabelCore.PluginObj<State> => ({
   name: 'babel-plugin-jsx',
-  inherits: syntaxJsx,
+  inherits: /*#__PURE__*/ interopDefault(syntaxJsx),
   visitor: {
     ...transformVueJSX,
     ...sugarFragment,
