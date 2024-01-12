@@ -80,8 +80,8 @@ export const transformJSXMemberExpression = (
         path.get('object') as NodePath<t.JSXMemberExpression>
       )
     : t.isJSXIdentifier(objectPath)
-    ? t.identifier(objectPath.name)
-    : t.nullLiteral();
+      ? t.identifier(objectPath.name)
+      : t.nullLiteral();
   const transformedProperty = t.identifier(propertyPath.name);
   return t.memberExpression(transformedObject, transformedProperty);
 };
@@ -106,12 +106,12 @@ export const getTag = (
       return name === FRAGMENT
         ? createIdentifier(state, FRAGMENT)
         : path.scope.hasBinding(name)
-        ? t.identifier(name)
-        : state.opts.isCustomElement?.(name)
-        ? t.stringLiteral(name)
-        : t.callExpression(createIdentifier(state, 'resolveComponent'), [
-            t.stringLiteral(name),
-          ]);
+          ? t.identifier(name)
+          : state.opts.isCustomElement?.(name)
+            ? t.stringLiteral(name)
+            : t.callExpression(createIdentifier(state, 'resolveComponent'), [
+                t.stringLiteral(name),
+              ]);
     }
 
     return t.stringLiteral(name);
