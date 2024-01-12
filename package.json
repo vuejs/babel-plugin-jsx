@@ -26,7 +26,7 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.2.0",
     "prettier": "^3.2.0",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
