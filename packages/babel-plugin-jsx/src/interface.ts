@@ -25,7 +25,8 @@ export interface VueJSXPluginOptions {
   /** Replace the function used when compiling JSX expressions */
   pragma?: string;
   /**
-   * enabled by default
+   * (**Experimental**) Infer component metadata from types (e.g. `props`, `emits`, `name`)
+   * @default false
    */
   resolveType?: Options | boolean;
 }

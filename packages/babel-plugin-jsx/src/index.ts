@@ -44,7 +44,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
   (api, opt, dirname) => {
     const { types } = api;
     let resolveType: BabelCore.PluginObj<BabelCore.PluginPass> | undefined;
-    if (opt.resolveType !== false) {
+    if (opt.resolveType) {
       if (typeof opt.resolveType === 'boolean') opt.resolveType = {};
       resolveType = ResolveType(api, opt.resolveType, dirname);
     }

@@ -12,7 +12,10 @@ describe('resolve type', () => {
         const App = defineComponent((props: Props) => <div />)
         `,
         {
-          plugins: [[typescript, { isTSX: true }], VueJsx],
+          plugins: [
+            [typescript, { isTSX: true }],
+            [VueJsx, { resolveType: true }],
+          ],
         }
       );
       expect(result!.code).toMatchSnapshot();
