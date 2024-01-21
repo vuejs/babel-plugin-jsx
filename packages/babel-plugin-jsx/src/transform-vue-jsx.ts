@@ -1,6 +1,5 @@
 import * as t from '@babel/types';
 import { type NodePath, type Visitor } from '@babel/traverse';
-// @ts-expect-error
 import { addDefault } from '@babel/helper-module-imports';
 import {
   buildIIFE,
