@@ -38,7 +38,7 @@
     "@babel/helper-module-imports": "^7.22.5",
     "@babel/helper-plugin-utils": "^7.22.5",
     "@babel/parser": "^7.22.11",
-    "@vue/compiler-sfc": "npm:@vue/compiler-sfc-canary@minor"
+    "@vue/compiler-sfc": "^3.4.15"
   },
   "devDependencies": {
     "@babel/core": "^7.22.11",

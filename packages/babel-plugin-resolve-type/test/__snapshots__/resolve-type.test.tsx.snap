@@ -43,7 +43,7 @@ exports[`resolve type > defineComponent scope > w/o import 1`] = `
 exports[`resolve type > infer component name > identifier options 1`] = `
 "import { defineComponent } from 'vue';
 const Foo = defineComponent(() => {}, {
-  name: \\"Foo\\",
+  name: "Foo",
   ...opts
 });"
 `;
@@ -51,14 +51,14 @@ const Foo = defineComponent(() => {}, {
 exports[`resolve type > infer component name > no options 1`] = `
 "import { defineComponent } from 'vue';
 const Foo = defineComponent(() => {}, {
-  name: \\"Foo\\"
+  name: "Foo"
 });"
 `;
 
 exports[`resolve type > infer component name > object options 1`] = `
 "import { defineComponent } from 'vue';
 const Foo = defineComponent(() => {}, {
-  name: \\"Foo\\",
+  name: "Foo",
   foo: 'bar'
 });"
 `;
@@ -79,7 +79,7 @@ defineComponent((props, {
   emit('change');
   return () => {};
 }, {
-  emits: [\\"change\\", \\"click\\"]
+  emits: ["change", "click"]
 });"
 `;
 
@@ -113,7 +113,7 @@ defineComponent((props: Props & Props2) => {
 `;
 
 exports[`resolve type > runtime props > with dynamic default value 1`] = `
-"import { _mergeDefaults } from \\"vue\\";
+"import { _mergeDefaults } from "vue";
 import { defineComponent, h } from 'vue';
 const defaults = {};
 defineComponent((props: {
@@ -121,7 +121,7 @@ defineComponent((props: {
 } = defaults) => {
   return () => h('div', props.msg);
 }, {
-  props: _mergeDefaults({
+  props: /*#__PURE__*/_mergeDefaults({
     msg: {
       type: String,
       required: false
