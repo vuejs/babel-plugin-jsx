@@ -39,10 +39,10 @@
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.20.5",
     "@types/svg-tags": "^1.0.2",
-    "@vue/runtime-dom": "^3.4.11",
+    "@vue/runtime-dom": "^3.4.15",
     "@vue/test-utils": "^2.4.3",
     "regenerator-runtime": "^0.14.1",
-    "vue": "^3.4.11"
+    "vue": "^3.4.15"
   },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0"
