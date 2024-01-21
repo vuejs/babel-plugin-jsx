@@ -26,6 +26,7 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
         source: file.code,
         options,
         ast: file.ast.program.body,
+        isCE: false,
         error(msg, node) {
           throw new Error(
             `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(

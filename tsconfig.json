@@ -14,9 +14,9 @@
     "types": ["vitest/globals"],
     "skipLibCheck": true,
     "paths": {
-      "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"],
+      "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
     },
-    "noEmit": true,,
-    "customConditions": ["dev"],
+    "noEmit": true,
+    "customConditions": ["dev"]
   }
 }
