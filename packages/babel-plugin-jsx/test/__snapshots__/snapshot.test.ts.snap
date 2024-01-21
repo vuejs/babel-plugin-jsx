@@ -189,7 +189,7 @@ const A = defineComponent({
     return () => _createVNode("span", null, [slots.default()]);
   }
 }, {
-  name: \\"A\\"
+  name: "A"
 });
 const _a2 = 2;
 a = _a2;
