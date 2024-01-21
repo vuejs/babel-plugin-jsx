@@ -166,10 +166,14 @@ const App = {
 
 ```jsx
 <input v-model={[val, ['modifier']]} />
+// Or
+<input v-model_modifier={val} />
 ```
 
 ```jsx
 <A v-model={[val, 'argument', ['modifier']]} />
+// Or
+<input v-model:argument_modifier={val} />
 ```
 
 Will compile to:
@@ -325,7 +329,7 @@ const App = {
         <a target="_blank" href="https://www.antdv.com/">
           <img
             width="32"
-            src="https://qn.antdv.com/logo.png"
+            src="https://github.com/vuejs/babel-plugin-jsx/assets/6481596/8d604d42-fe5f-4450-af87-97999537cd21"
           />
           <br>
           <strong>Ant Design Vue</strong>
