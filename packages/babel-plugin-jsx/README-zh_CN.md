@@ -71,6 +71,14 @@ Default: `createVNode`
 
 替换编译 JSX 表达式的时候使用的函数
 
+#### resolveType
+
+Type: `boolean`
+
+Default: `false`
+
+(**Experimental**) Infer component metadata from types (e.g. `props`, `emits`, `name`). This is an experimental feature and may not work in all cases.
+
 ## 表达式
 
 ### 内容

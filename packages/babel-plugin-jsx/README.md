@@ -75,6 +75,14 @@ Default: `createVNode`
 
 Replace the function used when compiling JSX expressions.
 
+#### resolveType
+
+Type: `boolean`
+
+Default: `false`
+
+(**Experimental**) Infer component metadata from types (e.g. `props`, `emits`, `name`). This is an experimental feature and may not work in all cases.
+
 ## Syntax
 
 ### Content
