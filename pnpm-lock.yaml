@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       '@babel/plugin-syntax-typescript':
-        specifier: ^7.22.5
+        specifier: ^7.23.3
         version: 7.23.3(@babel/core@7.23.7)
       '@rollup/plugin-babel':
         specifier: ^6.0.4
@@ -18,10 +18,10 @@ importers:
         specifier: ^7.20.5
         version: 7.20.5
       '@types/babel__helper-module-imports':
-        specifier: ^7.18.0
+        specifier: ^7.18.3
         version: 7.18.3
       '@types/babel__helper-plugin-utils':
-        specifier: ^7.10.1
+        specifier: ^7.10.3
         version: 7.10.3
       '@types/node':
         specifier: ^20.11.5
@@ -135,29 +135,29 @@ importers:
   packages/babel-plugin-resolve-type:
     dependencies:
       '@babel/code-frame':
-        specifier: ^7.22.10
+        specifier: ^7.23.5
         version: 7.23.5
       '@babel/helper-module-imports':
-        specifier: ^7.22.5
+        specifier: ^7.22.15
         version: 7.22.15
       '@babel/helper-plugin-utils':
         specifier: ^7.22.5
         version: 7.22.5
       '@babel/parser':
-        specifier: ^7.22.11
+        specifier: ^7.23.6
         version: 7.23.6
       '@vue/compiler-sfc':
         specifier: ^3.4.15
         version: 3.4.15
     devDependencies:
       '@babel/core':
-        specifier: ^7.22.11
+        specifier: ^7.23.7
         version: 7.23.7
       '@types/babel__code-frame':
-        specifier: ^7.0.3
+        specifier: ^7.0.6
         version: 7.0.6
       vue:
-        specifier: ^3.3.4
+        specifier: ^3.4.15
         version: 3.4.15(typescript@5.3.3)
 
   packages/jsx-explorer:
