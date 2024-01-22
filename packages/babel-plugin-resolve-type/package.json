@@ -20,6 +20,15 @@
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx"
   },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
   "scripts": {
     "build": "tsup",
     "watch": "tsup --watch"
