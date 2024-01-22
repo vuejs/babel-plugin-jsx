@@ -18,11 +18,11 @@
     "jsx"
   ],
   "devDependencies": {
-    "@babel/plugin-syntax-typescript": "^7.22.5",
+    "@babel/plugin-syntax-typescript": "^7.23.3",
     "@rollup/plugin-babel": "^6.0.4",
     "@types/babel__core": "^7.20.5",
-    "@types/babel__helper-module-imports": "^7.18.0",
-    "@types/babel__helper-plugin-utils": "^7.10.1",
+    "@types/babel__helper-module-imports": "^7.18.3",
+    "@types/babel__helper-plugin-utils": "^7.10.3",
     "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@vitest/coverage-v8": "^1.2.1",
