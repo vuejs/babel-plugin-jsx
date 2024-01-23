@@ -2,6 +2,8 @@ import * as monaco from 'monaco-editor';
 import { watchEffect } from 'vue';
 import { transform } from '@babel/core';
 import babelPluginJsx from '@vue/babel-plugin-jsx';
+// @ts-expect-error missing types
+import typescript from '@babel/plugin-syntax-typescript';
 import {
   type VueJSXPluginOptions,
   compilerOptions,
@@ -25,6 +27,8 @@ function main() {
 
   const sharedEditorOptions: monaco.editor.IStandaloneEditorConstructionOptions =
     {
+      language: 'typescript',
+      tabSize: 2,
       theme: 'vs-dark',
       fontSize: 14,
       wordWrap: 'on',
@@ -36,29 +40,37 @@ function main() {
       },
     };
 
+  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+    noSemanticValidation: true,
+  });
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
     allowJs: true,
     allowNonTsExtensions: true,
     jsx: monaco.languages.typescript.JsxEmit.Preserve,
     target: monaco.languages.typescript.ScriptTarget.Latest,
+    module: monaco.languages.typescript.ModuleKind.ESNext,
+    isolatedModules: true,
   });
 
   const editor = monaco.editor.create(document.getElementById('source')!, {
-    value:
-      decodeURIComponent(window.location.hash.slice(1)) ||
-      persistedState.src ||
-      'const App = () => <div>Hello World</div>',
-    language: 'typescript',
-    tabSize: 2,
     ...sharedEditorOptions,
+    model: monaco.editor.createModel(
+      decodeURIComponent(window.location.hash.slice(1)) ||
+        persistedState.src ||
+        'const App = () => <div>Hello World</div>',
+      'typescript',
+      monaco.Uri.parse('file:///app.tsx')
+    ),
   });
 
   const output = monaco.editor.create(document.getElementById('output')!, {
-    value: '',
-    language: 'javascript',
     readOnly: true,
-    tabSize: 2,
     ...sharedEditorOptions,
+    model: monaco.editor.createModel(
+      '',
+      'typescript',
+      monaco.Uri.parse('file:///output.tsx')
+    ),
   });
 
   const reCompile = () => {
@@ -74,7 +86,10 @@ function main() {
       src,
       {
         babelrc: false,
-        plugins: [[babelPluginJsx, { ...compilerOptions }]],
+        plugins: [
+          [babelPluginJsx, { ...compilerOptions }],
+          [typescript, { isTSX: true }],
+        ],
         ast: true,
       },
       (err, result = {}) => {
