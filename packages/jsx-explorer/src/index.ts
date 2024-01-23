@@ -74,7 +74,7 @@ function main() {
       src,
       {
         babelrc: false,
-        plugins: [[babelPluginJsx, compilerOptions]],
+        plugins: [[babelPluginJsx, { ...compilerOptions }]],
         ast: true,
       },
       (err, result = {}) => {

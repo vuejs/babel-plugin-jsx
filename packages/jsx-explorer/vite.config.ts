@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import VueJSX from '@vitejs/plugin-vue-jsx';
+import MonacoEditorPlugin from 'vite-plugin-monaco-editor';
 
 export default defineConfig({
   resolve: {
@@ -8,6 +10,11 @@ export default defineConfig({
     },
   },
   plugins: [
+    VueJSX(),
+    // @ts-expect-error
+    (MonacoEditorPlugin.default as typeof MonacoEditorPlugin)({
+      languageWorkers: ['editorWorkerService', 'typescript'],
+    }),
     nodePolyfills({
       globals: {
         process: true,
