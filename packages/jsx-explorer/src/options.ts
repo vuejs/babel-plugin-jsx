@@ -8,6 +8,7 @@ export const compilerOptions: VueJSXPluginOptions = reactive({
   optimize: false,
   transformOn: false,
   enableObjectSlots: true,
+  resolveType: false,
 });
 
 const App = {
@@ -85,6 +86,21 @@ const App = {
               },
             }),
             h('label', { for: 'enableObjectSlots' }, 'enableObjectSlots'),
+          ]),
+
+          // resolveType
+          h('li', [
+            h('input', {
+              type: 'checkbox',
+              id: 'resolveType',
+              checked: compilerOptions.resolveType,
+              onChange(e: Event) {
+                compilerOptions.resolveType = (
+                  e.target as HTMLInputElement
+                ).checked;
+              },
+            }),
+            h('label', { for: 'resolveType' }, 'resolveType'),
           ]),
         ]),
       ]),
