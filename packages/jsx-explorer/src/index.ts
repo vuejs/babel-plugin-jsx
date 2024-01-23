@@ -57,7 +57,9 @@ function main() {
     model: monaco.editor.createModel(
       decodeURIComponent(window.location.hash.slice(1)) ||
         persistedState.src ||
-        'const App = () => <div>Hello World</div>',
+        `import { defineComponent } from 'vue'
+
+const App = defineComponent((props) => <div>Hello World</div>)`,
       'typescript',
       monaco.Uri.parse('file:///app.tsx')
     ),
