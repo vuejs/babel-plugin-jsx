@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/core": "^7.23.7",
+    "@babel/core": "^7.23.9",
     "@vue/babel-plugin-jsx": "workspace:*",
     "monaco-editor": "^0.45.0",
     "vue": "^3.4.15"
