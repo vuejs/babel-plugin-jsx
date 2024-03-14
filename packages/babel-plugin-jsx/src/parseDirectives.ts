@@ -81,7 +81,7 @@ const parseDirectives = (params: {
   }
 
   const shouldResolve =
-    !['html', 'text', 'model', 'models'].includes(directiveName) ||
+    !['html', 'text', 'model', 'slots', 'models'].includes(directiveName) ||
     (isVModel && !isComponent);
 
   let modifiers = directiveModifiers;
