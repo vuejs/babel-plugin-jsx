@@ -71,7 +71,7 @@ importers:
   packages/babel-plugin-jsx:
     dependencies:
       '@babel/helper-module-imports':
-        specifier: ^7.22.15
+        specifier: ~7.22.15
         version: 7.22.15
       '@babel/helper-plugin-utils':
         specifier: ^7.22.5
@@ -138,7 +138,7 @@ importers:
         specifier: ^7.23.5
         version: 7.23.5
       '@babel/helper-module-imports':
-        specifier: ^7.22.15
+        specifier: ~7.22.15
         version: 7.22.15
       '@babel/helper-plugin-utils':
         specifier: ^7.22.5

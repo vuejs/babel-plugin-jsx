@@ -23,7 +23,7 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/helper-module-imports": "^7.22.15",
+    "@babel/helper-module-imports": "~7.22.15",
     "@babel/helper-plugin-utils": "^7.22.5",
     "@babel/plugin-syntax-jsx": "^7.23.3",
     "@babel/template": "^7.23.9",
