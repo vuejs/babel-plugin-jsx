@@ -191,44 +191,6 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
               }
             }
           },
-          exit(path) {
-            const body = path.get('body') as NodePath[];
-            const specifiersMap = new Map<string, t.ImportSpecifier>();
-
-            body
-              .filter(
-                (nodePath) =>
-                  t.isImportDeclaration(nodePath.node) &&
-                  nodePath.node.source.value === 'vue'
-              )
-              .forEach((nodePath) => {
-                const { specifiers } = nodePath.node as t.ImportDeclaration;
-                let shouldRemove = false;
-                specifiers.forEach((specifier) => {
-                  if (
-                    !specifier.loc &&
-                    t.isImportSpecifier(specifier) &&
-                    t.isIdentifier(specifier.imported)
-                  ) {
-                    specifiersMap.set(specifier.imported.name, specifier);
-                    shouldRemove = true;
-                  }
-                });
-                if (shouldRemove) {
-                  nodePath.remove();
-                }
-              });
-
-            const specifiers = [...specifiersMap.keys()].map(
-              (imported) => specifiersMap.get(imported)!
-            );
-            if (specifiers.length) {
-              path.unshiftContainer(
-                'body',
-                t.importDeclaration(specifiers, t.stringLiteral('vue'))
-              );
-            }
-          },
         },
       },
     };
