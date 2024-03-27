@@ -113,8 +113,7 @@ defineComponent((props: Props & Props2) => {
 `;
 
 exports[`resolve type > runtime props > with dynamic default value 1`] = `
-"import { _mergeDefaults } from "vue";
-import { defineComponent, h } from 'vue';
+"import { defineComponent, h, _mergeDefaults } from 'vue';
 const defaults = {};
 defineComponent((props: {
   msg?: string;
