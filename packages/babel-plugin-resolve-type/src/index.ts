@@ -120,7 +120,6 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
     comp: BabelCore.types.Function,
     options:
       | BabelCore.types.ArgumentPlaceholder
-      | BabelCore.types.JSXNamespacedName
       | BabelCore.types.SpreadElement
       | BabelCore.types.Expression
   ) {
@@ -153,7 +152,6 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
     comp: BabelCore.types.Function,
     options:
       | BabelCore.types.ArgumentPlaceholder
-      | BabelCore.types.JSXNamespacedName
       | BabelCore.types.SpreadElement
       | BabelCore.types.Expression
   ) {
