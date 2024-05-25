@@ -482,11 +482,8 @@ test('reassign variable as component should work', () => {
     },
   });
 
-  /* eslint-disable */
   const _a2 = 2;
   a = _a2;
-  /* eslint-enable */
-
   a = <A>{a}</A>;
 
   const wrapper = mount({
