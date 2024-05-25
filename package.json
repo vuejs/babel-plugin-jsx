@@ -5,6 +5,7 @@
   "packageManager": "pnpm@9.0.5",
   "type": "module",
   "scripts": {
+    "dev": "pnpm -C packages/jsx-explorer run dev",
     "build": "pnpm run -r build",
     "test": "vitest",
     "lint": "eslint --cache .",
