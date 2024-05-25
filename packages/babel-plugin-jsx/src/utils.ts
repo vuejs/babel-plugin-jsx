@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import htmlTags from 'html-tags';
+import htmlTags, { type HtmlTags } from 'html-tags';
 import svgTags from 'svg-tags';
 import { type NodePath } from '@babel/traverse';
 import type { State } from './interface';
@@ -60,7 +60,7 @@ export const checkIsComponent = (
   return (
     !state.opts.isCustomElement?.(tag) &&
     shouldTransformedToSlots(tag) &&
-    !htmlTags.includes(tag as htmlTags.htmlTags) &&
+    !htmlTags.includes(tag as HtmlTags) &&
     !svgTags.includes(tag)
   );
 };
@@ -99,10 +99,7 @@ export const getTag = (
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
-    if (
-      !htmlTags.includes(name as htmlTags.htmlTags) &&
-      !svgTags.includes(name)
-    ) {
+    if (!htmlTags.includes(name as HtmlTags) && !svgTags.includes(name)) {
       return name === FRAGMENT
         ? createIdentifier(state, FRAGMENT)
         : path.scope.hasBinding(name)
