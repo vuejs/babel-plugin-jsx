@@ -256,7 +256,7 @@ _createVNode(_resolveComponent("C"), {
 `;
 
 exports[`using v-slots without children should not be spread > using v-slots without children should not be spread 1`] = `
-"import { resolveComponent as _resolveComponent, resolveDirective as _resolveDirective, createVNode as _createVNode } from "vue";
+"import { resolveComponent as _resolveComponent, createVNode as _createVNode } from "vue";
 _createVNode(_resolveComponent("A"), null, slots);"
 `;
 
