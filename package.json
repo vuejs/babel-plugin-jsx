@@ -32,7 +32,7 @@
     "eslint": "^9.3.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import-x": "^3.0.1",
-    "jsdom": "^24.0.0",
+    "jsdom": "^25.0.0",
     "prettier": "^3.2.5",
     "tslib": "^2.6.2",
     "tsup": "^8.0.2",
