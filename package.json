@@ -31,7 +31,7 @@
     "bumpp": "^9.4.1",
     "eslint": "^9.3.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import-x": "^3.0.1",
+    "eslint-plugin-import-x": "^4.1.1",
     "jsdom": "^25.0.0",
     "prettier": "^3.2.5",
     "tslib": "^2.6.2",
