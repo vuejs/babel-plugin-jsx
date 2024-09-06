@@ -9,6 +9,7 @@ import {
   compilerOptions,
   initOptions,
 } from './options';
+import './editor.worker';
 import './index.css';
 
 main();
@@ -100,6 +101,7 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
           console.log('AST', res.ast!);
           output.setValue(res.code!);
         } else {
+          console.error(err);
           output.setValue(err.message!);
         }
       }
