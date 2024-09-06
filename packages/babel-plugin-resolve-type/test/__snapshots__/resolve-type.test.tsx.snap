@@ -120,7 +120,7 @@ defineComponent((props: {
 } = defaults) => {
   return () => h('div', props.msg);
 }, {
-  props: /*#__PURE__*/_mergeDefaults({
+  props: /*@__PURE__*/_mergeDefaults({
     msg: {
       type: String,
       required: false

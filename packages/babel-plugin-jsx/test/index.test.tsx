@@ -173,7 +173,7 @@ describe('Transform JSX', () => {
         return () => <input type="text" value={val} />;
       },
     });
-    expect(wrapper.html()).toBe('<input type="text">');
+    expect(wrapper.html()).toBe('<input type="text" value="foo">');
   });
 
   test('domProps input[checked]', () => {
