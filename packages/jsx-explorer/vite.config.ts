@@ -4,11 +4,6 @@ import VueJSX from '@vitejs/plugin-vue-jsx';
 import MonacoEditorPlugin from 'vite-plugin-monaco-editor';
 
 export default defineConfig({
-  build: {
-    commonjsOptions: {
-      include: [],
-    },
-  },
   resolve: {
     alias: {
       '@vue/babel-plugin-jsx': '@vue/babel-plugin-jsx/src/index.ts',
@@ -21,12 +16,7 @@ export default defineConfig({
       languageWorkers: ['editorWorkerService', 'typescript'],
     }),
     nodePolyfills({
-      globals: {
-        process: true,
-      },
+      globals: { process: true },
     }),
   ],
-  optimizeDeps: {
-    disabled: false,
-  },
 });
