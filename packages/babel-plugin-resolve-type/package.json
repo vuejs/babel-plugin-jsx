@@ -43,15 +43,15 @@
     "@babel/core": "^7.0.0-0"
   },
   "dependencies": {
-    "@babel/code-frame": "^7.24.6",
-    "@babel/helper-module-imports": "^7.24.6",
-    "@babel/helper-plugin-utils": "^7.24.6",
-    "@babel/parser": "^7.24.6",
-    "@vue/compiler-sfc": "^3.4.27"
+    "@babel/code-frame": "^7.24.7",
+    "@babel/helper-module-imports": "^7.24.7",
+    "@babel/helper-plugin-utils": "^7.24.8",
+    "@babel/parser": "^7.25.6",
+    "@vue/compiler-sfc": "^3.5.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.6",
+    "@babel/core": "^7.25.2",
     "@types/babel__code-frame": "^7.0.6",
-    "vue": "^3.4.27"
+    "vue": "^3.5.3"
   }
 }
