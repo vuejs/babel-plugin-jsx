@@ -1,6 +1,6 @@
 {
   "name": "@vue/jsx-explorer",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "type": "module",
   "private": true,
   "scripts": {
