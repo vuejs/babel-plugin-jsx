@@ -1,2 +1,4 @@
 packages:
   - packages/*
+catalog:
+  vue: ^3.5.3

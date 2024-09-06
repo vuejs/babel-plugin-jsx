@@ -52,6 +52,6 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/babel__code-frame": "^7.0.6",
-    "vue": "^3.5.3"
+    "vue": "catalog:"
   }
 }

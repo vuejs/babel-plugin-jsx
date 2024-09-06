@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    vue:
+      specifier: ^3.5.3
+      version: 3.5.3
+
 importers:
 
   .:
@@ -122,9 +128,6 @@ importers:
       '@types/svg-tags':
         specifier: ^1.0.2
         version: 1.0.2
-      '@vue/runtime-dom':
-        specifier: ^3.5.3
-        version: 3.5.3
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -132,7 +135,7 @@ importers:
         specifier: ^0.14.1
         version: 0.14.1
       vue:
-        specifier: ^3.5.3
+        specifier: 'catalog:'
         version: 3.5.3(typescript@5.5.4)
 
   packages/babel-plugin-resolve-type:
@@ -160,7 +163,7 @@ importers:
         specifier: ^7.0.6
         version: 7.0.6
       vue:
-        specifier: ^3.5.3
+        specifier: 'catalog:'
         version: 3.5.3(typescript@5.5.4)
 
   packages/jsx-explorer:
@@ -177,11 +180,8 @@ importers:
       monaco-editor:
         specifier: ^0.51.0
         version: 0.51.0
-      pathe:
-        specifier: ^1.1.2
-        version: 1.1.2
       vue:
-        specifier: ^3.5.3
+        specifier: 'catalog:'
         version: 3.5.3(typescript@5.5.4)
     devDependencies:
       '@types/babel__standalone':
