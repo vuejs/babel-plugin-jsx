@@ -31,7 +31,7 @@
     "@babel/types": "^7.25.6",
     "@vue/babel-helper-vue-transform-on": "workspace:*",
     "@vue/babel-plugin-resolve-type": "workspace:*",
-    "html-tags": "^4.0.0",
+    "html-tags": "^3.3.1",
     "svg-tags": "^1.0.0"
   },
   "devDependencies": {

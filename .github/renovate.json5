@@ -14,4 +14,5 @@
       enabled: false,
     },
   ],
+  ignoreDeps: ['html-tags'],
 }

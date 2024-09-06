@@ -107,8 +107,8 @@ importers:
         specifier: workspace:*
         version: link:../babel-plugin-resolve-type
       html-tags:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^3.3.1
+        version: 3.3.1
       svg-tags:
         specifier: ^1.0.0
         version: 1.0.0
@@ -2018,10 +2018,6 @@ packages:
   html-tags@3.3.1:
     resolution: {integrity: sha512-ztqyC3kLto0e9WbNp0aeP+M3kTt+nbaIveGmUxAtZa+8iFgKLUOD4YKM5j+f3QD89bra7UeumolZHKuOXnTmeQ==}
     engines: {node: '>=8'}
-
-  html-tags@4.0.0:
-    resolution: {integrity: sha512-KM1SNmemQtsD+OTInZTYKZNbyPzzVrjMR2Iz1Np+Y+bcxUh0dgKF4NtylJVkGZRLe3NklHizJ5k1Vd3ug1uTPA==}
-    engines: {node: '>=18.20'}
 
   http-proxy-agent@7.0.2:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
@@ -5078,8 +5074,6 @@ snapshots:
   html-escaper@2.0.2: {}
 
   html-tags@3.3.1: {}
-
-  html-tags@4.0.0: {}
 
   http-proxy-agent@7.0.2:
     dependencies:
