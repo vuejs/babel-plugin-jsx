@@ -1,5 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import { type VNode, defineComponent } from '@vue/runtime-dom';
+import { type VNode, defineComponent } from 'vue';
 
 test('input[type="checkbox"] should work', async () => {
   const wrapper = shallowMount(
