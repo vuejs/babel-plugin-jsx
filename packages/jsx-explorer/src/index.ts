@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
 import { watchEffect } from 'vue';
-import { transform } from '@babel/core';
+import { transform } from '@babel/standalone';
 import babelPluginJsx from '@vue/babel-plugin-jsx';
 // @ts-expect-error missing types
 import typescript from '@babel/plugin-syntax-typescript';
@@ -85,27 +85,21 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
     localStorage.setItem('state', state);
     window.location.hash = encodeURIComponent(src);
     console.clear();
-    transform(
-      src,
-      {
+    try {
+      const res = transform(src, {
         babelrc: false,
         plugins: [
           [babelPluginJsx, { ...compilerOptions }],
           [typescript, { isTSX: true }],
         ],
         ast: true,
-      },
-      (err, result = {}) => {
-        const res = result!;
-        if (!err) {
-          console.log('AST', res.ast!);
-          output.setValue(res.code!);
-        } else {
-          console.error(err);
-          output.setValue(err.message!);
-        }
-      }
-    );
+      });
+      console.log('AST', res.ast!);
+      output.setValue(res.code!);
+    } catch (err: any) {
+      console.error(err);
+      output.setValue(err.message!);
+    }
   };
 
   // handle resize

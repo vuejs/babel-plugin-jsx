@@ -165,9 +165,9 @@ importers:
 
   packages/jsx-explorer:
     dependencies:
-      '@babel/core':
-        specifier: ^7.25.2
-        version: 7.25.2
+      '@babel/standalone':
+        specifier: ^7.25.6
+        version: 7.25.6
       '@vue/babel-plugin-jsx':
         specifier: workspace:*
         version: link:../babel-plugin-jsx
@@ -184,6 +184,9 @@ importers:
         specifier: ^3.5.3
         version: 3.5.3(typescript@5.5.4)
     devDependencies:
+      '@types/babel__standalone':
+        specifier: ^7.1.7
+        version: 7.1.7
       '@vitejs/plugin-vue-jsx':
         specifier: ^4.0.1
         version: 4.0.1(vite@5.4.3(@types/node@22.5.4)(terser@5.31.6))(vue@3.5.3(typescript@5.5.4))
@@ -785,6 +788,10 @@ packages:
     resolution: {integrity: sha512-VBj9MYyDb9tuLq7yzqjgzt6Q+IBQLrGZfdjOekyEirZPHxXWoTSGUTMrpsfi58Up73d13NfYLv8HT9vmznjzhQ==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/standalone@7.25.6':
+    resolution: {integrity: sha512-Kf2ZcZVqsKbtYhlA7sP0z5A3q5hmCVYMKMWRWNK/5OVwHIve3JY1djVRmIVAx8FMueLIfZGKQDIILK2w8zO4mg==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/template@7.25.0':
     resolution: {integrity: sha512-aOOgh1/5XzKvg1jvVz7AVrx2piJ2XBi227DHmbY6y+bM9H2FlN+IfecYu4Xl0cNiiVejlsCri89LUsbj8vJD9Q==}
     engines: {node: '>=6.9.0'}
@@ -1288,6 +1295,9 @@ packages:
 
   '@types/babel__helper-plugin-utils@7.10.3':
     resolution: {integrity: sha512-FcLBBPXInqKfULB2nvOBskQPcnSMZ0s1Y2q76u9H1NPPWaLcTeq38xBeKfF/RBUECK333qeaqRdYoPSwW7rTNQ==}
+
+  '@types/babel__standalone@7.1.7':
+    resolution: {integrity: sha512-4RUJX9nWrP/emaZDzxo/+RYW8zzLJTXWJyp2k78HufG459HCz754hhmSymt3VFOU6/Wy+IZqfPvToHfLuGOr7w==}
 
   '@types/babel__template@7.4.4':
     resolution: {integrity: sha512-h/NUaSyG5EyxBIp8YRxo4RMe2/qQgvyowRwVMzhYhBCONbW8PUsg4lkFMrhgZhUe5z3L3MiLDuvyJ/CaPa2A8A==}
@@ -3792,6 +3802,8 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
+  '@babel/standalone@7.25.6': {}
+
   '@babel/template@7.25.0':
     dependencies:
       '@babel/code-frame': 7.24.7
@@ -4144,6 +4156,10 @@ snapshots:
       '@types/babel__traverse': 7.20.6
 
   '@types/babel__helper-plugin-utils@7.10.3':
+    dependencies:
+      '@types/babel__core': 7.20.5
+
+  '@types/babel__standalone@7.1.7':
     dependencies:
       '@types/babel__core': 7.20.5
 

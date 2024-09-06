@@ -9,7 +9,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@vue/babel-plugin-jsx': '@vue/babel-plugin-jsx/src/index.ts',
-      path: 'pathe',
     },
   },
   plugins: [
@@ -17,10 +16,6 @@ export default defineConfig({
     Replace({
       values: {
         'process.env.BABEL_TYPES_8_BREAKING': 'false',
-        'process.env.BABEL_ENV': '"development"',
-        'process.env.NODE_NDEBUG': 'true',
-        'process.env.NODE_DEBUG': 'false',
-        'Buffer.isBuffer': 'function isBuffer() { return false; }',
       },
     }),
   ],

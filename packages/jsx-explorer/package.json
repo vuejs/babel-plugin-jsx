@@ -9,14 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/core": "^7.25.2",
+    "@babel/standalone": "^7.25.6",
     "@vue/babel-plugin-jsx": "workspace:*",
     "assert": "^2.1.0",
     "monaco-editor": "^0.51.0",
-    "pathe": "^1.1.2",
     "vue": "^3.5.3"
   },
   "devDependencies": {
+    "@types/babel__standalone": "^7.1.7",
     "@vitejs/plugin-vue-jsx": "^4.0.1",
     "terser": "^5.31.6",
     "unplugin-replace": "^0.3.3",
