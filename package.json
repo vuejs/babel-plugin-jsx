@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm -C packages/jsx-explorer run dev",
-    "build": "pnpm run -r build",
+    "build": "pnpm run -F babel-plugin-jsx... build",
     "test": "vitest",
     "lint": "eslint --cache .",
     "format": "prettier --write .",
