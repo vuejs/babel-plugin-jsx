@@ -2,5 +2,5 @@
 NODE_VERSION = "20"
 
 [build]
-command = "pnpm run build"
+command = "pnpm run -r build"
 publish = "packages/jsx-explorer/dist"
