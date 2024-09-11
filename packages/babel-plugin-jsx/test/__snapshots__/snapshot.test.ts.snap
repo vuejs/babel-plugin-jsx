@@ -269,7 +269,7 @@ const b = {
 };
 _createVNode(_Fragment, null, [_createVNode(_resolveComponent("A"), {
   [foo]: xx,
-  ["onUpdate" + foo]: $event => xx = $event
+  ["onUpdate:" + foo]: $event => xx = $event
 }, null, 16), _createVNode(_resolveComponent("B"), {
   "modelValue": xx,
   "modelModifiers": {
@@ -281,25 +281,25 @@ _createVNode(_Fragment, null, [_createVNode(_resolveComponent("A"), {
   [foo + "Modifiers"]: {
     "a": true
   },
-  ["onUpdate" + foo]: $event => xx = $event
+  ["onUpdate:" + foo]: $event => xx = $event
 }, null, 16), _createVNode(_resolveComponent("D"), {
   [foo === 'foo' ? 'a' : 'b']: xx,
   [(foo === 'foo' ? 'a' : 'b') + "Modifiers"]: {
     "a": true
   },
-  ["onUpdate" + (foo === 'foo' ? 'a' : 'b')]: $event => xx = $event
+  ["onUpdate:" + (foo === 'foo' ? 'a' : 'b')]: $event => xx = $event
 }, null, 16), _createVNode(_resolveComponent("E"), {
   [a()]: xx,
   [a() + "Modifiers"]: {
     "a": true
   },
-  ["onUpdate" + a()]: $event => xx = $event
+  ["onUpdate:" + a()]: $event => xx = $event
 }, null, 16), _createVNode(_resolveComponent("F"), {
   [b.c]: xx,
   [b.c + "Modifiers"]: {
     "a": true
   },
-  ["onUpdate" + b.c]: $event => xx = $event
+  ["onUpdate:" + b.c]: $event => xx = $event
 }, null, 16)]);"
 `;
 

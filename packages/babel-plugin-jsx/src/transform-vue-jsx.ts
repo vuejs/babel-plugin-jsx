@@ -208,7 +208,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             }
 
             const updateName = isDynamic
-              ? t.binaryExpression('+', t.stringLiteral('onUpdate'), propName)
+              ? t.binaryExpression('+', t.stringLiteral('onUpdate:'), propName)
               : t.stringLiteral(
                   `onUpdate:${
                     (propName as t.StringLiteral)?.value || 'modelValue'
