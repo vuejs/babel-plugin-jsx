@@ -1,6 +1,6 @@
 {
   "name": "@vue/babel-plugin-resolve-type",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Babel plugin for resolving Vue types.",
   "author": "三咲智子 <sxzz@sxzz.moe>",
   "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-resolve-type#readme",
