@@ -112,8 +112,8 @@ export const getTag = (
             : state.opts.isGlobalElement?.(name)
               ? t.identifier(name)
               : t.callExpression(createIdentifier(state, 'resolveComponent'), [
-                t.stringLiteral(name),
-              ]);
+                  t.stringLiteral(name),
+                ]);
     }
 
     return t.stringLiteral(name);
