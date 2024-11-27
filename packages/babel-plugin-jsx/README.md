@@ -51,6 +51,14 @@ Default: `undefined`
 
 configuring custom elements
 
+#### isGlobalElement
+
+Type: `(tag: string) => boolean`
+
+Default: `undefined`
+
+configuring global elements so that they don't need to be wrapped by `resolveComponent`.
+
 #### mergeProps
 
 Type: `boolean`
