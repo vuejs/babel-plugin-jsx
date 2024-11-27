@@ -20,6 +20,8 @@ export interface VueJSXPluginOptions {
   mergeProps?: boolean;
   /** configuring custom elements */
   isCustomElement?: (tag: string) => boolean;
+  /** configuring global elements */
+  isGlobalElement?: (tag: string) => boolean;
   /** enable object slots syntax */
   enableObjectSlots?: boolean;
   /** Replace the function used when compiling JSX expressions */
