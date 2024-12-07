@@ -208,6 +208,10 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
     name: 'using v-slots without children should not be spread',
     from: '<A v-slots={slots} />',
   },
+  {
+    name: 'TemplateLiteral prop and event co-usage',
+    from: '<div value={`${foo}`} onClick={() => foo.value++}></div>',
+  },
 ].forEach(({ name, from }) => {
   test(name, async () => {
     expect(
