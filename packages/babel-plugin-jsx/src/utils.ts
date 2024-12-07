@@ -323,7 +323,7 @@ export const isConstant = (
       isConstant((property as any).value)
     );
   }
-  if (t.isLiteral(node)) {
+  if (t.isLiteral(node) && !t.isTemplateLiteral(node)) {
     return true;
   }
   return false;
