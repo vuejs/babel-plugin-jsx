@@ -371,12 +371,12 @@ describe('PatchFlags', () => {
         return () => (
           <button value={`${foo.value}`} onClick={() => foo.value++}></button>
         );
-      }
+      },
     });
     patchFlagExpect(wrapper, 8, ['value', 'onClick']);
     await wrapper.trigger('click');
     expect(wrapper.html()).toBe('<button value="1"></button>');
-  })
+  });
 
   test('full props', async () => {
     const wrapper = mount({
