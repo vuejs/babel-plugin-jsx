@@ -28,7 +28,7 @@
     "@types/node": "^22.13.1",
     "@vitest/coverage-v8": "^2.1.9",
     "@vue/babel-plugin-jsx": "workspace:*",
-    "bumpp": "^9.11.1",
+    "bumpp": "^10.0.2",
     "eslint": "^9.20.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import-x": "^4.6.1",
