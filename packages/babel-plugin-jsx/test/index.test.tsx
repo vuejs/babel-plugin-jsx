@@ -364,6 +364,20 @@ describe('PatchFlags', () => {
     expect(wrapper.html()).toBe('<div style="display: none;">NEED_PATCH</div>');
   });
 
+  test('#728: template literals with expressions should be treated as dynamic', async () => {
+    const wrapper = mount({
+      setup() {
+        const foo = ref(0);
+        return () => (
+          <button value={`${foo.value}`} onClick={() => foo.value++}></button>
+        );
+      }
+    });
+    patchFlagExpect(wrapper, 8, ['value', 'onClick']);
+    await wrapper.trigger('click');
+    expect(wrapper.html()).toBe('<button value="1"></button>');
+  })
+
   test('full props', async () => {
     const wrapper = mount({
       setup() {
