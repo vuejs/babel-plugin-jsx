@@ -41,7 +41,9 @@ Type: `boolean`
 
 Default: `false`
 
-是否开启优化. 如果你对 Vue 3 不太熟悉，不建议打开
+开启此选项后，JSX 插件会尝试使用 [`PatchFlags`](https://cn.vuejs.org/guide/extras/rendering-mechanism#patch-flags) 和 [`SlotFlags`](https://github.com/vuejs/core/blob/v3.5.13/packages/runtime-core/src/componentSlots.ts#L69-L77) 来优化运行时代码，从而提升渲染性能。需要注意的是，JSX 的灵活性远高于模板语法，这使得编译优化的可能性相对有限，其优化效果会比 Vue 官方模板编译器更为有限。
+
+优化后的代码会选择性地跳过一些重渲染操作以提高性能。因此，建议在开启此选项后对应用进行完整的测试，确保所有功能都能正常工作。
 
 #### isCustomElement
 

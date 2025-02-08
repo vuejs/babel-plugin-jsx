@@ -41,7 +41,9 @@ Type: `boolean`
 
 Default: `false`
 
-enable optimization or not. It's not recommended to enable it If you are not familiar with Vue 3.
+When enabled, this plugin generates optimized runtime code using [`PatchFlags`](https://vuejs.org/guide/extras/rendering-mechanism#patch-flags) and [`SlotFlags`](https://github.com/vuejs/core/blob/v3.5.13/packages/runtime-core/src/componentSlots.ts#L69-L77) to improve rendering performance. However, due to JSX's dynamic nature, the optimizations are not as comprehensive as those in Vue's official template compiler.
+
+Since the optimized code may skip certain re-renders to improve performance, we strongly recommend thorough testing of your application after enabling this option to ensure everything works as expected.
 
 #### isCustomElement
 
