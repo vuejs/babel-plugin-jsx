@@ -23,6 +23,14 @@ _createVNode("div", {
 }, null, 6);"
 `;
 
+exports[`TemplateLiteral prop and event co-usage > TemplateLiteral prop and event co-usage 1`] = `
+"import { createVNode as _createVNode } from "vue";
+_createVNode("div", {
+  "value": \`\${foo}\`,
+  "onClick": () => foo.value++
+}, null, 8, ["value", "onClick"]);"
+`;
+
 exports[`Without JSX should work > Without JSX should work 1`] = `
 "import { createVNode } from 'vue';
 createVNode('div', null, ['Without JSX should work']);"
