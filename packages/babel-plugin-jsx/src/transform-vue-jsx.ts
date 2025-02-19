@@ -512,7 +512,11 @@ const transformJSXElement = (
     ) {
       VNodeChild = t.objectExpression([
         t.objectProperty(t.identifier('default'), child),
-      ]);
+        optimize && t.objectProperty(
+          t.identifier('_'),
+          t.numericLiteral(slotFlag),
+        ) as any,
+      ].filter(Boolean));
     } else if (t.isObjectExpression(child)) {
       VNodeChild = t.objectExpression(
         [
@@ -526,9 +530,13 @@ const transformJSXElement = (
         ? t.objectExpression([
             t.objectProperty(
               t.identifier('default'),
-              t.arrowFunctionExpression([], t.arrayExpression([child]))
+              t.arrowFunctionExpression([], child),
             ),
-          ])
+            optimize && t.objectProperty(
+              t.identifier('_'),
+              t.numericLiteral(slotFlag),
+            ) as any,
+        ].filter(Boolean))
         : t.arrayExpression([child]);
     }
   }
