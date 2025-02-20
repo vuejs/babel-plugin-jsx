@@ -184,6 +184,11 @@ const resolveDirective = (
     }
     return modelToUse;
   }
+  const referenceName =
+    'v' + directiveName[0].toUpperCase() + directiveName.slice(1);
+  if (path.scope.references[referenceName]) {
+    return t.identifier(referenceName);
+  }
   return t.callExpression(createIdentifier(state, 'resolveDirective'), [
     t.stringLiteral(directiveName),
   ]);
