@@ -407,7 +407,15 @@ const transformJSXElement = (
 
   // #541 - directives can't be resolved in optimized slots
   // all parents should be deoptimized
-  if (directives.length) {
+  if (
+    directives.length &&
+    directives.some(
+      (d) =>
+        d.elements?.[0]?.type === 'CallExpression' &&
+        d.elements[0].callee.type === 'Identifier' &&
+        d.elements[0].callee.name === '_resolveDirective'
+    )
+  ) {
     let currentPath = path;
     while (currentPath.parentPath?.isJSXElement()) {
       currentPath = currentPath.parentPath;

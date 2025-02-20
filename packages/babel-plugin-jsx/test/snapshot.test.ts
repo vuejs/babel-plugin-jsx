@@ -156,6 +156,13 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
     `,
   },
   {
+    name: 'directive in scope',
+    from: `
+      const vXxx = {};
+      <A v-xxx />
+    `,
+  },
+  {
     name: 'vModels',
     from: '<C v-models={[[foo, ["modifier"]], [bar, "bar", ["modifier1", "modifier2"]]]} />',
   },
@@ -269,6 +276,18 @@ const slotsTests: Test[] = [
   {
     name: 'directive in slot',
     from: `
+      <>
+        <A><div v-xxx />{foo}</A>
+        <A>
+          <B><div v-xxx />{foo}</B>
+        </A>
+      </>
+    `,
+  },
+  {
+    name: 'directive in slot, in scope',
+    from: `
+      const vXxx = {};
       <>
         <A><div v-xxx />{foo}</A>
         <A>
