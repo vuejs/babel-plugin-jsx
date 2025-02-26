@@ -1,8 +1,8 @@
 import * as t from '@babel/types';
 import { type NodePath } from '@babel/traverse';
+import { isHTMLTag , isSVGTag } from '@vue/shared'
 import type { State } from './interface';
 import SlotFlags from './slotFlags';
-import { isHTMLTag , isSVGTag } from '@vue/shared'
 export const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
 export const FRAGMENT = 'Fragment';
 export const KEEP_ALIVE = 'KeepAlive';
