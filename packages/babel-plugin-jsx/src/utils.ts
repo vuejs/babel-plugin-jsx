@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { type NodePath } from '@babel/traverse';
-import { isHTMLTag , isSVGTag } from '@vue/shared'
+import { isHTMLTag, isSVGTag } from '@vue/shared';
 import type { State } from './interface';
 import SlotFlags from './slotFlags';
 export const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
@@ -97,10 +97,7 @@ export const getTag = (
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
-    if (
-      !isHTMLTag(name) &&
-      !isSVGTag(name)
-    ) {
+    if (!isHTMLTag(name) && !isSVGTag(name)) {
       return name === FRAGMENT
         ? createIdentifier(state, FRAGMENT)
         : path.scope.hasBinding(name)
