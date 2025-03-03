@@ -1,10 +1,8 @@
 import * as t from '@babel/types';
-import htmlTags from 'html-tags';
-import svgTags from 'svg-tags';
 import { type NodePath } from '@babel/traverse';
+import { isHTMLTag, isSVGTag } from '@vue/shared';
 import type { State } from './interface';
 import SlotFlags from './slotFlags';
-
 export const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
 export const FRAGMENT = 'Fragment';
 export const KEEP_ALIVE = 'KeepAlive';
@@ -60,8 +58,8 @@ export const checkIsComponent = (
   return (
     !state.opts.isCustomElement?.(tag) &&
     shouldTransformedToSlots(tag) &&
-    !htmlTags.includes(tag as htmlTags.htmlTags) &&
-    !svgTags.includes(tag)
+    !isHTMLTag(tag) &&
+    !isSVGTag(tag)
   );
 };
 
@@ -99,10 +97,7 @@ export const getTag = (
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
-    if (
-      !htmlTags.includes(name as htmlTags.htmlTags) &&
-      !svgTags.includes(name)
-    ) {
+    if (!isHTMLTag(name) && !isSVGTag(name)) {
       return name === FRAGMENT
         ? createIdentifier(state, FRAGMENT)
         : path.scope.hasBinding(name)

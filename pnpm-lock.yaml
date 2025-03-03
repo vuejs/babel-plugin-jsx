@@ -106,12 +106,9 @@ importers:
       '@vue/babel-plugin-resolve-type':
         specifier: workspace:*
         version: link:../babel-plugin-resolve-type
-      html-tags:
-        specifier: ^3.3.1
-        version: 3.3.1
-      svg-tags:
-        specifier: ^1.0.0
-        version: 1.0.0
+      '@vue/shared':
+        specifier: ^3.5.13
+        version: 3.5.13
     devDependencies:
       '@babel/core':
         specifier: ^7.26.9
@@ -125,9 +122,6 @@ importers:
       '@types/babel__traverse':
         specifier: ^7.20.6
         version: 7.20.6
-      '@types/svg-tags':
-        specifier: ^1.0.2
-        version: 1.0.2
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -1156,9 +1150,6 @@ packages:
 
   '@types/node@22.13.4':
     resolution: {integrity: sha512-ywP2X0DYtX3y08eFVx5fNIw7/uIv8hYUKgXoK8oayJlLnKcRfEYCxWMVE1XagUdVtCJlZT1AU4LXEABW+L1Peg==}
-
-  '@types/svg-tags@1.0.2':
-    resolution: {integrity: sha512-D8rhCFfpmWzXvzVqdXo40EXNeropfqp4gvwn8fcVfzYIci8M1C1tk/L26Yacn/U9vaPM7FlS73BNoUtfjAjwAw==}
 
   '@typescript-eslint/eslint-plugin@8.24.1':
     resolution: {integrity: sha512-ll1StnKtBigWIGqvYDVuDmXJHVH4zLVot1yQ4fJtLpL7qacwkxJc1T0bptqw+miBQ/QfUbhl1TcQ4accW5KUyA==}
@@ -3839,8 +3830,6 @@ snapshots:
   '@types/node@22.13.4':
     dependencies:
       undici-types: 6.20.0
-
-  '@types/svg-tags@1.0.2': {}
 
   '@typescript-eslint/eslint-plugin@8.24.1(@typescript-eslint/parser@8.24.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3))(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)':
     dependencies:
