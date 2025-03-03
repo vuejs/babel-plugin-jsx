@@ -405,7 +405,26 @@ const transformJSXElement = (
 
   const { optimize = false } = state.opts;
 
-  const slotFlag = path.getData('slotFlag') || SlotFlags.STABLE;
+  // #541 - directives can't be resolved in optimized slots
+  // all parents should be deoptimized
+  if (
+    directives.length &&
+    directives.some(
+      (d) =>
+        d.elements?.[0]?.type === 'CallExpression' &&
+        d.elements[0].callee.type === 'Identifier' &&
+        d.elements[0].callee.name === '_resolveDirective'
+    )
+  ) {
+    let currentPath = path;
+    while (currentPath.parentPath?.isJSXElement()) {
+      currentPath = currentPath.parentPath;
+      currentPath.setData('slotFlag', 0);
+    }
+  }
+
+  const slotFlag = path.getData('slotFlag') ?? SlotFlags.STABLE;
+  const optimizeSlots = optimize && slotFlag !== 0;
   let VNodeChild;
 
   if (children.length > 1 || slots) {
@@ -431,7 +450,7 @@ const transformJSXElement = (
                   ? (slots! as t.ObjectExpression).properties
                   : [t.spreadElement(slots!)]
                 : []),
-              optimize &&
+              optimizeSlots &&
                 t.objectProperty(t.identifier('_'), t.numericLiteral(slotFlag)),
             ].filter(Boolean as any)
           )
@@ -452,7 +471,7 @@ const transformJSXElement = (
             t.arrayExpression(buildIIFE(path, [child]))
           )
         ),
-        optimize &&
+        optimizeSlots &&
           (t.objectProperty(
             t.identifier('_'),
             t.numericLiteral(slotFlag)
@@ -490,7 +509,7 @@ const transformJSXElement = (
                 t.arrayExpression(buildIIFE(path, [slotId]))
               )
             ),
-            optimize &&
+            optimizeSlots &&
               (t.objectProperty(
                 t.identifier('_'),
                 t.numericLiteral(slotFlag)
@@ -517,7 +536,7 @@ const transformJSXElement = (
       VNodeChild = t.objectExpression(
         [
           ...child.properties,
-          optimize &&
+          optimizeSlots &&
             t.objectProperty(t.identifier('_'), t.numericLiteral(slotFlag)),
         ].filter(Boolean as any)
       );
