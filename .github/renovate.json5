@@ -1,18 +1,13 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
-    'config:base',
-    'schedule:weekly',
-    'group:allNonMajor',
-    ':semanticCommitTypeAll(chore)',
+    'github>haoqunjiang/renovate-presets:npm.json5',
+    'schedule:monthly',
   ],
-  labels: ['dependencies'],
-  rangeStrategy: 'bump',
   packageRules: [
     {
       depTypeList: ['peerDependencies'],
       enabled: false,
     },
   ],
-  ignoreDeps: ['html-tags'],
 }
