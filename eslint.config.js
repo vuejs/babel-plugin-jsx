@@ -3,7 +3,6 @@ import { builtinModules } from 'node:module';
 import tseslint from 'typescript-eslint';
 import importX from 'eslint-plugin-import-x';
 import eslint from '@eslint/js';
-// @ts-expect-error missing types
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
