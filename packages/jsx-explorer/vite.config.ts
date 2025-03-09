@@ -15,6 +15,8 @@ export default defineConfig({
     VueJSX(),
     Replace({
       values: {
+        'process.env': '{}',
+        'process.env.NODE_DEBUG': 'false',
         'process.env.BABEL_TYPES_8_BREAKING': 'false',
       },
     }),
