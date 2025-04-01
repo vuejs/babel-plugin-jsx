@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/standalone": "^7.26.9",
+    "@babel/standalone": "^7.27.0",
     "@vue/babel-plugin-jsx": "workspace:*",
     "assert": "^2.1.0",
     "monaco-editor": "^0.52.2",
