@@ -32,8 +32,8 @@
     }
   },
   "scripts": {
-    "build": "tsup",
-    "watch": "tsup --watch"
+    "build": "tsdown",
+    "watch": "tsdown --watch"
   },
   "bugs": {
     "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
