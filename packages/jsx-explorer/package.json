@@ -20,6 +20,6 @@
     "@vitejs/plugin-vue-jsx": "^4.1.2",
     "terser": "^5.39.0",
     "unplugin-replace": "^0.5.1",
-    "vite": "^6.2.5"
+    "vite": "^6.2.7"
   }
 }
