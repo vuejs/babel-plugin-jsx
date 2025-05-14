@@ -243,24 +243,29 @@ h(A, {
 
 #### custom directive
 
-Recommended when using string arguments
-
 ```jsx
 const App = {
-  directives: { custom: customDirective },
+  directives: { custom: vCustom },
   setup() {
-    return () => <a v-custom:arg={val} />;
+    return () => <a v-custom={val} />;
   },
 };
 ```
 
+Directive names will resolve a variable matching `/v[A-Z]/` first, `options.directives` is only needed to prevent the import from being reported as unused.
+
+Arguments and modifiers can be added as an array:
+
 ```jsx
-const App = {
-  directives: { custom: customDirective },
-  setup() {
-    return () => <a v-custom={[val, 'arg', ['a', 'b']]} />;
-  },
-};
+// same as v-custom:arg.a.b="val" in a .vue file
+<a v-custom={[val, 'arg', ['a', 'b']]} />
+```
+
+Or arguments as part of the attribute name:
+
+```jsx
+<a v-custom:arg={val} />
+<b v-custom:arg={[val, ['a', 'b']]} />
 ```
 
 ### Slot
