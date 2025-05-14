@@ -163,6 +163,15 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
     `,
   },
   {
+    name: 'directive in outer scope',
+    from: `
+      const vXxx = {};
+      () => (
+        <A v-xxx />
+      );
+    `,
+  },
+  {
     name: 'vModels',
     from: '<C v-models={[[foo, ["modifier"]], [bar, "bar", ["modifier1", "modifier2"]]]} />',
   },
