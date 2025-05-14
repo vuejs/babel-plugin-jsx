@@ -63,6 +63,12 @@ _createVNode(_Fragment, null, [_withDirectives(_createVNode(_resolveComponent("A
 }]])]);"
 `;
 
+exports[`directive in outer scope > directive in outer scope 1`] = `
+"import { resolveComponent as _resolveComponent, createVNode as _createVNode, withDirectives as _withDirectives } from "vue";
+const vXxx = {};
+() => _withDirectives(_createVNode(_resolveComponent("A"), null, null, 512), [[vXxx]]);"
+`;
+
 exports[`directive in scope > directive in scope 1`] = `
 "import { resolveComponent as _resolveComponent, createVNode as _createVNode, withDirectives as _withDirectives } from "vue";
 const vXxx = {};
