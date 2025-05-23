@@ -1,12 +1,15 @@
 import * as t from '@babel/types';
-import * as BabelCore from '@babel/core';
-import template from '@babel/template';
-import syntaxJsx from '@babel/plugin-syntax-jsx';
-import { addNamed, isModule, addNamespace } from '@babel/helper-module-imports';
-import { NodePath } from '@babel/traverse';
+import type * as BabelCore from '@babel/core';
+import _template from '@babel/template';
+// @ts-expect-error
+import _syntaxJsx from '@babel/plugin-syntax-jsx';
+import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports';
+import { type NodePath, type Visitor } from '@babel/traverse';
+import ResolveType from '@vue/babel-plugin-resolve-type';
+import { declare } from '@babel/helper-plugin-utils';
 import transformVueJSX from './transform-vue-jsx';
 import sugarFragment from './sugar-fragment';
-import type { VueJSXPluginOptions, State } from './interface';
+import type { State, VueJSXPluginOptions } from './interface';
 
 export { VueJSXPluginOptions };
 
@@ -29,182 +32,172 @@ const hasJSX = (parentPath: NodePath<t.Program>) => {
 
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 
-export default ({ types }: typeof BabelCore) => ({
-  name: 'babel-plugin-jsx',
-  inherits: syntaxJsx,
-  visitor: {
-    ...transformVueJSX,
-    ...sugarFragment,
-    Program: {
-      enter(path: NodePath<t.Program>, state: State) {
-        if (hasJSX(path)) {
-          const importNames = [
-            'Fragment',
-            'createElementVNode',
-            'createTextVNode',
-            'createVNode',
-            'guardReactiveProps',
-            'isVNode',
-            'mergeProps',
-            'normalizeClass',
-            'normalizeProps',
-            'normalizeStyle',
-            'resolveComponent',
-            'resolveDirective',
-            'vModelCheckbox',
-            'vModelDynamic',
-            'vModelRadio',
-            'vModelSelect',
-            'vModelText',
-            'vModelText',
-            'vShow',
-            'withDirectives',
-          ];
-          if (isModule(path)) {
-            // import { createVNode } from "vue";
-            const importMap: Record<string, t.Identifier> = {};
-            importNames.forEach((name) => {
-              state.set(name, () => {
-                if (importMap[name]) {
-                  return types.cloneNode(importMap[name]);
-                }
-                const identifier = addNamed(path, name, 'vue', {
-                  ensureLiveReference: true,
+/* #__NO_SIDE_EFFECTS__ */
+function interopDefault(m: any) {
+  return m.default || m;
+}
+
+const syntaxJsx = /*#__PURE__*/ interopDefault(_syntaxJsx);
+const template = /*#__PURE__*/ interopDefault(_template);
+
+export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
+  (api, opt, dirname) => {
+    const { types } = api;
+    let resolveType: BabelCore.PluginObj<BabelCore.PluginPass> | undefined;
+    if (opt.resolveType) {
+      if (typeof opt.resolveType === 'boolean') opt.resolveType = {};
+      resolveType = ResolveType(api, opt.resolveType, dirname);
+    }
+    return {
+      ...(resolveType || {}),
+      name: 'babel-plugin-jsx',
+      inherits: /*#__PURE__*/ interopDefault(syntaxJsx),
+      visitor: {
+        ...(resolveType?.visitor as Visitor<State>),
+        ...transformVueJSX,
+        ...sugarFragment,
+        Program: {
+          enter(path, state) {
+            if (hasJSX(path)) {
+              const importNames = [
+                'Fragment',
+                'createElementVNode',
+                'createTextVNode',
+                'createVNode',
+                'guardReactiveProps',
+                'isVNode',
+                'mergeProps',
+                'normalizeClass',
+                'normalizeProps',
+                'normalizeStyle',
+                'resolveComponent',
+                'resolveDirective',
+                'vModelCheckbox',
+                'vModelDynamic',
+                'vModelRadio',
+                'vModelSelect',
+                'vModelText',
+                'vModelText',
+                'vShow',
+                'withDirectives',
+              ];
+              if (isModule(path)) {
+                // import { createVNode } from "vue";
+                const importMap: Record<
+                  string,
+                  t.MemberExpression | t.Identifier
+                > = {};
+                importNames.forEach((name) => {
+                  state.set(name, () => {
+                    if (importMap[name]) {
+                      return types.cloneNode(importMap[name]);
+                    }
+                    const identifier = addNamed(path, name, 'vue', {
+                      ensureLiveReference: true,
+                    });
+                    importMap[name] = identifier;
+                    return identifier;
+                  });
                 });
-                importMap[name] = identifier;
-                return identifier;
-              });
-            });
-            const { enableObjectSlots = true } = state.opts;
-            if (enableObjectSlots) {
-              state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
-                if (importMap.runtimeIsSlot) {
-                  return importMap.runtimeIsSlot;
-                }
-                const { name: isVNodeName } = state.get(
-                  'isVNode',
-                )() as t.Identifier;
-                const isSlot = path.scope.generateUidIdentifier('isSlot');
-                const ast = template.ast`
-                  function ${isSlot.name}(s) {
-                    return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
-                  }
-                `;
-                const lastImport = (path.get('body') as NodePath[])
-                  .filter((p) => p.isImportDeclaration())
-                  .pop();
-                if (lastImport) {
-                  lastImport.insertAfter(ast);
-                }
-                importMap.runtimeIsSlot = isSlot;
-                return isSlot;
-              });
-            }
-          } else {
-            // var _vue = require('vue');
-            let sourceName: t.Identifier;
-            importNames.forEach((name) => {
-              state.set(name, () => {
-                if (!sourceName) {
-                  sourceName = addNamespace(path, 'vue', {
-                    ensureLiveReference: true,
+                const { enableObjectSlots = true } = state.opts;
+                if (enableObjectSlots) {
+                  state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
+                    if (importMap.runtimeIsSlot) {
+                      return importMap.runtimeIsSlot;
+                    }
+                    const { name: isVNodeName } = state.get(
+                      'isVNode'
+                    )() as t.Identifier;
+                    const isSlot = path.scope.generateUidIdentifier('isSlot');
+                    const ast = template.ast`
+                    function ${isSlot.name}(s) {
+                      return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
+                    }
+                  `;
+                    const lastImport = (path.get('body') as NodePath[])
+                      .filter((p) => p.isImportDeclaration())
+                      .pop();
+                    if (lastImport) {
+                      lastImport.insertAfter(ast);
+                    }
+                    importMap.runtimeIsSlot = isSlot;
+                    return isSlot;
                   });
                 }
-                return t.memberExpression(sourceName, t.identifier(name));
-              });
-            });
+              } else {
+                // var _vue = require('vue');
+                let sourceName: t.Identifier;
+                importNames.forEach((name) => {
+                  state.set(name, () => {
+                    if (!sourceName) {
+                      sourceName = addNamespace(path, 'vue', {
+                        ensureLiveReference: true,
+                      });
+                    }
+                    return t.memberExpression(sourceName, t.identifier(name));
+                  });
+                });
 
-            const helpers: Record<string, t.Identifier> = {};
+                const helpers: Record<string, t.Identifier> = {};
 
-            const { enableObjectSlots = true } = state.opts;
-            if (enableObjectSlots) {
-              state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
-                if (helpers.runtimeIsSlot) {
-                  return helpers.runtimeIsSlot;
+                const { enableObjectSlots = true } = state.opts;
+                if (enableObjectSlots) {
+                  state.set('@vue/babel-plugin-jsx/runtimeIsSlot', () => {
+                    if (helpers.runtimeIsSlot) {
+                      return helpers.runtimeIsSlot;
+                    }
+                    const isSlot = path.scope.generateUidIdentifier('isSlot');
+                    const { object: objectName } = state.get(
+                      'isVNode'
+                    )() as t.MemberExpression;
+                    const ast = template.ast`
+                    function ${isSlot.name}(s) {
+                      return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${
+                        (objectName as t.Identifier).name
+                      }.isVNode(s));
+                    }
+                  `;
+
+                    const nodePaths = path.get('body') as NodePath[];
+                    const lastImport = nodePaths
+                      .filter(
+                        (p) =>
+                          p.isVariableDeclaration() &&
+                          p.node.declarations.some(
+                            (d) =>
+                              (d.id as t.Identifier)?.name === sourceName.name
+                          )
+                      )
+                      .pop();
+                    if (lastImport) {
+                      lastImport.insertAfter(ast);
+                    }
+                    return isSlot;
+                  });
                 }
-                const isSlot = path.scope.generateUidIdentifier('isSlot');
-                const { object: objectName } = state.get(
-                  'isVNode',
-                )() as t.MemberExpression;
-                const ast = template.ast`
-                  function ${isSlot.name}(s) {
-                    return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${(objectName as t.Identifier).name}.isVNode(s));
+              }
+
+              const {
+                opts: { pragma = '' },
+                file,
+              } = state;
+
+              if (pragma) {
+                state.set('createVNode', () => t.identifier(pragma));
+              }
+
+              if (file.ast.comments) {
+                for (const comment of file.ast.comments) {
+                  const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
+                  if (jsxMatches) {
+                    state.set('createVNode', () => t.identifier(jsxMatches[1]));
                   }
-                `;
-
-                const nodePaths = path.get('body') as NodePath[];
-                const lastImport = nodePaths
-                  .filter(
-                    (p) => p.isVariableDeclaration()
-                      && p.node.declarations.some(
-                        (d) => (d.id as t.Identifier)?.name === sourceName.name,
-                      ),
-                  )
-                  .pop();
-                if (lastImport) {
-                  lastImport.insertAfter(ast);
                 }
-                return isSlot;
-              });
-            }
-          }
-
-          const {
-            opts: { pragma = '' },
-            file,
-          } = state;
-
-          if (pragma) {
-            state.set('createVNode', () => t.identifier(pragma));
-          }
-
-          if (file.ast.comments) {
-            for (const comment of file.ast.comments) {
-              const jsxMatches = JSX_ANNOTATION_REGEX.exec(comment.value);
-              if (jsxMatches) {
-                state.set('createVNode', () => t.identifier(jsxMatches[1]));
               }
             }
-          }
-        }
+          },
+        },
       },
-      exit(path: NodePath<t.Program>) {
-        const body = path.get('body') as NodePath[];
-        const specifiersMap = new Map<string, t.ImportSpecifier>();
-
-        body
-          .filter(
-            (nodePath) => t.isImportDeclaration(nodePath.node)
-              && nodePath.node.source.value === 'vue',
-          )
-          .forEach((nodePath) => {
-            const { specifiers } = nodePath.node as t.ImportDeclaration;
-            let shouldRemove = false;
-            specifiers.forEach((specifier) => {
-              if (
-                !specifier.loc
-                && t.isImportSpecifier(specifier)
-                && t.isIdentifier(specifier.imported)
-              ) {
-                specifiersMap.set(specifier.imported.name, specifier);
-                shouldRemove = true;
-              }
-            });
-            if (shouldRemove) {
-              nodePath.remove();
-            }
-          });
-
-        const specifiers = [...specifiersMap.keys()].map(
-          (imported) => specifiersMap.get(imported)!,
-        );
-        if (specifiers.length) {
-          path.unshiftContainer(
-            'body',
-            t.importDeclaration(specifiers, t.stringLiteral('vue')),
-          );
-        }
-      },
-    },
-  },
-});
+    };
+  }
+);

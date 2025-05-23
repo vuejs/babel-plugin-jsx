@@ -1,0 +1,156 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`resolve type > defineComponent scope > fake 1`] = `
+"const defineComponent = () => {};
+defineComponent((props: {
+  msg?: string;
+}) => {
+  return () => <div />;
+});"
+`;
+
+exports[`resolve type > defineComponent scope > import sub-package 1`] = `
+"import { defineComponent } from 'vue/dist/vue.esm-bundler';
+defineComponent((props: {
+  msg?: string;
+}) => {
+  return () => <div />;
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: false
+    }
+  }
+});"
+`;
+
+exports[`resolve type > defineComponent scope > w/o import 1`] = `
+"defineComponent((props: {
+  msg?: string;
+}) => {
+  return () => <div />;
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: false
+    }
+  }
+});"
+`;
+
+exports[`resolve type > infer component name > identifier options 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, {
+  name: "Foo",
+  ...opts
+});"
+`;
+
+exports[`resolve type > infer component name > no options 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, {
+  name: "Foo"
+});"
+`;
+
+exports[`resolve type > infer component name > object options 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, {
+  name: "Foo",
+  foo: 'bar'
+});"
+`;
+
+exports[`resolve type > infer component name > rest param 1`] = `
+"import { defineComponent } from 'vue';
+const Foo = defineComponent(() => {}, ...args);"
+`;
+
+exports[`resolve type > runtime emits > basic 1`] = `
+"import { type SetupContext, defineComponent } from 'vue';
+defineComponent((props, {
+  emit
+}: SetupContext<{
+  change(val: string): void;
+  click(): void;
+}>) => {
+  emit('change');
+  return () => {};
+}, {
+  emits: ["change", "click"]
+});"
+`;
+
+exports[`resolve type > runtime props > basic 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+interface Props2 {
+  set: Set<string>;
+}
+defineComponent((props: Props & Props2) => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    },
+    set: {
+      type: Set,
+      required: true
+    }
+  }
+});"
+`;
+
+exports[`resolve type > runtime props > with dynamic default value 1`] = `
+"import { defineComponent, h, _mergeDefaults } from 'vue';
+const defaults = {};
+defineComponent((props: {
+  msg?: string;
+} = defaults) => {
+  return () => h('div', props.msg);
+}, {
+  props: /*@__PURE__*/_mergeDefaults({
+    msg: {
+      type: String,
+      required: false
+    }
+  }, defaults)
+});"
+`;
+
+exports[`resolve type > runtime props > with static default value 1`] = `
+"import { defineComponent, h } from 'vue';
+defineComponent((props: {
+  msg?: string;
+} = {
+  msg: 'hello'
+}) => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: false,
+      default: 'hello'
+    }
+  }
+});"
+`;
+
+exports[`resolve type > w/ tsx 1`] = `
+"import { type SetupContext, defineComponent } from 'vue';
+defineComponent(() => {
+  return () => <div />;
+}, {});"
+`;

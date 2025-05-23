@@ -1,10 +1,8 @@
 import * as t from '@babel/types';
-import htmlTags from 'html-tags';
-import svgTags from 'svg-tags';
-import { NodePath } from '@babel/traverse';
+import { type NodePath } from '@babel/traverse';
+import { isHTMLTag, isSVGTag } from '@vue/shared';
 import type { State } from './interface';
 import SlotFlags from './slotFlags';
-
 export const JSX_HELPER_KEY = 'JSX_HELPER_KEY';
 export const FRAGMENT = 'Fragment';
 export const KEEP_ALIVE = 'KeepAlive';
@@ -17,22 +15,26 @@ export const KEEP_ALIVE = 'KeepAlive';
  * @returns MemberExpression
  */
 export const createIdentifier = (
-  state: State, name: string,
+  state: State,
+  name: string
 ): t.Identifier | t.MemberExpression => state.get(name)();
 
 /**
  * Checks if string is describing a directive
  * @param src string
  */
-export const isDirective = (src: string): boolean => src.startsWith('v-')
-  || (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
+export const isDirective = (src: string): boolean =>
+  src.startsWith('v-') ||
+  (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z');
 
 /**
  * Should transformed to slots
  * @param tag string
  * @returns boolean
  */
-export const shouldTransformedToSlots = (tag: string) => !(tag.endsWith(FRAGMENT) || tag === KEEP_ALIVE);
+// if _Fragment is already imported, it will end with number
+export const shouldTransformedToSlots = (tag: string) =>
+  !(tag.match(RegExp(`^_?${FRAGMENT}\\d*$`)) || tag === KEEP_ALIVE);
 
 /**
  * Check if a Node is a component
@@ -41,7 +43,10 @@ export const shouldTransformedToSlots = (tag: string) => !(tag.endsWith(FRAGMENT
  * @param path JSXOpeningElement
  * @returns boolean
  */
-export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>, state: State): boolean => {
+export const checkIsComponent = (
+  path: NodePath<t.JSXOpeningElement>,
+  state: State
+): boolean => {
   const namePath = path.get('name');
 
   if (namePath.isJSXMemberExpression()) {
@@ -50,7 +55,12 @@ export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>, state: Sta
 
   const tag = (namePath as NodePath<t.JSXIdentifier>).node.name;
 
-  return !state.opts.isCustomElement?.(tag) && shouldTransformedToSlots(tag) && !htmlTags.includes(tag) && !svgTags.includes(tag);
+  return (
+    !state.opts.isCustomElement?.(tag) &&
+    shouldTransformedToSlots(tag) &&
+    !isHTMLTag(tag) &&
+    !isSVGTag(tag)
+  );
 };
 
 /**
@@ -59,12 +69,14 @@ export const checkIsComponent = (path: NodePath<t.JSXOpeningElement>, state: Sta
  * @returns MemberExpression
  */
 export const transformJSXMemberExpression = (
-  path: NodePath<t.JSXMemberExpression>,
+  path: NodePath<t.JSXMemberExpression>
 ): t.MemberExpression => {
   const objectPath = path.node.object;
   const propertyPath = path.node.property;
   const transformedObject = t.isJSXMemberExpression(objectPath)
-    ? transformJSXMemberExpression(path.get('object') as NodePath<t.JSXMemberExpression>)
+    ? transformJSXMemberExpression(
+        path.get('object') as NodePath<t.JSXMemberExpression>
+      )
     : t.isJSXIdentifier(objectPath)
       ? t.identifier(objectPath.name)
       : t.nullLiteral();
@@ -80,19 +92,21 @@ export const transformJSXMemberExpression = (
  */
 export const getTag = (
   path: NodePath<t.JSXElement>,
-  state: State,
+  state: State
 ): t.Identifier | t.CallExpression | t.StringLiteral | t.MemberExpression => {
   const namePath = path.get('openingElement').get('name');
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node;
-    if (!htmlTags.includes(name) && !svgTags.includes(name)) {
-      return (name === FRAGMENT
+    if (!isHTMLTag(name) && !isSVGTag(name)) {
+      return name === FRAGMENT
         ? createIdentifier(state, FRAGMENT)
         : path.scope.hasBinding(name)
           ? t.identifier(name)
           : state.opts.isCustomElement?.(name)
             ? t.stringLiteral(name)
-            : t.callExpression(createIdentifier(state, 'resolveComponent'), [t.stringLiteral(name)]));
+            : t.callExpression(createIdentifier(state, 'resolveComponent'), [
+                t.stringLiteral(name),
+              ]);
     }
 
     return t.stringLiteral(name);
@@ -118,9 +132,15 @@ export const getJSXAttributeName = (path: NodePath<t.JSXAttribute>): string => {
  * @param path JSXText
  * @returns StringLiteral | null
  */
-export const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | null => {
-  const { node } = path;
-  const lines = node.value.split(/\r\n|\n|\r/);
+export const transformJSXText = (
+  path: NodePath<t.JSXText | t.StringLiteral>
+): t.StringLiteral | null => {
+  const str = transformText(path.node.value);
+  return str !== '' ? t.stringLiteral(str) : null;
+};
+
+export const transformText = (text: string) => {
+  const lines = text.split(/\r\n|\n|\r/);
 
   let lastNonEmptyLine = 0;
 
@@ -161,7 +181,7 @@ export const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | n
     }
   }
 
-  return str !== '' ? t.stringLiteral(str) : null;
+  return str;
 };
 
 /**
@@ -170,10 +190,8 @@ export const transformJSXText = (path: NodePath<t.JSXText>): t.StringLiteral | n
  * @returns Expression
  */
 export const transformJSXExpressionContainer = (
-  path: NodePath<t.JSXExpressionContainer>,
-): (
-  t.Expression
-  ) => path.get('expression').node as t.Expression;
+  path: NodePath<t.JSXExpressionContainer>
+): t.Expression => path.get('expression').node as t.Expression;
 
 /**
  * Transform JSXSpreadChild
@@ -181,10 +199,14 @@ export const transformJSXExpressionContainer = (
  * @returns SpreadElement
  */
 export const transformJSXSpreadChild = (
-  path: NodePath<t.JSXSpreadChild>,
+  path: NodePath<t.JSXSpreadChild>
 ): t.SpreadElement => t.spreadElement(path.get('expression').node);
 
-export const walksScope = (path: NodePath, name: string, slotFlag: SlotFlags): void => {
+export const walksScope = (
+  path: NodePath,
+  name: string,
+  slotFlag: SlotFlags
+): void => {
   if (path.scope.hasBinding(name) && path.parentPath) {
     if (t.isJSXElement(path.parentPath.node)) {
       path.parentPath.setData('slotFlag', slotFlag);
@@ -193,9 +215,12 @@ export const walksScope = (path: NodePath, name: string, slotFlag: SlotFlags): v
   }
 };
 
-export const buildIIFE = (path: NodePath<t.JSXElement>, children: t.Expression[]) => {
+export const buildIIFE = (
+  path: NodePath<t.JSXElement>,
+  children: t.Expression[]
+) => {
   const { parentPath } = path;
-  if (t.isAssignmentExpression(parentPath)) {
+  if (parentPath.isAssignmentExpression()) {
     const { left } = parentPath.node as t.AssignmentExpression;
     if (t.isIdentifier(left)) {
       return children.map((child) => {
@@ -206,11 +231,15 @@ export const buildIIFE = (path: NodePath<t.JSXElement>, children: t.Expression[]
               t.variableDeclarator(
                 insertName,
                 t.callExpression(
-                  t.functionExpression(null, [], t.blockStatement([t.returnStatement(child)])),
-                  [],
-                ),
+                  t.functionExpression(
+                    null,
+                    [],
+                    t.blockStatement([t.returnStatement(child)])
+                  ),
+                  []
+                )
               ),
-            ]),
+            ])
           );
           return insertName;
         }
@@ -225,7 +254,10 @@ const onRE = /^on[^a-z]/;
 
 export const isOn = (key: string) => onRE.test(key);
 
-const mergeAsArray = (existing: t.ObjectProperty, incoming: t.ObjectProperty) => {
+const mergeAsArray = (
+  existing: t.ObjectProperty,
+  incoming: t.ObjectProperty
+) => {
   if (t.isArrayExpression(existing.value)) {
     existing.value.elements.push(incoming.value as t.Expression);
   } else {
@@ -236,7 +268,10 @@ const mergeAsArray = (existing: t.ObjectProperty, incoming: t.ObjectProperty) =>
   }
 };
 
-export const dedupeProperties = (properties: t.ObjectProperty[] = [], mergeProps?: boolean) => {
+export const dedupeProperties = (
+  properties: t.ObjectProperty[] = [],
+  mergeProps?: boolean
+) => {
   if (!mergeProps) {
     return properties;
   }
@@ -269,7 +304,7 @@ export const dedupeProperties = (properties: t.ObjectProperty[] = [], mergeProps
  * @returns boolean
  */
 export const isConstant = (
-  node: t.Expression | t.Identifier | t.Literal | t.SpreadElement | null,
+  node: t.Expression | t.Identifier | t.Literal | t.SpreadElement | null
 ): boolean => {
   if (t.isIdentifier(node)) {
     return node.name === 'undefined';
@@ -279,9 +314,13 @@ export const isConstant = (
     return elements.every((element) => element && isConstant(element));
   }
   if (t.isObjectExpression(node)) {
-    return node.properties.every((property) => isConstant((property as any).value));
+    return node.properties.every((property) =>
+      isConstant((property as any).value)
+    );
   }
-  if (t.isLiteral(node)) {
+  if (
+    t.isTemplateLiteral(node) ? !node.expressions.length : t.isLiteral(node)
+  ) {
     return true;
   }
   return false;
@@ -291,13 +330,21 @@ export const transformJSXSpreadAttribute = (
   nodePath: NodePath,
   path: NodePath<t.JSXSpreadAttribute>,
   mergeProps: boolean,
-  args: (t.ObjectProperty | t.Expression | t.SpreadElement)[],
+  args: (t.ObjectProperty | t.Expression | t.SpreadElement)[]
 ) => {
-  const argument = path.get('argument') as NodePath<t.ObjectExpression | t.Identifier>;
-  const properties = t.isObjectExpression(argument.node) ? argument.node.properties : undefined;
+  const argument = path.get('argument') as NodePath<
+    t.ObjectExpression | t.Identifier
+  >;
+  const properties = t.isObjectExpression(argument.node)
+    ? argument.node.properties
+    : undefined;
   if (!properties) {
     if (argument.isIdentifier()) {
-      walksScope(nodePath, (argument.node as t.Identifier).name, SlotFlags.DYNAMIC);
+      walksScope(
+        nodePath,
+        (argument.node as t.Identifier).name,
+        SlotFlags.DYNAMIC
+      );
     }
     args.push(mergeProps ? argument.node : t.spreadElement(argument.node));
   } else if (mergeProps) {

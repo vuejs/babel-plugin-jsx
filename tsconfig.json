@@ -1,25 +1,22 @@
 {
   "compilerOptions": {
-    "sourceMap": false,
-    "target": "es2015",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["ES2015", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
     "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,
-    "experimentalDecorators": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "removeComments": false,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": ["node", "jest"],
-  },
-  "include": [
-    "global.d.ts",
-    "packages/*/src",
-    "packages/*/test",
-  ]
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "types": ["vitest/globals"],
+    "skipLibCheck": true,
+    "paths": {
+      "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
+    },
+    "noEmit": true,
+    "customConditions": ["dev"]
+  }
 }

@@ -1,19 +1,19 @@
 import {
+  type CSSProperties,
+  type ComponentPublicInstance,
+  Transition,
+  defineComponent,
   reactive,
   ref,
-  defineComponent,
-  CSSProperties,
-  ComponentPublicInstance,
-  Transition,
 } from 'vue';
-import { shallowMount, mount, VueWrapper } from '@vue/test-utils';
+import { type VueWrapper, mount, shallowMount } from '@vue/test-utils';
 
 const patchFlagExpect = (
   wrapper: VueWrapper<ComponentPublicInstance>,
   flag: number,
-  dynamic: string[] | null,
+  dynamic: string[] | null
 ) => {
-  const { patchFlag, dynamicProps } = wrapper.vm.$.subTree;
+  const { patchFlag, dynamicProps } = wrapper.vm.$.subTree as any;
 
   expect(patchFlag).toBe(flag);
   expect(dynamicProps).toEqual(dynamic);
@@ -94,7 +94,7 @@ describe('Transform JSX', () => {
       },
     });
 
-    expect(wrapper.html()).toBe('<div>123</div><div>456</div>');
+    expect(wrapper.html()).toBe('<div>123</div>\n<div>456</div>');
   });
 
   test('nested component', () => {
@@ -125,7 +125,7 @@ describe('Transform JSX', () => {
   test('Merge class', () => {
     const wrapper = shallowMount({
       setup() {
-        // @ts-ignore
+        // @ts-expect-error
         return () => <div class="a" {...{ class: 'b' }} />;
       },
     });
@@ -152,7 +152,7 @@ describe('Transform JSX', () => {
       },
     });
     expect(wrapper.html()).toBe(
-      '<div style="color: blue; width: 300px; height: 300px;"></div>',
+      '<div style="color: blue; width: 300px; height: 300px;"></div>'
     );
   });
 
@@ -173,7 +173,7 @@ describe('Transform JSX', () => {
         return () => <input type="text" value={val} />;
       },
     });
-    expect(wrapper.html()).toBe('<input type="text">');
+    expect(wrapper.html()).toBe('<input type="text" value="foo">');
   });
 
   test('domProps input[checked]', () => {
@@ -234,8 +234,8 @@ describe('Transform JSX', () => {
     const wrapper = shallowMount({
       setup() {
         return () => (
-          <a
-            href="huhu"
+          <button
+            type="button"
             {...data}
             class={{ c: true }}
             onClick={() => calls.push(4)}
@@ -246,7 +246,7 @@ describe('Transform JSX', () => {
     });
 
     expect(wrapper.attributes('id')).toBe('hehe');
-    expect(wrapper.attributes('href')).toBe('huhu');
+    expect(wrapper.attributes('type')).toBe('button');
     expect(wrapper.text()).toBe('2');
     expect(wrapper.classes()).toEqual(expect.arrayContaining(['a', 'b', 'c']));
 
@@ -254,16 +254,26 @@ describe('Transform JSX', () => {
 
     expect(calls).toEqual(expect.arrayContaining([3, 4]));
   });
+
+  test('empty string', () => {
+    const wrapper = shallowMount({
+      setup() {
+        return () => <h1 title=""></h1>;
+      },
+    });
+    expect(wrapper.html()).toBe('<h1 title=""></h1>');
+  });
 });
 
 describe('directive', () => {
   test('vHtml', () => {
     const wrapper = shallowMount({
       setup() {
-        return () => <h1 v-html="<div>foo</div>"></h1>;
+        const html = '<div>foo</div>';
+        return () => <h1 v-html={html}></h1>;
       },
     });
-    expect(wrapper.html()).toBe('<h1><div>foo</div></h1>');
+    expect(wrapper.html()).toBe('<h1>\n  <div>foo</div>\n</h1>');
   });
 
   test('vText', () => {
@@ -354,6 +364,20 @@ describe('PatchFlags', () => {
     expect(wrapper.html()).toBe('<div style="display: none;">NEED_PATCH</div>');
   });
 
+  test('#728: template literals with expressions should be treated as dynamic', async () => {
+    const wrapper = mount({
+      setup() {
+        const foo = ref(0);
+        return () => (
+          <button value={`${foo.value}`} onClick={() => foo.value++}></button>
+        );
+      },
+    });
+    patchFlagExpect(wrapper, 8, ['value', 'onClick']);
+    await wrapper.trigger('click');
+    expect(wrapper.html()).toBe('<button value="1"></button>');
+  });
+
   test('full props', async () => {
     const wrapper = mount({
       setup() {
@@ -419,7 +443,7 @@ describe('variables outside slots', () => {
             </A>
           );
         },
-      }),
+      })
     );
 
     expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
@@ -428,32 +452,34 @@ describe('variables outside slots', () => {
   });
 
   test('forwarded', async () => {
-    const wrapper = mount({
-      data() {
-        return {
-          val: 0,
-        };
-      },
-      methods: {
-        inc() {
-          this.val += 1;
+    const wrapper = mount(
+      defineComponent({
+        data() {
+          return {
+            val: 0,
+          };
         },
-      },
-      render() {
-        const attrs = {
-          innerHTML: `${this.val}`,
-        };
-        const textarea = <textarea id="textarea" {...attrs} />;
-        return (
-          <A inc={this.inc}>
-            <div>{textarea}</div>
-            <button id="button" onClick={this.inc}>
-              +1
-            </button>
-          </A>
-        );
-      },
-    });
+        methods: {
+          inc() {
+            this.val += 1;
+          },
+        },
+        render() {
+          const attrs = {
+            innerHTML: `${this.val}`,
+          };
+          const textarea = <textarea id="textarea" {...attrs} />;
+          return (
+            <A inc={this.inc}>
+              <div>{textarea}</div>
+              <button id="button" onClick={this.inc}>
+                +1
+              </button>
+            </A>
+          );
+        },
+      })
+    );
 
     expect(wrapper.get('#textarea').element.innerHTML).toBe('0');
     await wrapper.get('#button').trigger('click');
@@ -470,11 +496,8 @@ test('reassign variable as component should work', () => {
     },
   });
 
-  /* eslint-disable */
   const _a2 = 2;
   a = _a2;
-  /* eslint-enable */
-
   a = <A>{a}</A>;
 
   const wrapper = mount({
@@ -581,8 +604,15 @@ describe('should support passing object slots via JSX children', () => {
       },
     });
 
-    expect(wrapper.html()).toBe(
-      '<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>',
+    expect(wrapper.html()).toMatchInlineSnapshot(
+      `
+      "<span><span>A</span>
+      <!----></span>
+      <span><span>B</span>
+      <!----></span>
+      <span><span>C</span>
+      <!----></span>"
+    `
     );
   });
 
@@ -601,8 +631,15 @@ describe('should support passing object slots via JSX children', () => {
       },
     });
 
-    expect(wrapper.html()).toBe(
-      '<span><span>A</span><!----></span><span><span>B</span><!----></span><span><span>C</span><!----></span>',
+    expect(wrapper.html()).toMatchInlineSnapshot(
+      `
+      "<span><span>A</span>
+      <!----></span>
+      <span><span>B</span>
+      <!----></span>
+      <span><span>C</span>
+      <!----></span>"
+    `
     );
   });
 });

@@ -1,5 +1,5 @@
-// https://github.com/vuejs/vue-next/blob/master/packages/shared/src/patchFlags.ts
-// tslint:disable: no-bitwise
+// https://github.com/vuejs/core/blob/main/packages/shared/src/patchFlags.ts
+
 export const enum PatchFlags {
   TEXT = 1,
   CLASS = 1 << 1,

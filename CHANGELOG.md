@@ -1,3 +1,15 @@
+## 1.1.1
+
+`2021-10-17`
+
+- 🐞 fix: wrong compilation result when _Fragment is imported (#518)
+
+## 1.1.0
+
+`2021-09-30`
+
+- 🌟 feat: allow string arguments on directives [#496]
+
 ## 1.0.6
 
 `2021-05-02`
@@ -42,7 +54,7 @@
 
 `2020-12-12`
 
-- 🐞 wrong result in slots array map expression [#218](https://github.com/vuejs/jsx-next/pull/218)
+- 🐞 wrong result in slots array map expression [#218](https://github.com/vuejs/babel-plugin-jsx/pull/218)
 
 ## 1.0.0-rc.4
 
@@ -55,15 +67,15 @@
 
 `2020-09-14`
 
-- 🐞 fix mergeProps order error ([bf59811](https://github.com/vuejs/jsx-next/commit/bf59811f4334dbc30fd62ba33a33926031dd8835))
-- 🌟 optional mergeProps ([e16695d](https://github.com/vuejs/jsx-next/commit/e16695d87e269000055828f32492690c4cf796b2))
+- 🐞 fix mergeProps order error ([bf59811](https://github.com/vuejs/babel-plugin-jsx/commit/bf59811f4334dbc30fd62ba33a33926031dd8835))
+- 🌟 optional mergeProps ([e16695d](https://github.com/vuejs/babel-plugin-jsx/commit/e16695d87e269000055828f32492690c4cf796b2))
 
 ## 1.0.0-rc.2
 
 `2020-08-28`
 
-- 🌟 rename package scope from ant-design-vue to vue ([09c220e](https://github.com/vuejs/jsx-next/commit/09c220eeff98bbec757a83d41af1f0731652d00c))
-- 🌟 replace namespace imports with named imports [#67](https://github.com/vuejs/jsx-next/pull/67)
+- 🌟 rename package scope from ant-design-vue to vue ([09c220e](https://github.com/vuejs/babel-plugin-jsx/commit/09c220eeff98bbec757a83d41af1f0731652d00c))
+- 🌟 replace namespace imports with named imports [#67](https://github.com/vuejs/babel-plugin-jsx/pull/67)
 
 ## 1.0.0-rc.1
 

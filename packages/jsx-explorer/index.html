@@ -1,19 +1,14 @@
-<title>Vue JSX Explorer</title>
-<link rel="stylesheet" data-name="vs/editor/editor.main" href="https://unpkg.com/monaco-editor@0.20.0/min/vs/editor/editor.main.css">
-
-<div id="header"></div>
-<div id="source" class="editor"></div>
-<div id="output" class="editor"></div>
-
-<script src="https://unpkg.com/monaco-editor@0.20.0/min/vs/loader.js"></script>
-<script>
-require.config({
-  paths: {
-    'vs': 'https://unpkg.com/monaco-editor@0.20.0/min/vs'
-  }
-})
-</script>
-<script src="./main.js"></script>
-<script>
-require(['vs/editor/editor.main'], init /* injected by build */)
-</script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue JSX Explorer</title>
+  </head>
+  <body>
+    <div id="header"></div>
+    <div id="source" class="editor"></div>
+    <div id="output" class="editor"></div>
+    <script type="module" src="./src/index.ts"></script>
+  </body>
+</html>

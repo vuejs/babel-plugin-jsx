@@ -1,5 +1,6 @@
-import * as t from '@babel/types';
-import * as BabelCore from '@babel/core';
+import type * as t from '@babel/types';
+import type * as BabelCore from '@babel/core';
+import { type Options } from '@vue/babel-plugin-resolve-type';
 
 export type Slots = t.Identifier | t.ObjectExpression | null;
 
@@ -7,7 +8,7 @@ export type State = {
   get: (name: string) => any;
   set: (name: string, value: any) => any;
   opts: VueJSXPluginOptions;
-  file: BabelCore.BabelFile
+  file: BabelCore.BabelFile;
 };
 
 export interface VueJSXPluginOptions {
@@ -23,4 +24,9 @@ export interface VueJSXPluginOptions {
   enableObjectSlots?: boolean;
   /** Replace the function used when compiling JSX expressions */
   pragma?: string;
+  /**
+   * (**Experimental**) Infer component metadata from types (e.g. `props`, `emits`, `name`)
+   * @default false
+   */
+  resolveType?: Options | boolean;
 }

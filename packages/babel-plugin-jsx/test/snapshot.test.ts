@@ -1,27 +1,29 @@
 import { transform } from '@babel/core';
-import JSX, { VueJSXPluginOptions } from '../src';
+import JSX, { type VueJSXPluginOptions } from '../src';
 
 interface Test {
   name: string;
   from: string;
 }
 
-const transpile = (
-  source: string, options: VueJSXPluginOptions = {},
-) => new Promise((resolve, reject) => transform(
-  source,
-  {
-    filename: '',
-    presets: null,
-    plugins: [[JSX, options]],
-    configFile: false,
-  }, (error, result) => {
-    if (error) {
-      return reject(error);
-    }
-    resolve(result?.code);
-  },
-));
+const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
+  new Promise((resolve, reject) =>
+    transform(
+      source,
+      {
+        filename: '',
+        presets: null,
+        plugins: [[JSX, options]],
+        configFile: false,
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(result?.code);
+      }
+    )
+  );
 
 [
   {
@@ -154,6 +156,13 @@ const transpile = (
     `,
   },
   {
+    name: 'directive in scope',
+    from: `
+      const vXxx = {};
+      <A v-xxx />
+    `,
+  },
+  {
     name: 'vModels',
     from: '<C v-models={[[foo, ["modifier"]], [bar, "bar", ["modifier1", "modifier2"]]]} />',
   },
@@ -206,34 +215,33 @@ const transpile = (
     name: 'using v-slots without children should not be spread',
     from: '<A v-slots={slots} />',
   },
-].forEach((
-  { name, from },
-) => {
-  test(
-    name,
-    async () => {
-      expect(await transpile(from, { optimize: true, enableObjectSlots: true })).toMatchSnapshot(name);
-    },
-  );
+  {
+    name: 'TemplateLiteral prop and event co-usage',
+    from: '<div value={`${foo}`} onClick={() => foo.value++}></div>',
+  },
+].forEach(({ name, from }) => {
+  test(name, async () => {
+    expect(
+      await transpile(from, { optimize: true, enableObjectSlots: true })
+    ).toMatchSnapshot(name);
+  });
 });
 
-const overridePropsTests: Test[] = [{
-  name: 'single',
-  from: '<div {...a} />',
-}, {
-  name: 'multiple',
-  from: '<A loading {...a} {...{ b: 1, c: { d: 2 } }} class="x" style={x} />',
-}];
+const overridePropsTests: Test[] = [
+  {
+    name: 'single',
+    from: '<div {...a} />',
+  },
+  {
+    name: 'multiple',
+    from: '<A loading {...a} {...{ b: 1, c: { d: 2 } }} class="x" style={x} />',
+  },
+];
 
-overridePropsTests.forEach((
-  { name, from },
-) => {
-  test(
-    `override props ${name}`,
-    async () => {
-      expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name);
-    },
-  );
+overridePropsTests.forEach(({ name, from }) => {
+  test(`override props ${name}`, async () => {
+    expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name);
+  });
 });
 
 const slotsTests: Test[] = [
@@ -254,17 +262,48 @@ const slotsTests: Test[] = [
       <A>{foo()}</A>;
     `,
   },
+  {
+    name: 'no directive in slot',
+    from: `
+      <>
+        <A><div />{foo}</A>
+        <A>
+          <B><div />{foo}</B>
+        </A>
+      </>
+    `,
+  },
+  {
+    name: 'directive in slot',
+    from: `
+      <>
+        <A><div v-xxx />{foo}</A>
+        <A>
+          <B><div v-xxx />{foo}</B>
+        </A>
+      </>
+    `,
+  },
+  {
+    name: 'directive in slot, in scope',
+    from: `
+      const vXxx = {};
+      <>
+        <A><div v-xxx />{foo}</A>
+        <A>
+          <B><div v-xxx />{foo}</B>
+        </A>
+      </>
+    `,
+  },
 ];
 
-slotsTests.forEach(({
-  name, from,
-}) => {
-  test(
-    `passing object slots via JSX children ${name}`,
-    async () => {
-      expect(await transpile(from, { optimize: true, enableObjectSlots: true })).toMatchSnapshot(name);
-    },
-  );
+slotsTests.forEach(({ name, from }) => {
+  test(`passing object slots via JSX children ${name}`, async () => {
+    expect(
+      await transpile(from, { optimize: true, enableObjectSlots: true })
+    ).toMatchSnapshot(name);
+  });
 });
 
 const objectSlotsTests = [
@@ -274,16 +313,12 @@ const objectSlotsTests = [
   },
 ];
 
-objectSlotsTests.forEach(({
-  name, from,
-}) => {
-  test(
-    `disable object slot syntax with ${name}`,
-    async () => {
-      expect(await transpile(from, { optimize: true, enableObjectSlots: false }))
-        .toMatchSnapshot(name);
-    },
-  );
+objectSlotsTests.forEach(({ name, from }) => {
+  test(`disable object slot syntax with ${name}`, async () => {
+    expect(
+      await transpile(from, { optimize: true, enableObjectSlots: false })
+    ).toMatchSnapshot(name);
+  });
 });
 
 const pragmaTests = [
@@ -293,28 +328,40 @@ const pragmaTests = [
   },
 ];
 
-pragmaTests.forEach(({
-  name, from,
-}) => {
-  test(
-    `set pragma to ${name}`,
-    async () => {
-      expect(await transpile(from, { pragma: 'custom' }))
-        .toMatchSnapshot(name);
-    },
-  );
+pragmaTests.forEach(({ name, from }) => {
+  test(`set pragma to ${name}`, async () => {
+    expect(await transpile(from, { pragma: 'custom' })).toMatchSnapshot(name);
+  });
 });
 
-const isCustomElementTests = [{
-  name: 'isCustomElement',
-  from: '<foo><span>foo</span></foo>'
-}]
+const isCustomElementTests = [
+  {
+    name: 'isCustomElement',
+    from: '<foo><span>foo</span></foo>',
+  },
+];
 
-isCustomElementTests.forEach(({name, from }) => {
-  test(
-    name,
-    async () => {
-      expect(await transpile(from, { isCustomElement: tag => tag === 'foo' })).toMatchSnapshot(name);
-    }
-  )
-})
+isCustomElementTests.forEach(({ name, from }) => {
+  test(name, async () => {
+    expect(
+      await transpile(from, { isCustomElement: (tag) => tag === 'foo' })
+    ).toMatchSnapshot(name);
+  });
+});
+
+const fragmentTests = [
+  {
+    name: '_Fragment already imported',
+    from: `
+      import { Fragment as _Fragment } from 'vue'
+      const Root1 = () => <>root1</>
+      const Root2 = () => <_Fragment>root2</_Fragment>
+      `,
+  },
+];
+
+fragmentTests.forEach(({ name, from }) => {
+  test(name, async () => {
+    expect(await transpile(from)).toMatchSnapshot(name);
+  });
+});

@@ -1,6 +1,7 @@
 # Vue 3 Babel JSX 插件
 
-[![CircleCI](https://circleci.com/gh/vuejs/jsx-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-next) [![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
+[![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
+[![issues-helper](https://img.shields.io/badge/Issues%20Manage%20By-issues--helper-orange?style=flat-square)](https://github.com/actions-cool/issues-helper)
 
 以 JSX 的方式来编写 Vue 代码
 
@@ -40,7 +41,9 @@ Type: `boolean`
 
 Default: `false`
 
-是否开启优化. 如果你对 Vue 3 不太熟悉，不建议打开
+开启此选项后，JSX 插件会尝试使用 [`PatchFlags`](https://cn.vuejs.org/guide/extras/rendering-mechanism#patch-flags) 和 [`SlotFlags`](https://github.com/vuejs/core/blob/v3.5.13/packages/runtime-core/src/componentSlots.ts#L69-L77) 来优化运行时代码，从而提升渲染性能。需要注意的是，JSX 的灵活性远高于模板语法，这使得编译优化的可能性相对有限，其优化效果会比 Vue 官方模板编译器更为有限。
+
+优化后的代码会选择性地跳过一些重渲染操作以提高性能。因此，建议在开启此选项后对应用进行完整的测试，确保所有功能都能正常工作。
 
 #### isCustomElement
 
@@ -68,7 +71,15 @@ Type: `string`
 
 Default: `createVNode`
 
-替换编译JSX表达式的时候使用的函数
+替换编译 JSX 表达式的时候使用的函数
+
+#### resolveType
+
+Type: `boolean`
+
+Default: `false`
+
+(**Experimental**) Infer component metadata from types (e.g. `props`, `emits`, `name`). This is an experimental feature and may not work in all cases.
 
 ## 表达式
 
@@ -91,7 +102,7 @@ const App = {
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from "vue";
+import { withModifiers, defineComponent } from 'vue';
 
 const App = defineComponent({
   setup() {
@@ -102,7 +113,7 @@ const App = defineComponent({
     };
 
     return () => (
-      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
+      <div onClick={withModifiers(inc, ['self'])}>{count.value}</div>
     );
   },
 });
@@ -128,13 +139,13 @@ const App = () => <input type="email" />;
 动态绑定:
 
 ```jsx
-const placeholderText = "email";
+const placeholderText = 'email';
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
 ### 指令
 
-v-show
+#### v-show
 
 ```jsx
 const App = {
@@ -147,7 +158,7 @@ const App = {
 };
 ```
 
-v-model
+#### v-model
 
 > 注意：如果想要使用 `arg`, 第二个参数需要为字符串
 
@@ -156,14 +167,22 @@ v-model
 ```
 
 ```jsx
-<input v-model={[val, ["modifier"]]} />
+<input v-model:argument={val} />
 ```
 
 ```jsx
-<A v-model={[val, "argument", ["modifier"]]} />
+<input v-model={[val, ['modifier']]} />
+// 或者
+<input v-model_modifier={val} />
 ```
 
-会变编译成：
+```jsx
+<A v-model={[val, 'argument', ['modifier']]} />
+// 或者
+<input v-model:argument_modifier={val} />
+```
+
+会编译成：
 
 ```js
 h(A, {
@@ -171,23 +190,23 @@ h(A, {
   argumentModifiers: {
     modifier: true,
   },
-  "onUpdate:argument": ($event) => (val = $event),
+  'onUpdate:argument': ($event) => (val = $event),
 });
 ```
 
-v-models
+#### v-models (从 1.1.0 开始不推荐使用)
 
 > 注意: 你应该传递一个二维数组给 v-models。
 
 ```jsx
-<A v-models={[[foo], [bar, "bar"]]} />
+<A v-models={[[foo], [bar, 'bar']]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, "foo"],
-    [bar, "bar"],
+    [foo, 'foo'],
+    [bar, 'bar'],
   ]}
 />
 ```
@@ -195,13 +214,13 @@ v-models
 ```jsx
 <A
   v-models={[
-    [foo, ["modifier"]],
-    [bar, "bar", ["modifier"]],
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
   ]}
 />
 ```
 
-会变编译成：
+会编译成：
 
 ```js
 h(A, {
@@ -209,22 +228,33 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  "onUpdate:modelValue": ($event) => (foo = $event),
+  'onUpdate:modelValue': ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  "onUpdate:bar": ($event) => (bar = $event),
+  'onUpdate:bar': ($event) => (bar = $event),
 });
 ```
 
-自定义指令
+#### 自定义指令
+
+只有 argument 的时候推荐使用
 
 ```jsx
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
+    return () => <a v-custom:arg={val} />;
+  },
+};
+```
+
+```jsx
+const App = {
+  directives: { custom: customDirective },
+  setup() {
+    return () => <a v-custom={[val, 'arg', ['a', 'b']]} />;
   },
 };
 ```
@@ -236,8 +266,8 @@ const App = {
 ```jsx
 const A = (props, { slots }) => (
   <>
-    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
-    <h2>{ slots.bar?.() }</h2>
+    <h1>{slots.default ? slots.default() : 'foo'}</h1>
+    <h2>{slots.bar?.()}</h2>
   </>
 );
 
@@ -266,7 +296,7 @@ const App = {
   },
 };
 
-// or
+// 或者，当 `enableObjectSlots` 不是 `false` 时，您可以使用对象插槽
 const App = {
   setup() {
     return () => (
@@ -277,14 +307,14 @@ const App = {
             bar: () => <span>B</span>,
           }}
         </A>
-        <B>{() => "foo"}</B>
+        <B>{() => 'foo'}</B>
       </>
     );
   },
 };
 ```
 
-### 在 TypeSript 中使用
+### 在 TypeScript 中使用
 
 `tsconfig.json`:
 
@@ -296,7 +326,7 @@ const App = {
 }
 ```
 
-## 谁在用
+## 谁在使用
 
 <table>
   <tbody>
@@ -305,7 +335,7 @@ const App = {
         <a target="_blank" href="https://www.antdv.com/">
           <img
             width="32"
-            src="https://qn.antdv.com/logo.png"
+            src="https://github.com/vuejs/babel-plugin-jsx/assets/6481596/8d604d42-fe5f-4450-af87-97999537cd21"
           />
           <br>
           <strong>Ant Design Vue</strong>

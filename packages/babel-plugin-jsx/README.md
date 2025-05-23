@@ -1,6 +1,7 @@
-# Babel Plugin JSX for Vue 3.0
+# Babel Plugin JSX for Vue 3
 
-[![CircleCI](https://circleci.com/gh/vuejs/jsx-next.svg?style=svg)](https://circleci.com/gh/vuejs/vue-next) [![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
+[![npm package](https://img.shields.io/npm/v/@vue/babel-plugin-jsx.svg?style=flat-square)](https://www.npmjs.com/package/@vue/babel-plugin-jsx)
+[![issues-helper](https://img.shields.io/badge/Issues%20Manage%20By-issues--helper-blueviolet?style=flat-square)](https://github.com/actions-cool/issues-helper)
 
 To add Vue JSX support.
 
@@ -14,9 +15,9 @@ Install the plugin with:
 npm install @vue/babel-plugin-jsx -D
 ```
 
-Then add the plugin to .babelrc:
+Then add the plugin to your babel config:
 
-```js
+```json
 {
   "plugins": ["@vue/babel-plugin-jsx"]
 }
@@ -40,7 +41,9 @@ Type: `boolean`
 
 Default: `false`
 
-enable optimization or not. It's not recommended to enable it If you are not familiar with Vue 3.
+When enabled, this plugin generates optimized runtime code using [`PatchFlags`](https://vuejs.org/guide/extras/rendering-mechanism#patch-flags) and [`SlotFlags`](https://github.com/vuejs/core/blob/v3.5.13/packages/runtime-core/src/componentSlots.ts#L69-L77) to improve rendering performance. However, due to JSX's dynamic nature, the optimizations are not as comprehensive as those in Vue's official template compiler.
+
+Since the optimized code may skip certain re-renders to improve performance, we strongly recommend thorough testing of your application after enabling this option to ensure everything works as expected.
 
 #### isCustomElement
 
@@ -74,6 +77,14 @@ Default: `createVNode`
 
 Replace the function used when compiling JSX expressions.
 
+#### resolveType
+
+Type: `boolean`
+
+Default: `false`
+
+(**Experimental**) Infer component metadata from types (e.g. `props`, `emits`, `name`). This is an experimental feature and may not work in all cases.
+
 ## Syntax
 
 ### Content
@@ -95,7 +106,7 @@ const App = {
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from "vue";
+import { withModifiers, defineComponent } from 'vue';
 
 const App = defineComponent({
   setup() {
@@ -106,7 +117,7 @@ const App = defineComponent({
     };
 
     return () => (
-      <div onClick={withModifiers(inc, ["self"])}>{count.value}</div>
+      <div onClick={withModifiers(inc, ['self'])}>{count.value}</div>
     );
   },
 });
@@ -132,13 +143,13 @@ const App = () => <input type="email" />;
 with a dynamic binding:
 
 ```jsx
-const placeholderText = "email";
+const placeholderText = 'email';
 const App = () => <input type="email" placeholder={placeholderText} />;
 ```
 
 ### Directives
 
-v-show
+#### v-show
 
 ```jsx
 const App = {
@@ -151,7 +162,7 @@ const App = {
 };
 ```
 
-v-model
+#### v-model
 
 > Note: You should pass the second param as string for using `arg`.
 
@@ -160,11 +171,19 @@ v-model
 ```
 
 ```jsx
-<input v-model={[val, ["modifier"]]} />
+<input v-model:argument={val} />
 ```
 
 ```jsx
-<A v-model={[val, "argument", ["modifier"]]} />
+<input v-model={[val, ['modifier']]} />
+// Or
+<input v-model_modifier={val} />
+```
+
+```jsx
+<A v-model={[val, 'argument', ['modifier']]} />
+// Or
+<input v-model:argument_modifier={val} />
 ```
 
 Will compile to:
@@ -175,23 +194,23 @@ h(A, {
   argumentModifiers: {
     modifier: true,
   },
-  "onUpdate:argument": ($event) => (val = $event),
+  'onUpdate:argument': ($event) => (val = $event),
 });
 ```
 
-v-models
+#### v-models (Not recommended since v1.1.0)
 
 > Note: You should pass a Two-dimensional Arrays to v-models.
 
 ```jsx
-<A v-models={[[foo], [bar, "bar"]]} />
+<A v-models={[[foo], [bar, 'bar']]} />
 ```
 
 ```jsx
 <A
   v-models={[
-    [foo, "foo"],
-    [bar, "bar"],
+    [foo, 'foo'],
+    [bar, 'bar'],
   ]}
 />
 ```
@@ -199,8 +218,8 @@ v-models
 ```jsx
 <A
   v-models={[
-    [foo, ["modifier"]],
-    [bar, "bar", ["modifier"]],
+    [foo, ['modifier']],
+    [bar, 'bar', ['modifier']],
   ]}
 />
 ```
@@ -213,35 +232,46 @@ h(A, {
   modelModifiers: {
     modifier: true,
   },
-  "onUpdate:modelValue": ($event) => (foo = $event),
+  'onUpdate:modelValue': ($event) => (foo = $event),
   bar: bar,
   barModifiers: {
     modifier: true,
   },
-  "onUpdate:bar": ($event) => (bar = $event),
+  'onUpdate:bar': ($event) => (bar = $event),
 });
 ```
 
-custom directive
+#### custom directive
+
+Recommended when using string arguments
 
 ```jsx
 const App = {
   directives: { custom: customDirective },
   setup() {
-    return () => <a v-custom={[val, "arg", ["a", "b"]]} />;
+    return () => <a v-custom:arg={val} />;
+  },
+};
+```
+
+```jsx
+const App = {
+  directives: { custom: customDirective },
+  setup() {
+    return () => <a v-custom={[val, 'arg', ['a', 'b']]} />;
   },
 };
 ```
 
 ### Slot
 
-> Note: In `jsx`, _`v-slot`_ should be replace with **`v-slots`**
+> Note: In `jsx`, _`v-slot`_ should be replaced with **`v-slots`**
 
 ```jsx
 const A = (props, { slots }) => (
   <>
-    <h1>{ slots.default ? slots.default() : 'foo' }</h1>
-    <h2>{ slots.bar?.() }</h2>
+    <h1>{slots.default ? slots.default() : 'foo'}</h1>
+    <h2>{slots.bar?.()}</h2>
   </>
 );
 
@@ -281,7 +311,7 @@ const App = {
             bar: () => <span>B</span>,
           }}
         </A>
-        <B>{() => "foo"}</B>
+        <B>{() => 'foo'}</B>
       </>
     );
   },
@@ -309,7 +339,7 @@ const App = {
         <a target="_blank" href="https://www.antdv.com/">
           <img
             width="32"
-            src="https://qn.antdv.com/logo.png"
+            src="https://github.com/vuejs/babel-plugin-jsx/assets/6481596/8d604d42-fe5f-4450-af87-97999537cd21"
           />
           <br>
           <strong>Ant Design Vue</strong>
