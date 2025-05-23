@@ -173,9 +173,10 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
   {
     name: 'named import specifier `Keep Alive`',
     from: `
-      import { KeepAlive } from 'vue';
+      import { KeepAlive, KeepAlive as KeepAliveA } from 'vue';
 
-      <KeepAlive>123</KeepAlive>
+      const Root1 = <KeepAlive>root1</KeepAlive>
+      const Root2 = <KeepAliveA>root2</KeepAliveA>
     `,
   },
   {
@@ -353,9 +354,10 @@ const fragmentTests = [
   {
     name: '_Fragment already imported',
     from: `
-      import { Fragment as _Fragment } from 'vue'
+      import { Fragment as _Fragment, Fragment as _FragmentA } from 'vue'
       const Root1 = () => <>root1</>
       const Root2 = () => <_Fragment>root2</_Fragment>
+      const Root3 = () => <_FragmentA>root3</_FragmentA>
       `,
   },
 ];
