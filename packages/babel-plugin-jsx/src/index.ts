@@ -120,10 +120,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
                   });
                 }
 
-                const vueImportMap: Record<
-                  string,
-                  (t.MemberExpression | t.Identifier)[]
-                > = {};
+                const vueImportMap: Record<string, t.Identifier[]> = {};
                 state.set('vueImportMap', vueImportMap);
                 path.node.body.forEach((statement) => {
                   if (t.isImportDeclaration(statement)) {

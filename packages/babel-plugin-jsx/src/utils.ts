@@ -38,10 +38,11 @@ export const shouldTransformedToSlots = (tag: string, state?: State) => {
   if (state) {
     const vueImportMap = state.get('vueImportMap');
     for (const name of [FRAGMENT, KEEP_ALIVE]) {
-      if (vueImportMap[name]) {
-        if (vueImportMap[name].some((id: t.Identifier) => id.name === tag)) {
-          return false;
-        }
+      if (
+        vueImportMap[name] &&
+        vueImportMap[name].some((id: t.Identifier) => id.name === tag)
+      ) {
+        return false;
       }
     }
   }
