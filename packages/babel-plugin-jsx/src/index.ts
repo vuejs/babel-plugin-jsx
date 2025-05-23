@@ -119,6 +119,28 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
                     return isSlot;
                   });
                 }
+
+                const vueImportMap: Record<string, t.Identifier[]> = {};
+                state.set('vueImportMap', vueImportMap);
+                path.node.body.forEach((statement) => {
+                  if (t.isImportDeclaration(statement)) {
+                    const { source, specifiers } = statement;
+                    if (source.value === 'vue') {
+                      specifiers.forEach((specifier) => {
+                        if (
+                          t.isImportSpecifier(specifier) &&
+                          t.isIdentifier(specifier.imported)
+                        ) {
+                          const name = specifier.imported.name;
+                          if (!vueImportMap[name]) {
+                            vueImportMap[name] = [];
+                          }
+                          vueImportMap[name].push(specifier.local);
+                        }
+                      });
+                    }
+                  }
+                });
               } else {
                 // var _vue = require('vue');
                 let sourceName: t.Identifier;

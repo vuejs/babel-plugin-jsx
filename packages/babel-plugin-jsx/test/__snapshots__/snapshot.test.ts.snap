@@ -1,9 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`_Fragment already imported > _Fragment already imported 1`] = `
-"import { Fragment as _Fragment, Fragment as _Fragment2, createTextVNode as _createTextVNode, createVNode as _createVNode } from 'vue';
+"import { Fragment as _Fragment, Fragment as _FragmentA, Fragment as _Fragment2, createTextVNode as _createTextVNode, createVNode as _createVNode } from 'vue';
 const Root1 = () => _createVNode(_Fragment2, null, [_createTextVNode("root1")]);
-const Root2 = () => _createVNode(_Fragment, null, [_createTextVNode("root2")]);"
+const Root2 = () => _createVNode(_Fragment, null, [_createTextVNode("root2")]);
+const Root3 = () => _createVNode(_FragmentA, null, [_createTextVNode("root3")]);"
 `;
 
 exports[`MereProps Order > MereProps Order 1`] = `
@@ -130,8 +131,9 @@ _createVNode("foo", null, [_createVNode("span", null, [_createTextVNode("foo")])
 `;
 
 exports[`named import specifier \`Keep Alive\` > named import specifier \`Keep Alive\` 1`] = `
-"import { KeepAlive, createTextVNode as _createTextVNode, createVNode as _createVNode } from 'vue';
-_createVNode(KeepAlive, null, [_createTextVNode("123")]);"
+"import { KeepAlive, KeepAlive as KeepAliveA, createTextVNode as _createTextVNode, createVNode as _createVNode } from 'vue';
+const Root1 = _createVNode(KeepAlive, null, [_createTextVNode("root1")]);
+const Root2 = _createVNode(KeepAliveA, null, [_createTextVNode("root2")]);"
 `;
 
 exports[`namespace specifier \`Keep Alive\` > namespace specifier \`Keep Alive\` 1`] = `
