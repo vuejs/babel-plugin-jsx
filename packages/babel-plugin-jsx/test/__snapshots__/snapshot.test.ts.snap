@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`_Fragment already imported > _Fragment already imported 1`] = `
-"import { Fragment as _Fragment, Fragment as _Fragment2, createTextVNode as _createTextVNode, createVNode as _createVNode } from 'vue';
-const Root1 = () => _createVNode(_Fragment2, null, [_createTextVNode("root1")]);
-const Root2 = () => _createVNode(_Fragment, null, [_createTextVNode("root2")]);"
+"import { Fragment as _Fragment, Fragment as _Fragment2, createTextVNode as _createTextVNode, createElementVNode as _createElementVNode } from 'vue';
+const Root1 = () => _createElementVNode(_Fragment2, null, [_createTextVNode("root1")]);
+const Root2 = () => _createElementVNode(_Fragment, null, [_createTextVNode("root2")]);"
 `;
 
 exports[`MereProps Order > MereProps Order 1`] = `
@@ -125,8 +125,8 @@ _withDirectives(_createElementVNode("input", {
 `;
 
 exports[`isCustomElement > isCustomElement 1`] = `
-"import { createTextVNode as _createTextVNode, createVNode as _createVNode } from "vue";
-_createVNode("foo", null, [_createVNode("span", null, [_createTextVNode("foo")])]);"
+"import { createTextVNode as _createTextVNode, createElementVNode as _createElementVNode } from "vue";
+_createElementVNode("foo", null, [_createElementVNode("span", null, [_createTextVNode("foo")])]);"
 `;
 
 exports[`named import specifier \`Keep Alive\` > named import specifier \`Keep Alive\` 1`] = `
@@ -141,7 +141,7 @@ _createElementVNode(Vue.KeepAlive, null, [_createTextVNode("123")]);"
 `;
 
 exports[`override props multiple > multiple 1`] = `
-"import { resolveComponent as _resolveComponent, createVNode as _createVNode } from "vue";
+"import { resolveComponent as _resolveComponent, normalizeStyle as _normalizeStyle, createVNode as _createVNode } from "vue";
 _createVNode(_resolveComponent("A"), {
   "loading": true,
   ...a,
@@ -150,13 +150,13 @@ _createVNode(_resolveComponent("A"), {
     d: 2
   },
   "class": "x",
-  "style": x
+  "style": _normalizeStyle(x)
 }, null);"
 `;
 
 exports[`override props single > single 1`] = `
-"import { createVNode as _createVNode } from "vue";
-_createVNode("div", a, null);"
+"import { createElementVNode as _createElementVNode } from "vue";
+_createElementVNode("div", a, null);"
 `;
 
 exports[`passing object slots via JSX children directive in slot > directive in slot 1`] = `
@@ -274,8 +274,8 @@ _createElementVNode("div", null, [_createTextVNode("Vue")]);"
 `;
 
 exports[`single no need for a mergeProps call > single no need for a mergeProps call 1`] = `
-"import { createTextVNode as _createTextVNode, createElementVNode as _createElementVNode } from "vue";
-_createElementVNode("div", x, [_createTextVNode("single")], 16);"
+"import { createTextVNode as _createTextVNode, normalizeProps as _normalizeProps, guardReactiveProps as _guardReactiveProps, createElementVNode as _createElementVNode } from "vue";
+_createElementVNode("div", _normalizeProps(_guardReactiveProps(x)), [_createTextVNode("single")], 16);"
 `;
 
 exports[`specifiers should be merged into a single importDeclaration > specifiers should be merged into a single importDeclaration 1`] = `

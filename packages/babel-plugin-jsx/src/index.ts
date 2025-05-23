@@ -184,6 +184,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
 
               if (pragma) {
                 state.set('createVNode', () => t.identifier(pragma));
+                state.set('createElementVNode', () => t.identifier(pragma));
               }
 
               if (file.ast.comments) {

@@ -78,7 +78,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
 
   const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] =
     [];
-  const { mergeProps = true, optimize = false } = state.opts;
+  const { mergeProps = true } = state.opts;
   props.forEach((prop) => {
     if (prop.isJSXAttribute()) {
       let name = getJSXAttributeName(prop);
@@ -310,7 +310,19 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       );
     } else {
       // single no need for a mergeProps call
-      propsExpression = mergeArgs[0];
+      if (isComponent) {
+        // createVNode already normalizes props
+        propsExpression = mergeArgs[0];
+      } else {
+        propsExpression = t.callExpression(
+          createIdentifier(state, 'normalizeProps'),
+          [
+            t.callExpression(createIdentifier(state, 'guardReactiveProps'), [
+              mergeArgs[0],
+            ]),
+          ]
+        );
+      }
     }
   } else if (properties.length) {
     // single no need for spread
@@ -320,34 +332,25 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       propsExpression = t.objectExpression(
         dedupeProperties(properties, mergeProps)
       );
-      if (optimize) {
-        if (hasClassBinding) {
-          const klass = propsExpression.properties.find(
-            (prop) =>
-              t.isObjectProperty(prop) &&
-              t.isStringLiteral(prop.key) &&
-              prop.key.value === 'class'
+      for (let i = 0; i < propsExpression.properties.length; i++) {
+        const property = propsExpression.properties[i];
+        if (
+          !t.isObjectProperty(property) ||
+          !t.isStringLiteral(property.key) ||
+          !t.isExpression(property.value) ||
+          isConstant(property.value)
+        )
+          continue;
+        if (property.key.value === 'class') {
+          property.value = t.callExpression(
+            createIdentifier(state, 'normalizeClass'),
+            [property.value]
           );
-          if (t.isObjectProperty(klass)) {
-            klass.value = t.callExpression(
-              createIdentifier(state, 'normalizeClass'),
-              [klass.value as any]
-            );
-          }
-        }
-        if (hasStyleBinding) {
-          const style = propsExpression.properties.find(
-            (prop) =>
-              t.isObjectProperty(prop) &&
-              t.isStringLiteral(prop.key) &&
-              prop.key.value === 'style'
+        } else if (property.key.value === 'style') {
+          property.value = t.callExpression(
+            createIdentifier(state, 'normalizeStyle'),
+            [property.value]
           );
-          if (t.isObjectProperty(style)) {
-            style.value = t.callExpression(
-              createIdentifier(state, 'normalizeStyle'),
-              [style.value as any]
-            );
-          }
         }
       }
     }
@@ -583,12 +586,7 @@ const transformJSXElement = (
   }
 
   const createVNode = t.callExpression(
-    optimize
-      ? createIdentifier(
-          state,
-          isComponent ? 'createVNode' : 'createElementVNode'
-        )
-      : createIdentifier(state, 'createVNode'),
+    createIdentifier(state, isComponent ? 'createVNode' : 'createElementVNode'),
     [
       tag,
       props,
