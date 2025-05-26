@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 import { type NodePath } from '@babel/traverse';
-import { createIdentifier } from './utils';
+import { camelize, capitalize, createIdentifier } from './utils';
 import type { State } from './interface';
 
 export type Tag =
@@ -184,8 +184,7 @@ const resolveDirective = (
     }
     return modelToUse;
   }
-  const referenceName =
-    'v' + directiveName[0].toUpperCase() + directiveName.slice(1);
+  const referenceName = 'v' + capitalize(camelize(directiveName));
   let scope = path.scope;
   do {
     if (scope.references[referenceName]) {
