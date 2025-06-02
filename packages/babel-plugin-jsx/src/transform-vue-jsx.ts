@@ -337,20 +337,28 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
         if (
           !t.isObjectProperty(property) ||
           !t.isStringLiteral(property.key) ||
-          !t.isExpression(property.value) ||
-          isConstant(property.value)
-        )
+          !t.isExpression(property.value)
+        ) {
           continue;
+        }
+        // TODO: if isConstant, pre-normalize class and style during build
         if (property.key.value === 'class') {
-          property.value = t.callExpression(
-            createIdentifier(state, 'normalizeClass'),
-            [property.value]
-          );
+          if (!t.isStringLiteral(property.value)) {
+            property.value = t.callExpression(
+              createIdentifier(state, 'normalizeClass'),
+              [property.value]
+            );
+          }
         } else if (property.key.value === 'style') {
-          property.value = t.callExpression(
-            createIdentifier(state, 'normalizeStyle'),
-            [property.value]
-          );
+          if (
+            !t.isStringLiteral(property.value) &&
+            !t.isObjectExpression(property.value)
+          ) {
+            property.value = t.callExpression(
+              createIdentifier(state, 'normalizeStyle'),
+              [property.value]
+            );
+          }
         }
       }
     }
