@@ -310,7 +310,19 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       );
     } else {
       // single no need for a mergeProps call
-      propsExpression = mergeArgs[0];
+      if (isComponent) {
+        // createVNode already normalizes props
+        propsExpression = mergeArgs[0];
+      } else {
+        propsExpression = t.callExpression(
+          createIdentifier(state, 'normalizeProps'),
+          [
+            t.callExpression(createIdentifier(state, 'guardReactiveProps'), [
+              mergeArgs[0],
+            ]),
+          ]
+        );
+      }
     }
   } else if (properties.length) {
     // single no need for spread
@@ -320,6 +332,35 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       propsExpression = t.objectExpression(
         dedupeProperties(properties, mergeProps)
       );
+      for (let i = 0; i < propsExpression.properties.length; i++) {
+        const property = propsExpression.properties[i];
+        if (
+          !t.isObjectProperty(property) ||
+          !t.isStringLiteral(property.key) ||
+          !t.isExpression(property.value)
+        ) {
+          continue;
+        }
+        // TODO: if isConstant, pre-normalize class and style during build
+        if (property.key.value === 'class') {
+          if (!t.isStringLiteral(property.value)) {
+            property.value = t.callExpression(
+              createIdentifier(state, 'normalizeClass'),
+              [property.value]
+            );
+          }
+        } else if (property.key.value === 'style') {
+          if (
+            !t.isStringLiteral(property.value) &&
+            !t.isObjectExpression(property.value)
+          ) {
+            property.value = t.callExpression(
+              createIdentifier(state, 'normalizeStyle'),
+              [property.value]
+            );
+          }
+        }
+      }
     }
   }
 
@@ -553,7 +594,7 @@ const transformJSXElement = (
   }
 
   const createVNode = t.callExpression(
-    createIdentifier(state, 'createVNode'),
+    createIdentifier(state, isComponent ? 'createVNode' : 'createElementVNode'),
     [
       tag,
       props,
