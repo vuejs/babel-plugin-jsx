@@ -34,7 +34,7 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-import-x": "^4.9.4",
     "jsdom": "^26.0.0",
-    "prettier": "3.5.3",
+    "prettier": "3.6.2",
     "tslib": "^2.8.1",
     "tsdown": "^0.9.6",
     "typescript": "~5.8.2",
