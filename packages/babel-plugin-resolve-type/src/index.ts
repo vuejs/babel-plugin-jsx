@@ -1,4 +1,7 @@
+import { codeFrameColumns } from '@babel/code-frame';
 import type * as BabelCore from '@babel/core';
+import { addNamed } from '@babel/helper-module-imports';
+import { declare } from '@babel/helper-plugin-utils';
 import { parseExpression } from '@babel/parser';
 import {
   type SimpleTypeResolveContext,
@@ -6,21 +9,19 @@ import {
   extractRuntimeEmits,
   extractRuntimeProps,
 } from '@vue/compiler-sfc';
-import { codeFrameColumns } from '@babel/code-frame';
-import { addNamed } from '@babel/helper-module-imports';
-import { declare } from '@babel/helper-plugin-utils';
 
 export { SimpleTypeResolveOptions as Options };
 
 export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
   let ctx: SimpleTypeResolveContext | undefined;
   let helpers: Set<string> | undefined;
-
+  // let ast
   return {
     name: 'babel-plugin-resolve-type',
     pre(file) {
       const filename = file.opts.filename || 'unknown.js';
       helpers = new Set();
+      // ast = file;
       ctx = {
         filename: filename,
         source: file.code,
@@ -79,8 +80,17 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
           node.arguments.push(options);
         }
 
-        node.arguments[1] = processProps(comp, options) || options;
-        node.arguments[1] = processEmits(comp, node.arguments[1]) || options;
+        let propsGenerics: BabelCore.types.TSType | undefined;
+        let emitsGenerics: BabelCore.types.TSType | undefined;
+        if (node.typeParameters && node.typeParameters.params.length > 0) {
+          propsGenerics = node.typeParameters.params[0];
+          emitsGenerics = node.typeParameters.params[1];
+        }
+
+        node.arguments[1] =
+          processProps(comp, propsGenerics, options) || options;
+        node.arguments[1] =
+          processEmits(comp, emitsGenerics, node.arguments[1]) || options;
       },
       VariableDeclarator(path) {
         inferComponentName(path);
@@ -118,6 +128,7 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
 
   function processProps(
     comp: BabelCore.types.Function,
+    generics: BabelCore.types.TSType | undefined,
     options:
       | BabelCore.types.ArgumentPlaceholder
       | BabelCore.types.SpreadElement
@@ -127,10 +138,18 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
     if (!props) return;
 
     if (props.type === 'AssignmentPattern') {
-      ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+      if (generics) {
+        ctx!.propsTypeDecl = resolveTypeReference(generics);
+      } else {
+        ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+      }
       ctx!.propsRuntimeDefaults = props.right;
     } else {
-      ctx!.propsTypeDecl = getTypeAnnotation(props);
+      if (generics) {
+        ctx!.propsTypeDecl = resolveTypeReference(generics);
+      } else {
+        ctx!.propsTypeDecl = getTypeAnnotation(props);
+      }
     }
 
     if (!ctx!.propsTypeDecl) return;
@@ -150,20 +169,26 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
 
   function processEmits(
     comp: BabelCore.types.Function,
+    generics: BabelCore.types.TSType | undefined,
     options:
       | BabelCore.types.ArgumentPlaceholder
       | BabelCore.types.SpreadElement
       | BabelCore.types.Expression
   ) {
+    let emitType: BabelCore.types.Node | undefined;
+    if (generics) {
+      emitType = resolveTypeReference(generics);
+    }
+
     const setupCtx = comp.params[1] && getTypeAnnotation(comp.params[1]);
     if (
-      !setupCtx ||
-      !t.isTSTypeReference(setupCtx) ||
-      !t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
-    )
-      return;
-
-    const emitType = setupCtx.typeParameters?.params[0];
+      !emitType &&
+      setupCtx &&
+      t.isTSTypeReference(setupCtx) &&
+      t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
+    ) {
+      emitType = setupCtx.typeParameters?.params[0];
+    }
     if (!emitType) return;
 
     ctx!.emitsTypeDecl = emitType;
@@ -177,6 +202,88 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
       options,
       t.objectProperty(t.identifier('emits'), ast)
     );
+  }
+
+  function resolveTypeReference(typeNode: BabelCore.types.TSType) {
+    if (!ctx) return;
+
+    // 如果是类型引用，尝试解析
+    if (t.isTSTypeReference(typeNode)) {
+      const typeName = getTypeReferenceName(typeNode);
+      if (typeName) {
+        const typeDeclaration = findTypeDeclaration(typeName);
+        if (typeDeclaration) {
+          return typeDeclaration;
+        }
+      }
+    }
+
+    return;
+  }
+
+  function getTypeReferenceName(typeRef: BabelCore.types.TSTypeReference) {
+    if (t.isIdentifier(typeRef.typeName)) {
+      return typeRef.typeName.name;
+    } else if (t.isTSQualifiedName(typeRef.typeName)) {
+      // 处理 A.B 这样的限定名称
+      const parts: string[] = [];
+      let current: BabelCore.types.TSEntityName = typeRef.typeName;
+
+      while (t.isTSQualifiedName(current)) {
+        if (t.isIdentifier(current.right)) {
+          parts.unshift(current.right.name);
+        }
+        current = current.left;
+      }
+
+      if (t.isIdentifier(current)) {
+        parts.unshift(current.name);
+      }
+
+      return parts.join('.');
+    }
+    return null;
+  }
+
+  function findTypeDeclaration(typeName: string) {
+    if (!ctx) return null;
+    // console.warn('11',ast)
+    // 在 AST 中查找类型声明
+    for (const statement of ctx.ast) {
+      if (
+        t.isTSInterfaceDeclaration(statement) &&
+        statement.id.name === typeName
+      ) {
+        // 将接口转换为类型字面量
+        return t.tsTypeLiteral(statement.body.body);
+      }
+
+      if (
+        t.isTSTypeAliasDeclaration(statement) &&
+        statement.id.name === typeName
+      ) {
+        return statement.typeAnnotation;
+      }
+
+      // 处理导出的类型声明
+      if (t.isExportNamedDeclaration(statement) && statement.declaration) {
+        if (
+          t.isTSInterfaceDeclaration(statement.declaration) &&
+          statement.declaration.id.name === typeName
+        ) {
+          return t.tsTypeLiteral(statement.declaration.body.body);
+        }
+
+        if (
+          t.isTSTypeAliasDeclaration(statement.declaration) &&
+          statement.declaration.id.name === typeName
+        ) {
+          return statement.declaration.typeAnnotation;
+        }
+      }
+    }
+
+    return null;
   }
 });
 
