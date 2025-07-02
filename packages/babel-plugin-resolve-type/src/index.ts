@@ -15,13 +15,12 @@ export { SimpleTypeResolveOptions as Options };
 export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
   let ctx: SimpleTypeResolveContext | undefined;
   let helpers: Set<string> | undefined;
-  // let ast
+
   return {
     name: 'babel-plugin-resolve-type',
     pre(file) {
       const filename = file.opts.filename || 'unknown.js';
       helpers = new Set();
-      // ast = file;
       ctx = {
         filename: filename,
         source: file.code,
@@ -207,7 +206,6 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
   function resolveTypeReference(typeNode: BabelCore.types.TSType) {
     if (!ctx) return;
 
-    // 如果是类型引用，尝试解析
     if (t.isTSTypeReference(typeNode)) {
       const typeName = getTypeReferenceName(typeNode);
       if (typeName) {
@@ -225,7 +223,6 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
     if (t.isIdentifier(typeRef.typeName)) {
       return typeRef.typeName.name;
     } else if (t.isTSQualifiedName(typeRef.typeName)) {
-      // 处理 A.B 这样的限定名称
       const parts: string[] = [];
       let current: BabelCore.types.TSEntityName = typeRef.typeName;
 
@@ -247,14 +244,12 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
 
   function findTypeDeclaration(typeName: string) {
     if (!ctx) return null;
-    // console.warn('11',ast)
-    // 在 AST 中查找类型声明
+
     for (const statement of ctx.ast) {
       if (
         t.isTSInterfaceDeclaration(statement) &&
         statement.id.name === typeName
       ) {
-        // 将接口转换为类型字面量
         return t.tsTypeLiteral(statement.body.body);
       }
 
@@ -265,7 +260,6 @@ export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
         return statement.typeAnnotation;
       }
 
-      // 处理导出的类型声明
       if (t.isExportNamedDeclaration(statement) && statement.declaration) {
         if (
           t.isTSInterfaceDeclaration(statement.declaration) &&
