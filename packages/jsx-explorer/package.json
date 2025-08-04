@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@babel/standalone": "^7.27.0",
+    "@babel/standalone": "^7.28.2",
     "@vue/babel-plugin-jsx": "workspace:*",
     "assert": "^2.1.0",
     "monaco-editor": "^0.52.2",
@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/babel__standalone": "^7.1.9",
     "@vitejs/plugin-vue-jsx": "^4.1.2",
-    "terser": "^5.39.0",
+    "terser": "^5.43.1",
     "unplugin-replace": "^0.5.1",
     "vite": "^6.2.5"
   }
