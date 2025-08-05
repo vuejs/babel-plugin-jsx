@@ -61,6 +61,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
             if (hasJSX(path)) {
               const importNames = [
                 'createVNode',
+                'createElementVNode',
                 'Fragment',
                 'resolveComponent',
                 'withDirectives',
@@ -73,6 +74,10 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
                 'vModelDynamic',
                 'resolveDirective',
                 'mergeProps',
+                'normalizeProps',
+                'normalizeClass',
+                'normalizeStyle',
+                'guardReactiveProps',
                 'createTextVNode',
                 'isVNode',
               ];
@@ -179,6 +184,7 @@ export default declare<VueJSXPluginOptions, BabelCore.PluginObj<State>>(
 
               if (pragma) {
                 state.set('createVNode', () => t.identifier(pragma));
+                state.set('createElementVNode', () => t.identifier(pragma));
               }
 
               if (file.ast.comments) {
