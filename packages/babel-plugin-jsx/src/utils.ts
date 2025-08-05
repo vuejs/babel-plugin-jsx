@@ -30,11 +30,24 @@ export const isDirective = (src: string): boolean =>
 /**
  * Should transformed to slots
  * @param tag string
+ * @param state State
  * @returns boolean
  */
 // if _Fragment is already imported, it will end with number
-export const shouldTransformedToSlots = (tag: string) =>
-  !(tag.match(RegExp(`^_?${FRAGMENT}\\d*$`)) || tag === KEEP_ALIVE);
+export const shouldTransformedToSlots = (tag: string, state?: State) => {
+  if (state) {
+    const vueImportMap = state.get('vueImportMap');
+    for (const name of [FRAGMENT, KEEP_ALIVE]) {
+      if (
+        vueImportMap[name] &&
+        vueImportMap[name].some((id: t.Identifier) => id.name === tag)
+      ) {
+        return false;
+      }
+    }
+  }
+  return !(tag.match(RegExp(`^_?${FRAGMENT}\\d*$`)) || tag === KEEP_ALIVE);
+};
 
 /**
  * Check if a Node is a component
@@ -57,7 +70,7 @@ export const checkIsComponent = (
 
   return (
     !state.opts.isCustomElement?.(tag) &&
-    shouldTransformedToSlots(tag) &&
+    shouldTransformedToSlots(tag, state) &&
     !isHTMLTag(tag) &&
     !isSVGTag(tag)
   );
