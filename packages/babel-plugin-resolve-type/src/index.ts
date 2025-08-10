@@ -1,7 +1,4 @@
-import { codeFrameColumns } from '@babel/code-frame';
 import type * as BabelCore from '@babel/core';
-import { addNamed } from '@babel/helper-module-imports';
-import { declare } from '@babel/helper-plugin-utils';
 import { parseExpression } from '@babel/parser';
 import {
   type SimpleTypeResolveContext,
@@ -9,7 +6,9 @@ import {
   extractRuntimeEmits,
   extractRuntimeProps,
 } from '@vue/compiler-sfc';
-
+import { codeFrameColumns } from '@babel/code-frame';
+import { addNamed } from '@babel/helper-module-imports';
+import { declare } from '@babel/helper-plugin-utils';
 export { SimpleTypeResolveOptions as Options };
 
 export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
