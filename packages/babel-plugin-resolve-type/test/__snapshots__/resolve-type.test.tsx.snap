@@ -167,28 +167,6 @@ defineComponent<Props>(props => {
 });"
 `;
 
-exports[`resolve type > runtime props > with generic type parameter 1`] = `
-"import { defineComponent, h } from 'vue';
-interface Props {
-  msg: string;
-  optional?: boolean;
-}
-defineComponent<Props>(props => {
-  return () => h('div', props.msg);
-}, {
-  props: {
-    msg: {
-      type: String,
-      required: true
-    },
-    optional: {
-      type: Boolean,
-      required: false
-    }
-  }
-});"
-`;
-
 exports[`resolve type > runtime props > with static default value 1`] = `
 "import { defineComponent, h } from 'vue';
 defineComponent((props: {
