@@ -1,6 +1,6 @@
 {
   "name": "@vue/babel-helper-vue-transform-on",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "commonjs",
   "description": "to help transform on",
   "author": "Amour1688 <lcz_1996@foxmail.com>",
