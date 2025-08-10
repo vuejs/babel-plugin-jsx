@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "pnpm -C packages/jsx-explorer run dev",
     "build": "tsdown",
+    "build:playground": "pnpm -C packages/jsx-explorer build",
     "test": "vitest",
     "lint": "eslint --cache .",
     "format": "prettier --write .",
