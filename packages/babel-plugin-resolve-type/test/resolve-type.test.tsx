@@ -31,6 +31,38 @@ describe('resolve type', () => {
       expect(result).toMatchSnapshot();
     });
 
+    test('with generic', async () => {
+      const result = await transform(
+        `
+        import { defineComponent, h } from 'vue';
+        interface Props {
+          msg: string;
+          optional?: boolean;
+        }
+        defineComponent<Props>((props) => {
+          return () => h('div', props.msg);
+        })
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('with static default value and generic', async () => {
+      const result = await transform(
+        `
+        import { defineComponent, h } from 'vue';
+        type Props = {
+          msg: string;
+          optional?: boolean;
+        };
+        defineComponent<Props>((props = { msg: 'hello' }) => {
+          return () => h('div', props.msg);
+        })
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
     test('with static default value', async () => {
       const result = await transform(
         `
@@ -67,6 +99,25 @@ describe('resolve type', () => {
             props,
             { emit }: SetupContext<{ change(val: string): void; click(): void }>
           ) => {
+            emit('change');
+            return () => {};
+          }
+        );
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
+
+    test('with generic emit type', async () => {
+      const result = await transform(
+        `
+        import { type SetupContext, defineComponent } from 'vue';
+        type EmitEvents = {
+          change(val: string): void;
+          click(): void;
+        };
+        defineComponent<{}, EmitEvents>(
+          (props, { emit }) => {
             emit('change');
             return () => {};
           }

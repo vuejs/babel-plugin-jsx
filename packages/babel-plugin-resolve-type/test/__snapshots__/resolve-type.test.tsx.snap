@@ -83,6 +83,22 @@ defineComponent((props, {
 });"
 `;
 
+exports[`resolve type > runtime emits > with generic emit type 1`] = `
+"import { type SetupContext, defineComponent } from 'vue';
+type EmitEvents = {
+  change(val: string): void;
+  click(): void;
+};
+defineComponent<{}, EmitEvents>((props, {
+  emit
+}) => {
+  emit('change');
+  return () => {};
+}, {
+  emits: ["change", "click"]
+});"
+`;
+
 exports[`resolve type > runtime props > basic 1`] = `
 "import { defineComponent, h } from 'vue';
 interface Props {
@@ -129,6 +145,28 @@ defineComponent((props: {
 });"
 `;
 
+exports[`resolve type > runtime props > with generic 1`] = `
+"import { defineComponent, h } from 'vue';
+interface Props {
+  msg: string;
+  optional?: boolean;
+}
+defineComponent<Props>(props => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true
+    },
+    optional: {
+      type: Boolean,
+      required: false
+    }
+  }
+});"
+`;
+
 exports[`resolve type > runtime props > with static default value 1`] = `
 "import { defineComponent, h } from 'vue';
 defineComponent((props: {
@@ -143,6 +181,31 @@ defineComponent((props: {
       type: String,
       required: false,
       default: 'hello'
+    }
+  }
+});"
+`;
+
+exports[`resolve type > runtime props > with static default value and generic 1`] = `
+"import { defineComponent, h } from 'vue';
+type Props = {
+  msg: string;
+  optional?: boolean;
+};
+defineComponent<Props>((props = {
+  msg: 'hello'
+}) => {
+  return () => h('div', props.msg);
+}, {
+  props: {
+    msg: {
+      type: String,
+      required: true,
+      default: 'hello'
+    },
+    optional: {
+      type: Boolean,
+      required: false
     }
   }
 });"

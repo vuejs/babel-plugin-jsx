@@ -84,8 +84,17 @@ const plugin: (
             node.arguments.push(options);
           }
 
-          node.arguments[1] = processProps(comp, options) || options;
-          node.arguments[1] = processEmits(comp, node.arguments[1]) || options;
+          let propsGenerics: BabelCore.types.TSType | undefined;
+          let emitsGenerics: BabelCore.types.TSType | undefined;
+          if (node.typeParameters && node.typeParameters.params.length > 0) {
+            propsGenerics = node.typeParameters.params[0];
+            emitsGenerics = node.typeParameters.params[1];
+          }
+
+          node.arguments[1] =
+            processProps(comp, propsGenerics, options) || options;
+          node.arguments[1] =
+            processEmits(comp, emitsGenerics, node.arguments[1]) || options;
         },
         VariableDeclarator(path) {
           inferComponentName(path);
@@ -125,6 +134,7 @@ const plugin: (
 
     function processProps(
       comp: BabelCore.types.Function,
+      generics: BabelCore.types.TSType | undefined,
       options:
         | BabelCore.types.ArgumentPlaceholder
         | BabelCore.types.SpreadElement
@@ -134,10 +144,18 @@ const plugin: (
       if (!props) return;
 
       if (props.type === 'AssignmentPattern') {
-        ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+        if (generics) {
+          ctx!.propsTypeDecl = resolveTypeReference(generics);
+        } else {
+          ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+        }
         ctx!.propsRuntimeDefaults = props.right;
       } else {
-        ctx!.propsTypeDecl = getTypeAnnotation(props);
+        if (generics) {
+          ctx!.propsTypeDecl = resolveTypeReference(generics);
+        } else {
+          ctx!.propsTypeDecl = getTypeAnnotation(props);
+        }
       }
 
       if (!ctx!.propsTypeDecl) return;
@@ -157,20 +175,26 @@ const plugin: (
 
     function processEmits(
       comp: BabelCore.types.Function,
+      generics: BabelCore.types.TSType | undefined,
       options:
         | BabelCore.types.ArgumentPlaceholder
         | BabelCore.types.SpreadElement
         | BabelCore.types.Expression
     ) {
+      let emitType: BabelCore.types.Node | undefined;
+      if (generics) {
+        emitType = resolveTypeReference(generics);
+      }
+
       const setupCtx = comp.params[1] && getTypeAnnotation(comp.params[1]);
       if (
-        !setupCtx ||
-        !t.isTSTypeReference(setupCtx) ||
-        !t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
-      )
-        return;
-
-      const emitType = setupCtx.typeParameters?.params[0];
+        !emitType &&
+        setupCtx &&
+        t.isTSTypeReference(setupCtx) &&
+        t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
+      ) {
+        emitType = setupCtx.typeParameters?.params[0];
+      }
       if (!emitType) return;
 
       ctx!.emitsTypeDecl = emitType;
@@ -185,8 +209,84 @@ const plugin: (
         t.objectProperty(t.identifier('emits'), ast)
       );
     }
-  });
 
+    function resolveTypeReference(typeNode: BabelCore.types.TSType) {
+      if (!ctx) return;
+
+      if (t.isTSTypeReference(typeNode)) {
+        const typeName = getTypeReferenceName(typeNode);
+        if (typeName) {
+          const typeDeclaration = findTypeDeclaration(typeName);
+          if (typeDeclaration) {
+            return typeDeclaration;
+          }
+        }
+      }
+
+      return;
+    }
+
+    function getTypeReferenceName(typeRef: BabelCore.types.TSTypeReference) {
+      if (t.isIdentifier(typeRef.typeName)) {
+        return typeRef.typeName.name;
+      } else if (t.isTSQualifiedName(typeRef.typeName)) {
+        const parts: string[] = [];
+        let current: BabelCore.types.TSEntityName = typeRef.typeName;
+
+        while (t.isTSQualifiedName(current)) {
+          if (t.isIdentifier(current.right)) {
+            parts.unshift(current.right.name);
+          }
+          current = current.left;
+        }
+
+        if (t.isIdentifier(current)) {
+          parts.unshift(current.name);
+        }
+
+        return parts.join('.');
+      }
+      return null;
+    }
+
+    function findTypeDeclaration(typeName: string) {
+      if (!ctx) return null;
+
+      for (const statement of ctx.ast) {
+        if (
+          t.isTSInterfaceDeclaration(statement) &&
+          statement.id.name === typeName
+        ) {
+          return t.tsTypeLiteral(statement.body.body);
+        }
+
+        if (
+          t.isTSTypeAliasDeclaration(statement) &&
+          statement.id.name === typeName
+        ) {
+          return statement.typeAnnotation;
+        }
+
+        if (t.isExportNamedDeclaration(statement) && statement.declaration) {
+          if (
+            t.isTSInterfaceDeclaration(statement.declaration) &&
+            statement.declaration.id.name === typeName
+          ) {
+            return t.tsTypeLiteral(statement.declaration.body.body);
+          }
+
+          if (
+            t.isTSTypeAliasDeclaration(statement.declaration) &&
+            statement.declaration.id.name === typeName
+          ) {
+            return statement.declaration.typeAnnotation;
+          }
+        }
+      }
+
+      return null;
+    }
+  });
 export default plugin;
 
 function getTypeAnnotation(node: BabelCore.types.Node) {
