@@ -12,173 +12,182 @@ import { declare } from '@babel/helper-plugin-utils';
 
 export { SimpleTypeResolveOptions as Options };
 
-export default declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
-  let ctx: SimpleTypeResolveContext | undefined;
-  let helpers: Set<string> | undefined;
+const plugin: (
+  api: object,
+  options: SimpleTypeResolveOptions | null | undefined,
+  dirname: string
+) => BabelCore.PluginObj<BabelCore.PluginPass> =
+  declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
+    let ctx: SimpleTypeResolveContext | undefined;
+    let helpers: Set<string> | undefined;
 
-  return {
-    name: 'babel-plugin-resolve-type',
-    pre(file) {
-      const filename = file.opts.filename || 'unknown.js';
-      helpers = new Set();
-      ctx = {
-        filename: filename,
-        source: file.code,
-        options,
-        ast: file.ast.program.body,
-        isCE: false,
-        error(msg, node) {
-          throw new Error(
-            `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(
-              file.code,
-              {
-                start: {
-                  line: node.loc!.start.line,
-                  column: node.loc!.start.column + 1,
-                },
-                end: {
-                  line: node.loc!.end.line,
-                  column: node.loc!.end.column + 1,
-                },
-              }
-            )}`
-          );
-        },
-        helper(key) {
-          helpers!.add(key);
-          return `_${key}`;
-        },
-        getString(node) {
-          return file.code.slice(node.start!, node.end!);
-        },
-        propsTypeDecl: undefined,
-        propsRuntimeDefaults: undefined,
-        propsDestructuredBindings: {},
-        emitsTypeDecl: undefined,
-      };
-    },
-    visitor: {
-      CallExpression(path) {
-        if (!ctx) {
-          throw new Error(
-            '[@vue/babel-plugin-resolve-type] context is not loaded.'
-          );
-        }
-
-        const { node } = path;
-
-        if (!t.isIdentifier(node.callee, { name: 'defineComponent' })) return;
-        if (!checkDefineComponent(path)) return;
-
-        const comp = node.arguments[0];
-        if (!comp || !t.isFunction(comp)) return;
-
-        let options = node.arguments[1];
-        if (!options) {
-          options = t.objectExpression([]);
-          node.arguments.push(options);
-        }
-
-        node.arguments[1] = processProps(comp, options) || options;
-        node.arguments[1] = processEmits(comp, node.arguments[1]) || options;
+    return {
+      name: 'babel-plugin-resolve-type',
+      pre(file) {
+        const filename = file.opts.filename || 'unknown.js';
+        helpers = new Set();
+        ctx = {
+          filename: filename,
+          source: file.code,
+          options,
+          ast: file.ast.program.body,
+          isCE: false,
+          error(msg, node) {
+            throw new Error(
+              `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(
+                file.code,
+                {
+                  start: {
+                    line: node.loc!.start.line,
+                    column: node.loc!.start.column + 1,
+                  },
+                  end: {
+                    line: node.loc!.end.line,
+                    column: node.loc!.end.column + 1,
+                  },
+                }
+              )}`
+            );
+          },
+          helper(key) {
+            helpers!.add(key);
+            return `_${key}`;
+          },
+          getString(node) {
+            return file.code.slice(node.start!, node.end!);
+          },
+          propsTypeDecl: undefined,
+          propsRuntimeDefaults: undefined,
+          propsDestructuredBindings: {},
+          emitsTypeDecl: undefined,
+        };
       },
-      VariableDeclarator(path) {
-        inferComponentName(path);
+      visitor: {
+        CallExpression(path) {
+          if (!ctx) {
+            throw new Error(
+              '[@vue/babel-plugin-resolve-type] context is not loaded.'
+            );
+          }
+
+          const { node } = path;
+
+          if (!t.isIdentifier(node.callee, { name: 'defineComponent' })) return;
+          if (!checkDefineComponent(path)) return;
+
+          const comp = node.arguments[0];
+          if (!comp || !t.isFunction(comp)) return;
+
+          let options = node.arguments[1];
+          if (!options) {
+            options = t.objectExpression([]);
+            node.arguments.push(options);
+          }
+
+          node.arguments[1] = processProps(comp, options) || options;
+          node.arguments[1] = processEmits(comp, node.arguments[1]) || options;
+        },
+        VariableDeclarator(path) {
+          inferComponentName(path);
+        },
       },
-    },
-    post(file) {
-      for (const helper of helpers!) {
-        addNamed(file.path, `_${helper}`, 'vue');
+      post(file) {
+        for (const helper of helpers!) {
+          addNamed(file.path, `_${helper}`, 'vue');
+        }
+      },
+    };
+
+    function inferComponentName(
+      path: BabelCore.NodePath<BabelCore.types.VariableDeclarator>
+    ) {
+      const id = path.get('id');
+      const init = path.get('init');
+      if (!id || !id.isIdentifier() || !init || !init.isCallExpression())
+        return;
+
+      if (!init.get('callee')?.isIdentifier({ name: 'defineComponent' }))
+        return;
+      if (!checkDefineComponent(init)) return;
+
+      const nameProperty = t.objectProperty(
+        t.identifier('name'),
+        t.stringLiteral(id.node.name)
+      );
+      const { arguments: args } = init.node;
+      if (args.length === 0) return;
+
+      if (args.length === 1) {
+        init.node.arguments.push(t.objectExpression([]));
       }
-    },
-  };
-
-  function inferComponentName(
-    path: BabelCore.NodePath<BabelCore.types.VariableDeclarator>
-  ) {
-    const id = path.get('id');
-    const init = path.get('init');
-    if (!id || !id.isIdentifier() || !init || !init.isCallExpression()) return;
-
-    if (!init.get('callee')?.isIdentifier({ name: 'defineComponent' })) return;
-    if (!checkDefineComponent(init)) return;
-
-    const nameProperty = t.objectProperty(
-      t.identifier('name'),
-      t.stringLiteral(id.node.name)
-    );
-    const { arguments: args } = init.node;
-    if (args.length === 0) return;
-
-    if (args.length === 1) {
-      init.node.arguments.push(t.objectExpression([]));
-    }
-    args[1] = addProperty(t, args[1], nameProperty);
-  }
-
-  function processProps(
-    comp: BabelCore.types.Function,
-    options:
-      | BabelCore.types.ArgumentPlaceholder
-      | BabelCore.types.SpreadElement
-      | BabelCore.types.Expression
-  ) {
-    const props = comp.params[0];
-    if (!props) return;
-
-    if (props.type === 'AssignmentPattern') {
-      ctx!.propsTypeDecl = getTypeAnnotation(props.left);
-      ctx!.propsRuntimeDefaults = props.right;
-    } else {
-      ctx!.propsTypeDecl = getTypeAnnotation(props);
+      args[1] = addProperty(t, args[1], nameProperty);
     }
 
-    if (!ctx!.propsTypeDecl) return;
+    function processProps(
+      comp: BabelCore.types.Function,
+      options:
+        | BabelCore.types.ArgumentPlaceholder
+        | BabelCore.types.SpreadElement
+        | BabelCore.types.Expression
+    ) {
+      const props = comp.params[0];
+      if (!props) return;
 
-    const runtimeProps = extractRuntimeProps(ctx!);
-    if (!runtimeProps) {
-      return;
+      if (props.type === 'AssignmentPattern') {
+        ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+        ctx!.propsRuntimeDefaults = props.right;
+      } else {
+        ctx!.propsTypeDecl = getTypeAnnotation(props);
+      }
+
+      if (!ctx!.propsTypeDecl) return;
+
+      const runtimeProps = extractRuntimeProps(ctx!);
+      if (!runtimeProps) {
+        return;
+      }
+
+      const ast = parseExpression(runtimeProps);
+      return addProperty(
+        t,
+        options,
+        t.objectProperty(t.identifier('props'), ast)
+      );
     }
 
-    const ast = parseExpression(runtimeProps);
-    return addProperty(
-      t,
-      options,
-      t.objectProperty(t.identifier('props'), ast)
-    );
-  }
+    function processEmits(
+      comp: BabelCore.types.Function,
+      options:
+        | BabelCore.types.ArgumentPlaceholder
+        | BabelCore.types.SpreadElement
+        | BabelCore.types.Expression
+    ) {
+      const setupCtx = comp.params[1] && getTypeAnnotation(comp.params[1]);
+      if (
+        !setupCtx ||
+        !t.isTSTypeReference(setupCtx) ||
+        !t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
+      )
+        return;
 
-  function processEmits(
-    comp: BabelCore.types.Function,
-    options:
-      | BabelCore.types.ArgumentPlaceholder
-      | BabelCore.types.SpreadElement
-      | BabelCore.types.Expression
-  ) {
-    const setupCtx = comp.params[1] && getTypeAnnotation(comp.params[1]);
-    if (
-      !setupCtx ||
-      !t.isTSTypeReference(setupCtx) ||
-      !t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
-    )
-      return;
+      const emitType = setupCtx.typeParameters?.params[0];
+      if (!emitType) return;
 
-    const emitType = setupCtx.typeParameters?.params[0];
-    if (!emitType) return;
+      ctx!.emitsTypeDecl = emitType;
+      const runtimeEmits = extractRuntimeEmits(ctx!);
 
-    ctx!.emitsTypeDecl = emitType;
-    const runtimeEmits = extractRuntimeEmits(ctx!);
+      const ast = t.arrayExpression(
+        Array.from(runtimeEmits).map((e) => t.stringLiteral(e))
+      );
+      return addProperty(
+        t,
+        options,
+        t.objectProperty(t.identifier('emits'), ast)
+      );
+    }
+  });
 
-    const ast = t.arrayExpression(
-      Array.from(runtimeEmits).map((e) => t.stringLiteral(e))
-    );
-    return addProperty(
-      t,
-      options,
-      t.objectProperty(t.identifier('emits'), ast)
-    );
-  }
-});
+export default plugin;
 
 function getTypeAnnotation(node: BabelCore.types.Node) {
   if (
