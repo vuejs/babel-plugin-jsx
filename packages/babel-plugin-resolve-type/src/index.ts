@@ -9,6 +9,7 @@ import {
 import { codeFrameColumns } from '@babel/code-frame';
 import { addNamed } from '@babel/helper-module-imports';
 import { declare } from '@babel/helper-plugin-utils';
+
 export { SimpleTypeResolveOptions as Options };
 
 const plugin: (
