@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import { type NodePath, type Visitor } from '@babel/traverse';
+import type { NodePath, VisitorBase } from '@babel/traverse';
 import type { State } from './interface';
 import { FRAGMENT, createIdentifier } from './utils';
 
@@ -7,16 +7,14 @@ const transformFragment = (
   path: NodePath<t.JSXFragment>,
   Fragment: t.JSXIdentifier | t.JSXMemberExpression
 ) => {
-  const children = path.get('children') || [];
   return t.jsxElement(
     t.jsxOpeningElement(Fragment, []),
     t.jsxClosingElement(Fragment),
-    children.map(({ node }) => node),
-    false
+    path.node.children.slice()
   );
 };
 
-const visitor: Visitor<State> = {
+const visitor: VisitorBase<State> = {
   JSXFragment: {
     enter(path, state) {
       const fragmentCallee = createIdentifier(state, FRAGMENT);

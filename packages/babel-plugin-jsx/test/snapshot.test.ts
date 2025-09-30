@@ -12,7 +12,7 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
       source,
       {
         filename: '',
-        presets: null,
+        presets: [],
         plugins: [[JSX, options]],
         configFile: false,
       },

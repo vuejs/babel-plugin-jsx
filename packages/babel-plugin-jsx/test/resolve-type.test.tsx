@@ -1,6 +1,7 @@
 import { transformAsync } from '@babel/core';
-// @ts-expect-error missing types
 import typescript from '@babel/plugin-syntax-typescript';
+import jsx from '@babel/plugin-syntax-jsx';
+
 import VueJsx from '../src';
 
 describe('resolve type', () => {
@@ -12,10 +13,7 @@ describe('resolve type', () => {
         const App = defineComponent((props: Props) => <div />)
         `,
         {
-          plugins: [
-            [typescript, { isTSX: true }],
-            [VueJsx, { resolveType: true }],
-          ],
+          plugins: [typescript, jsx, [VueJsx, { resolveType: true }]],
         }
       );
       expect(result!.code).toMatchSnapshot();

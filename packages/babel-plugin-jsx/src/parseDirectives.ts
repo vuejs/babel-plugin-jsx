@@ -186,7 +186,7 @@ const resolveDirective = (
   }
   const referenceName =
     'v' + directiveName[0].toUpperCase() + directiveName.slice(1);
-  if (path.scope.references[referenceName]) {
+  if (path.scope.getProgramParent().referencesSet.has(referenceName)) {
     return t.identifier(referenceName);
   }
   return t.callExpression(createIdentifier(state, 'resolveDirective'), [

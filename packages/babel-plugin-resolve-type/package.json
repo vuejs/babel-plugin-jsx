@@ -38,18 +38,17 @@
     "dist"
   ],
   "peerDependencies": {
-    "@babel/core": "^7.0.0-0"
+    "@babel/core": "^8.0.0-beta.2"
   },
   "dependencies": {
-    "@babel/code-frame": "^7.27.1",
-    "@babel/helper-module-imports": "^7.27.1",
-    "@babel/helper-plugin-utils": "^7.27.1",
-    "@babel/parser": "^7.28.0",
+    "@babel/code-frame": "^8.0.0-beta.2",
+    "@babel/helper-module-imports": "^8.0.0-beta.2",
+    "@babel/helper-plugin-utils": "^8.0.0-beta.2",
+    "@babel/parser": "^8.0.0-beta.2",
     "@vue/compiler-sfc": "^3.5.18"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.0",
-    "@types/babel__code-frame": "^7.0.6",
+    "@babel/core": "^8.0.0-beta.2",
     "vue": "catalog:"
   }
 }

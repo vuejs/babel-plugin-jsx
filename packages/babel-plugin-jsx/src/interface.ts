@@ -8,7 +8,7 @@ export type State = {
   get: (name: string) => any;
   set: (name: string, value: any) => any;
   opts: VueJSXPluginOptions;
-  file: BabelCore.BabelFile;
+  file: BabelCore.File;
 };
 
 export interface VueJSXPluginOptions {
