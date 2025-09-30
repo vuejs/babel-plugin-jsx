@@ -1,5 +1,5 @@
 import * as t from '@babel/types';
-import { type NodePath, type Visitor } from '@babel/traverse';
+import type { NodePath, VisitorBase } from '@babel/traverse';
 import { addDefault } from '@babel/helper-module-imports';
 import {
   buildIIFE,
@@ -577,7 +577,7 @@ const transformJSXElement = (
   ]);
 };
 
-const visitor: Visitor<State> = {
+const visitor: VisitorBase<State> = {
   JSXElement: {
     exit(path, state) {
       path.replaceWith(transformJSXElement(path, state));

@@ -27,27 +27,25 @@
     "dist"
   ],
   "dependencies": {
-    "@babel/helper-module-imports": "^7.27.1",
-    "@babel/helper-plugin-utils": "^7.27.1",
-    "@babel/plugin-syntax-jsx": "^7.27.1",
-    "@babel/template": "^7.27.2",
-    "@babel/traverse": "^7.28.0",
-    "@babel/types": "^7.28.2",
+    "@babel/helper-module-imports": "^8.0.0-beta.2",
+    "@babel/helper-plugin-utils": "^8.0.0-beta.2",
+    "@babel/plugin-syntax-jsx": "^8.0.0-beta.2",
+    "@babel/template": "^8.0.0-beta.2",
+    "@babel/traverse": "^8.0.0-beta.2",
+    "@babel/types": "^8.0.0-beta.2",
     "@vue/babel-helper-vue-transform-on": "workspace:*",
     "@vue/babel-plugin-resolve-type": "workspace:*",
     "@vue/shared": "^3.5.18"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.0",
-    "@babel/preset-env": "^7.28.0",
-    "@types/babel__template": "^7.4.4",
-    "@types/babel__traverse": "^7.28.0",
+    "@babel/core": "^8.0.0-beta.2",
+    "@babel/preset-env": "^8.0.0-beta.2",
     "@vue/test-utils": "^2.4.6",
     "regenerator-runtime": "^0.14.1",
     "vue": "catalog:"
   },
   "peerDependencies": {
-    "@babel/core": "^7.0.0-0"
+    "@babel/core": "^8.0.0-beta.2"
   },
   "peerDependenciesMeta": {
     "@babel/core": {

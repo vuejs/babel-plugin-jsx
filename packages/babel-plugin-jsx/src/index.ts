@@ -1,10 +1,9 @@
 import * as t from '@babel/types';
-import type * as BabelCore from '@babel/core';
+import type { PluginAPI, PluginObject, PluginPass } from '@babel/core';
 import _template from '@babel/template';
-// @ts-expect-error
 import _syntaxJsx from '@babel/plugin-syntax-jsx';
 import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports';
-import { type NodePath, type Visitor } from '@babel/traverse';
+import type { NodePath, VisitorBase } from '@babel/traverse';
 import ResolveType from '@vue/babel-plugin-resolve-type';
 import { declare } from '@babel/helper-plugin-utils';
 import transformVueJSX from './transform-vue-jsx';
@@ -14,20 +13,11 @@ import type { State, VueJSXPluginOptions } from './interface';
 export { VueJSXPluginOptions };
 
 const hasJSX = (parentPath: NodePath<t.Program>) => {
-  let fileHasJSX = false;
-  parentPath.traverse({
-    JSXElement(path) {
-      // skip ts error
-      fileHasJSX = true;
-      path.stop();
-    },
-    JSXFragment(path) {
-      fileHasJSX = true;
-      path.stop();
-    },
+  return t.traverseFast(parentPath.node, (node) => {
+    if (t.isJSXElement(node) || t.isJSXFragment(node)) {
+      return t.traverseFast.stop;
+    }
   });
-
-  return fileHasJSX;
 };
 
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
@@ -41,15 +31,15 @@ const syntaxJsx = /*#__PURE__*/ interopDefault(_syntaxJsx);
 const template = /*#__PURE__*/ interopDefault(_template);
 
 const plugin: (
-  api: object,
+  api: PluginAPI,
   options: VueJSXPluginOptions | null | undefined,
   dirname: string
-) => BabelCore.PluginObj<State> = declare<
-  VueJSXPluginOptions,
-  BabelCore.PluginObj<State>
+) => PluginObject<State & PluginPass> = declare<
+  State,
+  VueJSXPluginOptions | null | undefined
 >((api, opt, dirname) => {
   const { types } = api;
-  let resolveType: BabelCore.PluginObj<BabelCore.PluginPass> | undefined;
+  let resolveType: PluginObject<PluginPass> | undefined;
   if (opt.resolveType) {
     if (typeof opt.resolveType === 'boolean') opt.resolveType = {};
     resolveType = ResolveType(api, opt.resolveType, dirname);
@@ -59,7 +49,7 @@ const plugin: (
     name: 'babel-plugin-jsx',
     inherits: /*#__PURE__*/ interopDefault(syntaxJsx),
     visitor: {
-      ...(resolveType?.visitor as Visitor<State>),
+      ...(resolveType?.visitor as VisitorBase<State & PluginPass>),
       ...transformVueJSX,
       ...sugarFragment,
       Program: {
@@ -133,7 +123,7 @@ const plugin: (
                   if (!sourceName) {
                     sourceName = addNamespace(path, 'vue', {
                       ensureLiveReference: true,
-                    });
+                    }) as t.Identifier;
                   }
                   return t.memberExpression(sourceName, t.identifier(name));
                 });

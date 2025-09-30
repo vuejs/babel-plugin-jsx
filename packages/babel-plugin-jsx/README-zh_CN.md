@@ -382,5 +382,5 @@ const App = {
 
 要求：
 
-- **Babel 7+**
+- **Babel 8+**
 - **Vue 3+**

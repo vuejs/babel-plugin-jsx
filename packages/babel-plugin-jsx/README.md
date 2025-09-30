@@ -386,5 +386,5 @@ const App = {
 
 This repo is only compatible with:
 
-- **Babel 7+**
+- **Babel 8+**
 - **Vue 3+**
