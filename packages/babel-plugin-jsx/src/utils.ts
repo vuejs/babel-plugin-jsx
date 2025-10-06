@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import { type NodePath } from '@babel/traverse';
 import { isHTMLTag, isSVGTag } from '@vue/shared';
 import type { State } from './interface';

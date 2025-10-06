@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import type * as BabelCore from '@babel/core';
 import _template from '@babel/template';
 // @ts-expect-error

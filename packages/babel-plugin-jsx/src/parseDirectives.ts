@@ -1,4 +1,4 @@
-import * as t from '@babel/types';
+import t from '@babel/types';
 import { type NodePath } from '@babel/traverse';
 import { createIdentifier } from './utils';
 import type { State } from './interface';
