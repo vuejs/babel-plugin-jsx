@@ -11,8 +11,17 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "exports": {
-    ".": "./dist/index.mjs",
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "repository": {
     "type": "git",

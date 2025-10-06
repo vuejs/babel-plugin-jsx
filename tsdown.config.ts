@@ -10,6 +10,8 @@ export default defineConfig({
   target: 'node20.19',
   platform: 'neutral',
   inlineOnly: [],
-  exports: true,
+  exports: {
+    devExports: 'dev',
+  },
   fixedExtension: true,
 });
