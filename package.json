@@ -1,6 +1,6 @@
 {
   "name": "vue-jsx-monorepo",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "packageManager": "pnpm@10.18.1",
   "type": "module",
