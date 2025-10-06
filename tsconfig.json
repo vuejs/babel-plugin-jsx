@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ES2015", "DOM", "DOM.Iterable"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "moduleResolution": "bundler",
     "allowJs": true,
     "strict": true,
@@ -13,9 +13,6 @@
     "jsxImportSource": "vue",
     "types": ["vitest/globals"],
     "skipLibCheck": true,
-    "paths": {
-      "@vue/babel-plugin-jsx": ["./packages/babel-plugin-jsx/src"]
-    },
     "noEmit": true,
     "customConditions": ["dev"]
   }
