@@ -7,8 +7,8 @@ export default defineConfig({
       '@vue/babel-plugin-jsx': '@vue/babel-plugin-jsx/src/index.ts',
     },
   },
-  experimental: {
-    enableNativePlugin: true,
+  define: {
+    'process.env.BABEL_TYPES_8_BREAKING': 'false',
   },
   plugins: [VueJSX()],
 });

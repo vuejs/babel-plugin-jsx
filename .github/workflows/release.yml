@@ -7,36 +7,9 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    uses: sxzz/workflows/.github/workflows/release.yml@v1
+    with:
+      publish: false
     permissions:
       contents: write
       id-token: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4.1.0
-
-      - name: Set node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
-
-      - run: npx changelogithub
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Install Dependencies
-        run: pnpm i
-
-      - name: PNPM build
-        run: pnpm run build
-
-      - name: Publish to NPM
-        run: npm i -g npm && pnpm -r publish --access public --no-git-checks
