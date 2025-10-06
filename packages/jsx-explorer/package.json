@@ -12,7 +12,7 @@
     "@babel/standalone": "^7.28.2",
     "@vue/babel-plugin-jsx": "workspace:*",
     "assert": "^2.1.0",
-    "monaco-editor": "^0.52.2",
+    "monaco-editor": "^0.54.0",
     "vue": "catalog:"
   },
   "devDependencies": {
