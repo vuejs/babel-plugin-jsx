@@ -61,7 +61,7 @@ importers:
         version: 3.6.2
       tsdown:
         specifier: ^0.15.6
-        version: 0.15.6(typescript@5.9.3)
+        version: 0.15.6(publint@0.3.14)(typescript@5.9.3)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1039,6 +1039,10 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@publint/pack@0.1.2':
+    resolution: {integrity: sha512-S+9ANAvUmjutrshV4jZjaiG8XQyuJIZ8a4utWmN/vW1sgQ9IfBnPndwkmQYw53QmouOIytT874u65HEmu6H5jw==}
+    engines: {node: '>=18'}
 
   '@quansync/fs@0.1.5':
     resolution: {integrity: sha512-lNS9hL2aS2NZgNW7BBj+6EBl4rOf8l+tQ0eRY6JWCI8jI2kc53gSoqbjojU0OnAWhzoXiOjFyGsHcDGePB3lhA==}
@@ -2428,6 +2432,10 @@ packages:
   monaco-editor@0.54.0:
     resolution: {integrity: sha512-hx45SEUoLatgWxHKCmlLJH81xBo0uXP4sRkESUpmDQevfi+e7K1VuiSprK6UpQ8u4zOcKNiH0pMvHvlMWA/4cw==}
 
+  mri@1.2.0:
+    resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
+    engines: {node: '>=4'}
+
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
@@ -2558,6 +2566,11 @@ packages:
 
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
+
+  publint@0.3.14:
+    resolution: {integrity: sha512-14/VNBvWsrBeqWNDw8c/DK5ERcZBUwL1rnkVx18cQnF3zadr3GfoYtvD8mxi1dhkWpaPHp8kfi92MDbjMeW3qw==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -2691,6 +2704,10 @@ packages:
 
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
+
+  sade@1.8.1:
+    resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
+    engines: {node: '>=6'}
 
   safe-regex-test@1.1.0:
     resolution: {integrity: sha512-x/+Cz4YrimQxQccJf5mKEbIa1NzeCRNI5Ecl/ekmlYaampdNLPalVyIcCZNNH3MvmqBugV5TMYZXv0ljslUlaw==}
@@ -4040,6 +4057,9 @@ snapshots:
   '@oxc-project/types@0.93.0': {}
 
   '@pkgjs/parseargs@0.11.0':
+    optional: true
+
+  '@publint/pack@0.1.2':
     optional: true
 
   '@quansync/fs@0.1.5':
@@ -5462,6 +5482,9 @@ snapshots:
       dompurify: 3.1.7
       marked: 14.0.0
 
+  mri@1.2.0:
+    optional: true
+
   ms@2.1.3: {}
 
   nanoid@3.3.11: {}
@@ -5575,6 +5598,14 @@ snapshots:
   prettier@3.6.2: {}
 
   proto-list@1.2.4: {}
+
+  publint@0.3.14:
+    dependencies:
+      '@publint/pack': 0.1.2
+      package-manager-detector: 1.4.0
+      picocolors: 1.1.1
+      sade: 1.8.1
+    optional: true
 
   punycode@2.3.1: {}
 
@@ -5715,6 +5746,11 @@ snapshots:
   run-parallel@1.2.0:
     dependencies:
       queue-microtask: 1.2.3
+
+  sade@1.8.1:
+    dependencies:
+      mri: 1.2.0
+    optional: true
 
   safe-regex-test@1.1.0:
     dependencies:
@@ -5857,7 +5893,7 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  tsdown@0.15.6(typescript@5.9.3):
+  tsdown@0.15.6(publint@0.3.14)(typescript@5.9.3):
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
@@ -5874,6 +5910,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig: 7.3.3
     optionalDependencies:
+      publint: 0.3.14
       typescript: 5.9.3
     transitivePeerDependencies:
       - '@ts-macro/tsc'

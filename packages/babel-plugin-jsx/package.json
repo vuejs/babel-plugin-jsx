@@ -5,20 +5,18 @@
   "author": "Amour1688 <lcz_1996@foxmail.com>",
   "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-jsx#readme",
   "license": "MIT",
-  "type": "commonjs",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./*": "./*"
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vuejs/babel-plugin-jsx.git"
+    "url": "git+https://github.com/vuejs/babel-plugin-jsx.git",
+    "directory": "packages/babel-plugin-jsx"
   },
   "bugs": {
     "url": "https://github.com/vuejs/babel-plugin-jsx/issues"

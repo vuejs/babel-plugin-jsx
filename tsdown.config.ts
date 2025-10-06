@@ -6,8 +6,10 @@ export default defineConfig({
     './packages/babel-plugin-resolve-type',
   ],
   entry: ['src/index.ts'],
-  format: ['cjs', 'esm'],
   dts: { oxc: true },
-  target: 'es2015',
+  target: 'node20.19',
   platform: 'neutral',
+  inlineOnly: [],
+  exports: true,
+  fixedExtension: true,
 });

@@ -324,3 +324,4 @@ function addProperty<T extends BabelCore.types.Node>(
   }
   return object;
 }
+export { plugin as 'module.exports' };
