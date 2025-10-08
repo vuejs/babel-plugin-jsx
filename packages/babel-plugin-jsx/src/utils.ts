@@ -254,6 +254,14 @@ const onRE = /^on[^a-z]/;
 
 export const isOn = (key: string) => onRE.test(key);
 
+const camelizeRE = /-(\w)/g;
+export const camelize = (str: string): string => {
+  return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ''));
+};
+export const capitalize = <T extends string>(str: T): Capitalize<T> => {
+  return (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<T>;
+};
+
 const mergeAsArray = (
   existing: t.ObjectProperty,
   incoming: t.ObjectProperty
