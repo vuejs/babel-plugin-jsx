@@ -211,6 +211,26 @@ defineComponent<Props>((props = {
 });"
 `;
 
+exports[`resolve type > runtime props > with type reference annotation 1`] = `
+"import { defineComponent } from 'vue';
+interface MyProps {
+  list?: Array<{
+    id: number;
+    title: string;
+  }>;
+}
+defineComponent((props: MyProps) => {
+  return () => <div>{props.list?.length}</div>;
+}, {
+  props: {
+    list: {
+      type: Array,
+      required: false
+    }
+  }
+});"
+`;
+
 exports[`resolve type > w/ tsx 1`] = `
 "import { type SetupContext, defineComponent } from 'vue';
 defineComponent(() => {
