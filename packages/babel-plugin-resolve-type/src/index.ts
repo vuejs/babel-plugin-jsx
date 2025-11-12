@@ -147,14 +147,20 @@ const plugin: (
         if (generics) {
           ctx!.propsTypeDecl = resolveTypeReference(generics);
         } else {
-          ctx!.propsTypeDecl = getTypeAnnotation(props.left);
+          const typeAnnotation = getTypeAnnotation(props.left);
+          ctx!.propsTypeDecl = typeAnnotation && t.isTSTypeReference(typeAnnotation)
+            ? resolveTypeReference(typeAnnotation) || typeAnnotation
+            : typeAnnotation;
         }
         ctx!.propsRuntimeDefaults = props.right;
       } else {
         if (generics) {
           ctx!.propsTypeDecl = resolveTypeReference(generics);
         } else {
-          ctx!.propsTypeDecl = getTypeAnnotation(props);
+          const typeAnnotation = getTypeAnnotation(props);
+          ctx!.propsTypeDecl = typeAnnotation && t.isTSTypeReference(typeAnnotation)
+            ? resolveTypeReference(typeAnnotation) || typeAnnotation
+            : typeAnnotation;
         }
       }
 

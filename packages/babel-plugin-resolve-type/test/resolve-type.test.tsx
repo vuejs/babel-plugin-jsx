@@ -87,6 +87,24 @@ describe('resolve type', () => {
       );
       expect(result).toMatchSnapshot();
     });
+
+    test('with type reference annotation', async () => {
+      const result = await transform(
+        `
+        import { defineComponent } from 'vue';
+        interface MyProps {
+          list?: Array<{
+            id: number
+            title: string
+          }>
+        }
+        defineComponent((props: MyProps) => {
+          return () => <div>{props.list?.length}</div>;
+        })
+        `
+      );
+      expect(result).toMatchSnapshot();
+    });
   });
 
   describe('runtime emits', () => {
