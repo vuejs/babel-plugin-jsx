@@ -46,15 +46,15 @@
     "@babel/helper-plugin-utils": "^7.27.1",
     "@babel/plugin-syntax-jsx": "^7.27.1",
     "@babel/template": "^7.27.2",
-    "@babel/traverse": "^7.28.4",
-    "@babel/types": "^7.28.4",
+    "@babel/traverse": "^7.28.5",
+    "@babel/types": "^7.28.5",
     "@vue/babel-helper-vue-transform-on": "workspace:*",
     "@vue/babel-plugin-resolve-type": "workspace:*",
-    "@vue/shared": "^3.5.22"
+    "@vue/shared": "^3.5.25"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.4",
-    "@babel/preset-env": "^7.28.3",
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.28.0",
     "@vue/test-utils": "^2.4.6",
