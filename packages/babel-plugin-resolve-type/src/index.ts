@@ -1,14 +1,14 @@
-import type * as BabelCore from '@babel/core'
-import { parseExpression } from '@babel/parser'
-import {
-  type SimpleTypeResolveContext,
-  type SimpleTypeResolveOptions,
-  extractRuntimeEmits,
-  extractRuntimeProps,
-} from '@vue/compiler-sfc'
 import { codeFrameColumns } from '@babel/code-frame'
 import { addNamed } from '@babel/helper-module-imports'
 import { declare } from '@babel/helper-plugin-utils'
+import { parseExpression } from '@babel/parser'
+import {
+  extractRuntimeEmits,
+  extractRuntimeProps,
+  type SimpleTypeResolveContext,
+  type SimpleTypeResolveOptions,
+} from '@vue/compiler-sfc'
+import type * as BabelCore from '@babel/core'
 
 export { SimpleTypeResolveOptions as Options }
 
@@ -27,7 +27,7 @@ const plugin: (
         const filename = file.opts.filename || 'unknown.js'
         helpers = new Set()
         ctx = {
-          filename: filename,
+          filename,
           source: file.code,
           options,
           ast: file.ast.program.body,
@@ -75,12 +75,15 @@ const plugin: (
           if (!t.isIdentifier(node.callee, { name: 'defineComponent' })) return
           if (!checkDefineComponent(path)) return
 
+          // eslint-disable-next-line baseline-js/use-baseline
           const comp = node.arguments[0]
           if (!comp || !t.isFunction(comp)) return
 
+          // eslint-disable-next-line baseline-js/use-baseline
           let options = node.arguments[1]
           if (!options) {
             options = t.objectExpression([])
+            // eslint-disable-next-line baseline-js/use-baseline
             node.arguments.push(options)
           }
 
@@ -91,9 +94,12 @@ const plugin: (
             emitsGenerics = node.typeParameters.params[1]
           }
 
+          // eslint-disable-next-line baseline-js/use-baseline
           node.arguments[1] =
             processProps(comp, propsGenerics, options) || options
+          // eslint-disable-next-line baseline-js/use-baseline
           node.arguments[1] =
+            // eslint-disable-next-line baseline-js/use-baseline
             processEmits(comp, emitsGenerics, node.arguments[1]) || options
         },
         VariableDeclarator(path) {
@@ -125,6 +131,7 @@ const plugin: (
       if (args.length === 0) return
 
       if (args.length === 1) {
+        // eslint-disable-next-line baseline-js/use-baseline
         init.node.arguments.push(t.objectExpression([]))
       }
       args[1] = addProperty(t, args[1], nameProperty)
@@ -148,12 +155,10 @@ const plugin: (
           ctx!.propsTypeDecl = getTypeAnnotation(props.left)
         }
         ctx!.propsRuntimeDefaults = props.right
+      } else if (generics) {
+        ctx!.propsTypeDecl = resolveTypeReference(generics)
       } else {
-        if (generics) {
-          ctx!.propsTypeDecl = resolveTypeReference(generics)
-        } else {
-          ctx!.propsTypeDecl = getTypeAnnotation(props)
-        }
+        ctx!.propsTypeDecl = getTypeAnnotation(props)
       }
 
       if (!ctx!.propsTypeDecl) return
@@ -305,7 +310,7 @@ function checkDefineComponent(
 
   return (
     defineCompImport.type === 'ImportDeclaration' &&
-    /^@?vue(\/|$)/.test(defineCompImport.source.value)
+    /^@?vue(?:\/|$)/.test(defineCompImport.source.value)
   )
 }
 

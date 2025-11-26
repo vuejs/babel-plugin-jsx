@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config'
 import { babel } from '@rollup/plugin-babel'
+import { defineConfig } from 'vitest/config'
 import Jsx from './packages/babel-plugin-jsx/src'
 
 export default defineConfig({
@@ -16,7 +16,10 @@ export default defineConfig({
       plugins: [
         [
           Jsx,
-          { optimize: true, isCustomElement: (tag: string) => /^x-/.test(tag) },
+          {
+            optimize: true,
+            isCustomElement: (tag: string) => tag.startsWith('x-'),
+          },
         ],
       ],
     }),

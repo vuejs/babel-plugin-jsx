@@ -13,5 +13,5 @@ export default defineConfig({
   exports: {
     devExports: 'dev',
   },
-  fixedExtension: true,
+  publint: 'ci-only',
 })

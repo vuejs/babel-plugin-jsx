@@ -106,7 +106,7 @@ const App = {
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from 'vue'
+import { defineComponent, withModifiers } from 'vue'
 
 const App = defineComponent({
   setup() {
@@ -173,13 +173,13 @@ const App = {
 ```
 
 ```jsx
-<input v-model={[val, ['modifier']]} />
+<input v-model={[val, ['modifier']]} />;
 // Or
 <input v-model_modifier={val} />
 ```
 
 ```jsx
-<A v-model={[val, 'argument', ['modifier']]} />
+<A v-model={[val, 'argument', ['modifier']]} />;
 // Or
 <input v-model:argument_modifier={val} />
 ```
@@ -231,7 +231,7 @@ h(A, {
     modifier: true,
   },
   'onUpdate:modelValue': ($event) => (foo = $event),
-  bar: bar,
+  bar,
   barModifiers: {
     modifier: true,
   },
@@ -288,7 +288,7 @@ const App = {
 
 // or
 
-const App = {
+const App2 = {
   setup() {
     const slots = {
       default: () => <div>A</div>,
@@ -299,7 +299,7 @@ const App = {
 }
 
 // or you can use object slots when `enableObjectSlots` is not false.
-const App = {
+const App3 = {
   setup() {
     return () => (
       <>

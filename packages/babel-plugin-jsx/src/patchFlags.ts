@@ -1,6 +1,6 @@
 // https://github.com/vuejs/core/blob/main/packages/shared/src/patchFlags.ts
 
-export const enum PatchFlags {
+export enum PatchFlags {
   TEXT = 1,
   CLASS = 1 << 1,
   STYLE = 1 << 2,

@@ -2,38 +2,38 @@
   "name": "@vue/babel-plugin-resolve-type",
   "version": "2.0.1",
   "description": "Babel plugin for resolving Vue types.",
-  "author": "Kevin Deng <sxzz@sxzz.moe>",
-  "funding": "https://github.com/sponsors/sxzz",
-  "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-resolve-type#readme",
-  "license": "MIT",
   "type": "module",
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "exports": {
-    ".": {
-      "dev": "./src/index.ts",
-      "default": "./dist/index.mjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./dist/index.mjs",
-      "./package.json": "./package.json"
-    }
+  "license": "MIT",
+  "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-resolve-type#readme",
+  "bugs": {
+    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx.git",
     "directory": "packages/babel-plugin-resolve-type"
   },
-  "bugs": {
-    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
-  },
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
+  "funding": "https://github.com/sponsors/sxzz",
   "files": [
     "dist"
   ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  },
   "peerDependencies": {
     "@babel/core": "^7.0.0-0"
   },

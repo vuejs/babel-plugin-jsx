@@ -1,6 +1,8 @@
-import t from '@babel/types'
-import { type NodePath, type Visitor } from '@babel/traverse'
 import { addDefault } from '@babel/helper-module-imports'
+import t from '@babel/types'
+import parseDirectives from './parseDirectives'
+import { PatchFlags } from './patchFlags'
+import { SlotFlags } from './slotFlags'
 import {
   buildIIFE,
   checkIsComponent,
@@ -18,10 +20,8 @@ import {
   transformText,
   walksScope,
 } from './utils'
-import SlotFlags from './slotFlags'
-import { PatchFlags } from './patchFlags'
-import parseDirectives from './parseDirectives'
 import type { Slots, State } from './interface'
+import type { NodePath, Visitor } from '@babel/traverse'
 
 const xlinkRE = /^xlink([A-Z])/
 
@@ -229,15 +229,15 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
               ),
             )
 
-            if (!isDynamic) {
-              dynamicPropNames.add((updateName as t.StringLiteral).value)
-            } else {
+            if (isDynamic) {
               hasDynamicKeys = true
+            } else {
+              dynamicPropNames.add((updateName as t.StringLiteral).value)
             }
           })
         }
       } else {
-        if (name.match(xlinkRE)) {
+        if (xlinkRE.test(name)) {
           name = name.replace(
             xlinkRE,
             (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`,

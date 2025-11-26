@@ -1,15 +1,15 @@
-import t from '@babel/types'
-import type * as BabelCore from '@babel/core'
-import _template from '@babel/template'
+import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports'
+import { declare } from '@babel/helper-plugin-utils'
 // @ts-expect-error
 import _syntaxJsx from '@babel/plugin-syntax-jsx'
-import { addNamed, addNamespace, isModule } from '@babel/helper-module-imports'
-import { type NodePath, type Visitor } from '@babel/traverse'
+import _template from '@babel/template'
+import t from '@babel/types'
 import ResolveType from '@vue/babel-plugin-resolve-type'
-import { declare } from '@babel/helper-plugin-utils'
-import transformVueJSX from './transform-vue-jsx'
 import sugarFragment from './sugar-fragment'
+import transformVueJSX from './transform-vue-jsx'
 import type { State, VueJSXPluginOptions } from './interface'
+import type * as BabelCore from '@babel/core'
+import type { NodePath, Visitor } from '@babel/traverse'
 
 export { VueJSXPluginOptions }
 
@@ -30,7 +30,7 @@ const hasJSX = (parentPath: NodePath<t.Program>) => {
   return fileHasJSX
 }
 
-const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/
+const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+(\S+)/
 
 /* #__NO_SIDE_EFFECTS__ */
 function interopDefault(m: any) {
@@ -55,7 +55,7 @@ const plugin: (
     resolveType = ResolveType(api, opt.resolveType, dirname)
   }
   return {
-    ...(resolveType || {}),
+    ...resolveType,
     name: 'babel-plugin-jsx',
     inherits: /*#__PURE__*/ interopDefault(syntaxJsx),
     visitor: {
@@ -115,9 +115,9 @@ const plugin: (
                       return typeof s === 'function' || (Object.prototype.toString.call(s) === '[object Object]' && !${isVNodeName}(s));
                     }
                   `
-                  const lastImport = (path.get('body') as NodePath[])
-                    .filter((p) => p.isImportDeclaration())
-                    .pop()
+                  const lastImport = (path.get('body') as NodePath[]).findLast(
+                    (p) => p.isImportDeclaration(),
+                  )
                   if (lastImport) {
                     lastImport.insertAfter(ast)
                   }
@@ -160,16 +160,13 @@ const plugin: (
                   `
 
                   const nodePaths = path.get('body') as NodePath[]
-                  const lastImport = nodePaths
-                    .filter(
-                      (p) =>
-                        p.isVariableDeclaration() &&
-                        p.node.declarations.some(
-                          (d) =>
-                            (d.id as t.Identifier)?.name === sourceName.name,
-                        ),
-                    )
-                    .pop()
+                  const lastImport = nodePaths.findLast(
+                    (p) =>
+                      p.isVariableDeclaration() &&
+                      p.node.declarations.some(
+                        (d) => (d.id as t.Identifier)?.name === sourceName.name,
+                      ),
+                  )
                   if (lastImport) {
                     lastImport.insertAfter(ast)
                   }

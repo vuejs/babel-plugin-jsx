@@ -1,7 +1,7 @@
 import t from '@babel/types'
-import { type NodePath } from '@babel/traverse'
 import { createIdentifier } from './utils'
 import type { State } from './interface'
+import type { NodePath } from '@babel/traverse'
 
 export type Tag =
   | t.Identifier
@@ -187,8 +187,7 @@ const resolveDirective = (
     }
     return modelToUse
   }
-  const referenceName =
-    'v' + directiveName[0].toUpperCase() + directiveName.slice(1)
+  const referenceName = `v${directiveName[0].toUpperCase()}${directiveName.slice(1)}`
   if (path.scope.references[referenceName]) {
     return t.identifier(referenceName)
   }

@@ -17,7 +17,7 @@ npm install @vue/babel-plugin-jsx -D
 
 配置 Babel
 
-```js
+```json
 {
   "plugins": ["@vue/babel-plugin-jsx"]
 }
@@ -102,7 +102,7 @@ const App = {
 ```
 
 ```jsx
-import { withModifiers, defineComponent } from 'vue'
+import { defineComponent, withModifiers } from 'vue'
 
 const App = defineComponent({
   setup() {
@@ -169,13 +169,13 @@ const App = {
 ```
 
 ```jsx
-<input v-model={[val, ['modifier']]} />
+<input v-model={[val, ['modifier']]} />;
 // 或者
 <input v-model_modifier={val} />
 ```
 
 ```jsx
-<A v-model={[val, 'argument', ['modifier']]} />
+<A v-model={[val, 'argument', ['modifier']]} />;
 // 或者
 <input v-model:argument_modifier={val} />
 ```
@@ -227,7 +227,7 @@ h(A, {
     modifier: true,
   },
   'onUpdate:modelValue': ($event) => (foo = $event),
-  bar: bar,
+  bar,
   barModifiers: {
     modifier: true,
   },
@@ -284,7 +284,7 @@ const App = {
 
 // or
 
-const App = {
+const App2 = {
   setup() {
     const slots = {
       default: () => <div>A</div>,
@@ -295,7 +295,7 @@ const App = {
 }
 
 // 或者，当 `enableObjectSlots` 不是 `false` 时，您可以使用对象插槽
-const App = {
+const App3 = {
   setup() {
     return () => (
       <>

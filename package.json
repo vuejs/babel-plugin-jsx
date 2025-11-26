@@ -4,6 +4,11 @@
   "private": true,
   "packageManager": "pnpm@10.18.1",
   "type": "module",
+  "keywords": [
+    "vue",
+    "jsx"
+  ],
+  "license": "MIT",
   "scripts": {
     "dev": "pnpm -C packages/jsx-explorer run dev",
     "build": "tsdown",
@@ -14,15 +19,11 @@
     "typecheck": "tsc",
     "release": "bumpp -r"
   },
-  "license": "MIT",
-  "keywords": [
-    "vue",
-    "jsx"
-  ],
   "devDependencies": {
     "@babel/plugin-syntax-typescript": "^7.27.1",
-    "@eslint/js": "^9.37.0",
     "@rollup/plugin-babel": "^6.0.4",
+    "@sxzz/eslint-config": "^7.3.2",
+    "@sxzz/prettier-config": "^2.2.5",
     "@types/babel__core": "^7.20.5",
     "@types/babel__helper-module-imports": "^7.18.3",
     "@types/babel__helper-plugin-utils": "^7.10.3",
@@ -31,15 +32,13 @@
     "@vue/babel-plugin-jsx": "workspace:*",
     "bumpp": "^10.3.1",
     "eslint": "^9.37.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import-x": "^4.16.1",
     "jsdom": "^27.0.0",
     "prettier": "3.6.2",
-    "tsdown": "^0.15.6",
+    "tsdown": "^0.16.7",
     "tslib": "^2.8.1",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.45.0",
     "vite": "^7.1.9",
     "vitest": "^3.2.4"
-  }
+  },
+  "prettier": "@sxzz/prettier-config"
 }

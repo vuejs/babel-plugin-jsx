@@ -1,13 +1,13 @@
-import * as monaco from 'monaco-editor'
-import { watchEffect } from 'vue'
-import { transform } from '@babel/standalone'
-import babelPluginJsx from '@vue/babel-plugin-jsx'
 // @ts-expect-error missing types
 import typescript from '@babel/plugin-syntax-typescript'
+import { transform } from '@babel/standalone'
+import babelPluginJsx from '@vue/babel-plugin-jsx'
+import * as monaco from 'monaco-editor'
+import { watchEffect } from 'vue'
 import {
-  type VueJSXPluginOptions,
   compilerOptions,
   initOptions,
+  type VueJSXPluginOptions,
 } from './options'
 import './editor.worker'
 import './index.css'
@@ -53,10 +53,10 @@ function main() {
     isolatedModules: true,
   })
 
-  const editor = monaco.editor.create(document.getElementById('source')!, {
+  const editor = monaco.editor.create(document.querySelector('#source')!, {
     ...sharedEditorOptions,
     model: monaco.editor.createModel(
-      decodeURIComponent(window.location.hash.slice(1)) ||
+      decodeURIComponent(globalThis.location.hash.slice(1)) ||
         persistedState.src ||
         `import { defineComponent } from 'vue'
 
@@ -66,7 +66,7 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
     ),
   })
 
-  const output = monaco.editor.create(document.getElementById('output')!, {
+  const output = monaco.editor.create(document.querySelector('#output')!, {
     readOnly: true,
     ...sharedEditorOptions,
     model: monaco.editor.createModel(
@@ -83,7 +83,7 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
       options: compilerOptions,
     })
     localStorage.setItem('state', state)
-    window.location.hash = encodeURIComponent(src)
+    globalThis.location.hash = encodeURIComponent(src)
     console.clear()
     try {
       const res = transform(src, {
@@ -94,11 +94,11 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
         ],
         ast: true,
       })
-      console.log('AST', res.ast!)
+      console.info('AST', res.ast!)
       output.setValue(res.code!)
-    } catch (err: any) {
-      console.error(err)
-      output.setValue(err.message!)
+    } catch (error: any) {
+      console.error(error)
+      output.setValue(error.message!)
     }
   }
 
@@ -116,12 +116,12 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
 }
 
 function debounce<T extends (...args: any[]) => any>(fn: T, delay = 300): T {
-  let prevTimer: number | null = null
+  let prevTimer: ReturnType<typeof setTimeout> | null = null
   return ((...args: any[]) => {
     if (prevTimer) {
       clearTimeout(prevTimer)
     }
-    prevTimer = window.setTimeout(() => {
+    prevTimer = globalThis.setTimeout(() => {
       fn(...args)
       prevTimer = null
     }, delay)

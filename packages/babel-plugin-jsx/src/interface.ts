@@ -1,6 +1,6 @@
-import type t from '@babel/types'
 import type * as BabelCore from '@babel/core'
-import { type Options } from '@vue/babel-plugin-resolve-type'
+import type t from '@babel/types'
+import type { Options } from '@vue/babel-plugin-resolve-type'
 
 export type Slots = t.Identifier | t.ObjectExpression | null
 

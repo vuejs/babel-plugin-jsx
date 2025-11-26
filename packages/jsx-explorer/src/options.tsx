@@ -1,5 +1,5 @@
 import { createApp, defineComponent, reactive } from 'vue'
-import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
+import type { VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
 
 export { VueJSXPluginOptions }
 
@@ -107,5 +107,5 @@ const App = defineComponent({
 })
 
 export function initOptions() {
-  createApp(App).mount(document.getElementById('header')!)
+  createApp(App).mount(document.querySelector('#header')!)
 }

@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "customConditions": ["dev"],
+    "module": "ESNext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "types": ["vitest/globals"],
     "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "jsx": "preserve",
-    "jsxImportSource": "vue",
-    "types": ["vitest/globals"],
-    "skipLibCheck": true,
     "noEmit": true,
-    "customConditions": ["dev"]
+    "esModuleInterop": true,
+    "skipLibCheck": true
   }
 }

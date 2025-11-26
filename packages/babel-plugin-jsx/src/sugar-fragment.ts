@@ -1,7 +1,7 @@
 import t from '@babel/types'
-import { type NodePath, type Visitor } from '@babel/traverse'
+import { createIdentifier, FRAGMENT } from './utils'
 import type { State } from './interface'
-import { FRAGMENT, createIdentifier } from './utils'
+import type { NodePath, Visitor } from '@babel/traverse'
 
 const transformFragment = (
   path: NodePath<t.JSXFragment>,

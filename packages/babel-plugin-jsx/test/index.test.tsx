@@ -1,12 +1,12 @@
+import { mount, shallowMount, type VueWrapper } from '@vue/test-utils'
 import {
-  type CSSProperties,
-  type ComponentPublicInstance,
-  Transition,
   defineComponent,
   reactive,
   ref,
+  Transition,
+  type ComponentPublicInstance,
+  type CSSProperties,
 } from 'vue'
-import { type VueWrapper, mount, shallowMount } from '@vue/test-utils'
 
 const patchFlagExpect = (
   wrapper: VueWrapper<ComponentPublicInstance>,
@@ -129,21 +129,21 @@ describe('Transform JSX', () => {
         return () => <div class="a" {...{ class: 'b' }} />
       },
     })
-    expect(wrapper.classes().sort()).toEqual(['a', 'b'].sort())
+    expect(wrapper.classes().toSorted()).toEqual(['a', 'b'].toSorted())
   })
 
   test('Merge style', () => {
     const propsA = {
       style: {
         color: 'red',
-      } as CSSProperties,
+      } satisfies CSSProperties,
     }
     const propsB = {
       style: {
         color: 'blue',
         width: '300px',
         height: '300px',
-      } as CSSProperties,
+      } satisfies CSSProperties,
     }
     const wrapper = shallowMount({
       setup() {
@@ -369,7 +369,10 @@ describe('PatchFlags', () => {
       setup() {
         const foo = ref(0)
         return () => (
-          <button value={`${foo.value}`} onClick={() => foo.value++}></button>
+          <button
+            value={String(foo.value)}
+            onClick={() => foo.value++}
+          ></button>
         )
       },
     })
@@ -397,7 +400,7 @@ describe('PatchFlags', () => {
 
     await wrapper.trigger('click')
 
-    expect(wrapper.classes().sort()).toEqual(['b', 'static'].sort())
+    expect(wrapper.classes().toSorted()).toEqual(['b', 'static'].toSorted())
   })
 })
 
@@ -428,7 +431,7 @@ describe('variables outside slots', () => {
         },
         render() {
           const attrs = {
-            innerHTML: `${this.val}`,
+            innerHTML: String(this.val),
           }
           return (
             <A inc={this.inc}>
@@ -466,7 +469,7 @@ describe('variables outside slots', () => {
         },
         render() {
           const attrs = {
-            innerHTML: `${this.val}`,
+            innerHTML: String(this.val),
           }
           const textarea = <textarea id="textarea" {...attrs} />
           return (

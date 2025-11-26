@@ -1,19 +1,12 @@
 import t from '@babel/types'
-import { type NodePath } from '@babel/traverse'
 import { isHTMLTag, isSVGTag } from '@vue/shared'
+import { SlotFlags } from './slotFlags'
 import type { State } from './interface'
-import SlotFlags from './slotFlags'
+import type { NodePath } from '@babel/traverse'
 export const JSX_HELPER_KEY = 'JSX_HELPER_KEY'
 export const FRAGMENT = 'Fragment'
 export const KEEP_ALIVE = 'KeepAlive'
 
-/**
- * create Identifier
- * @param path NodePath
- * @param state
- * @param name string
- * @returns MemberExpression
- */
 export const createIdentifier = (
   state: State,
   name: string,
@@ -34,14 +27,10 @@ export const isDirective = (src: string): boolean =>
  */
 // if _Fragment is already imported, it will end with number
 export const shouldTransformedToSlots = (tag: string) =>
-  !(tag.match(RegExp(`^_?${FRAGMENT}\\d*$`)) || tag === KEEP_ALIVE)
+  !new RegExp(String.raw`^_?${FRAGMENT}\d*$`).test(tag) && tag !== KEEP_ALIVE
 
 /**
  * Check if a Node is a component
- *
- * @param t
- * @param path JSXOpeningElement
- * @returns boolean
  */
 export const checkIsComponent = (
   path: NodePath<t.JSXOpeningElement>,
@@ -136,7 +125,7 @@ export const transformJSXText = (
   path: NodePath<t.JSXText | t.StringLiteral>,
 ): t.StringLiteral | null => {
   const str = transformText(path.node.value)
-  return str !== '' ? t.stringLiteral(str) : null
+  return str === '' ? null : t.stringLiteral(str)
 }
 
 export const transformText = (text: string) => {
@@ -144,8 +133,8 @@ export const transformText = (text: string) => {
 
   let lastNonEmptyLine = 0
 
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].match(/[^ \t]/)) {
+  for (const [i, line] of lines.entries()) {
+    if (/[^ \t]/.test(line)) {
       lastNonEmptyLine = i
     }
   }
@@ -160,16 +149,16 @@ export const transformText = (text: string) => {
     const isLastNonEmptyLine = i === lastNonEmptyLine
 
     // replace rendered whitespace tabs with spaces
-    let trimmedLine = line.replace(/\t/g, ' ')
+    let trimmedLine = line.replaceAll('\t', ' ')
 
     // trim whitespace touching a newline
     if (!isFirstLine) {
-      trimmedLine = trimmedLine.replace(/^[ ]+/, '')
+      trimmedLine = trimmedLine.replace(/^ +/, '')
     }
 
     // trim whitespace touching an endline
     if (!isLastLine) {
-      trimmedLine = trimmedLine.replace(/[ ]+$/, '')
+      trimmedLine = trimmedLine.replace(/ +$/, '')
     }
 
     if (trimmedLine) {

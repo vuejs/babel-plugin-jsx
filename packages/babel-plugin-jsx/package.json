@@ -2,37 +2,45 @@
   "name": "@vue/babel-plugin-jsx",
   "version": "2.0.1",
   "description": "Babel plugin for Vue 3 JSX",
-  "author": "Amour1688 <lcz_1996@foxmail.com>",
-  "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-jsx#readme",
-  "license": "MIT",
   "type": "module",
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "exports": {
-    ".": {
-      "dev": "./src/index.ts",
-      "default": "./dist/index.mjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": "./dist/index.mjs",
-      "./package.json": "./package.json"
-    }
+  "license": "MIT",
+  "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-jsx#readme",
+  "bugs": {
+    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx.git",
     "directory": "packages/babel-plugin-jsx"
   },
-  "bugs": {
-    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
-  },
+  "author": "Amour1688 <lcz_1996@foxmail.com>",
   "files": [
     "dist"
   ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0-0"
+  },
+  "peerDependenciesMeta": {
+    "@babel/core": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@babel/helper-module-imports": "^7.27.1",
     "@babel/helper-plugin-utils": "^7.27.1",
@@ -52,13 +60,5 @@
     "@vue/test-utils": "^2.4.6",
     "regenerator-runtime": "^0.14.1",
     "vue": "catalog:"
-  },
-  "peerDependencies": {
-    "@babel/core": "^7.0.0-0"
-  },
-  "peerDependenciesMeta": {
-    "@babel/core": {
-      "optional": true
-    }
   }
 }

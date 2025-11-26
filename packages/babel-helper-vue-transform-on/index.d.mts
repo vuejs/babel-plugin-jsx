@@ -2,4 +2,5 @@ declare function transformOn(
   obj: Record<string, any>,
 ): Record<`on${string}`, any>
 
-export { transformOn as default, transformOn as 'module.exports' }
+export default transformOn
+export { transformOn as 'module.exports' }
