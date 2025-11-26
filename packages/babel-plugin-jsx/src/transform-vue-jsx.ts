@@ -1,6 +1,6 @@
-import t from '@babel/types';
-import { type NodePath, type Visitor } from '@babel/traverse';
-import { addDefault } from '@babel/helper-module-imports';
+import t from '@babel/types'
+import { type NodePath, type Visitor } from '@babel/traverse'
+import { addDefault } from '@babel/helper-module-imports'
 import {
   buildIIFE,
   checkIsComponent,
@@ -17,43 +17,43 @@ import {
   transformJSXText,
   transformText,
   walksScope,
-} from './utils';
-import SlotFlags from './slotFlags';
-import { PatchFlags } from './patchFlags';
-import parseDirectives from './parseDirectives';
-import type { Slots, State } from './interface';
+} from './utils'
+import SlotFlags from './slotFlags'
+import { PatchFlags } from './patchFlags'
+import parseDirectives from './parseDirectives'
+import type { Slots, State } from './interface'
 
-const xlinkRE = /^xlink([A-Z])/;
+const xlinkRE = /^xlink([A-Z])/
 
-type ExcludesBoolean = <T>(x: T | false | true) => x is T;
+type ExcludesBoolean = <T>(x: T | false | true) => x is T
 
 const getJSXAttributeValue = (
   path: NodePath<t.JSXAttribute>,
-  state: State
+  state: State,
 ): t.StringLiteral | t.Expression | null => {
-  const valuePath = path.get('value');
+  const valuePath = path.get('value')
   if (valuePath.isJSXElement()) {
-    return transformJSXElement(valuePath, state);
+    return transformJSXElement(valuePath, state)
   }
   if (valuePath.isStringLiteral()) {
-    return t.stringLiteral(transformText(valuePath.node.value));
+    return t.stringLiteral(transformText(valuePath.node.value))
   }
   if (valuePath.isJSXExpressionContainer()) {
-    return transformJSXExpressionContainer(valuePath);
+    return transformJSXExpressionContainer(valuePath)
   }
 
-  return null;
-};
+  return null
+}
 
 const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
-  const tag = getTag(path, state);
-  const isComponent = checkIsComponent(path.get('openingElement'), state);
-  const props = path.get('openingElement').get('attributes');
-  const directives: t.ArrayExpression[] = [];
-  const dynamicPropNames = new Set<string>();
+  const tag = getTag(path, state)
+  const isComponent = checkIsComponent(path.get('openingElement'), state)
+  const props = path.get('openingElement').get('attributes')
+  const directives: t.ArrayExpression[] = []
+  const dynamicPropNames = new Set<string>()
 
-  let slots: Slots = null;
-  let patchFlag = 0;
+  let slots: Slots = null
+  let patchFlag = 0
 
   if (props.length === 0) {
     return {
@@ -64,26 +64,25 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
       directives,
       patchFlag,
       dynamicPropNames,
-    };
+    }
   }
 
-  let properties: t.ObjectProperty[] = [];
+  let properties: t.ObjectProperty[] = []
 
   // patchFlag analysis
-  let hasRef = false;
-  let hasClassBinding = false;
-  let hasStyleBinding = false;
-  let hasHydrationEventBinding = false;
-  let hasDynamicKeys = false;
+  let hasRef = false
+  let hasClassBinding = false
+  let hasStyleBinding = false
+  let hasHydrationEventBinding = false
+  let hasDynamicKeys = false
 
-  const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] =
-    [];
-  const { mergeProps = true } = state.opts;
+  const mergeArgs: (t.CallExpression | t.ObjectExpression | t.Identifier)[] = []
+  const { mergeProps = true } = state.opts
   props.forEach((prop) => {
     if (prop.isJSXAttribute()) {
-      let name = getJSXAttributeName(prop);
+      let name = getJSXAttributeName(prop)
 
-      const attributeValue = getJSXAttributeValue(prop, state);
+      const attributeValue = getJSXAttributeValue(prop, state)
 
       if (!isConstant(attributeValue) || name === 'ref') {
         if (
@@ -95,17 +94,17 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
           // omit v-model handlers
           name !== 'onUpdate:modelValue'
         ) {
-          hasHydrationEventBinding = true;
+          hasHydrationEventBinding = true
         }
 
         if (name === 'ref') {
-          hasRef = true;
+          hasRef = true
         } else if (name === 'class' && !isComponent) {
-          hasClassBinding = true;
+          hasClassBinding = true
         } else if (name === 'style' && !isComponent) {
-          hasStyleBinding = true;
+          hasStyleBinding = true
         } else if (name !== 'key' && !isDirective(name) && name !== 'on') {
-          dynamicPropNames.add(name);
+          dynamicPropNames.add(name)
         }
       }
       if (state.opts.transformOn && (name === 'on' || name === 'nativeOn')) {
@@ -114,15 +113,15 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             'transformOn',
             addDefault(path, '@vue/babel-helper-vue-transform-on', {
               nameHint: '_transformOn',
-            })
-          );
+            }),
+          )
         }
         mergeArgs.push(
           t.callExpression(state.get('transformOn'), [
             attributeValue || t.booleanLiteral(true),
-          ])
-        );
-        return;
+          ]),
+        )
+        return
       }
       if (isDirective(name)) {
         const { directive, modifiers, values, args, directiveName } =
@@ -133,34 +132,34 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
             path: prop,
             state,
             value: attributeValue,
-          });
+          })
 
         if (directiveName === 'slots') {
-          slots = attributeValue as Slots;
-          return;
+          slots = attributeValue as Slots
+          return
         }
         if (directive) {
-          directives.push(t.arrayExpression(directive));
+          directives.push(t.arrayExpression(directive))
         } else if (directiveName === 'html') {
           properties.push(
-            t.objectProperty(t.stringLiteral('innerHTML'), values[0] as any)
-          );
-          dynamicPropNames.add('innerHTML');
+            t.objectProperty(t.stringLiteral('innerHTML'), values[0] as any),
+          )
+          dynamicPropNames.add('innerHTML')
         } else if (directiveName === 'text') {
           properties.push(
-            t.objectProperty(t.stringLiteral('textContent'), values[0] as any)
-          );
-          dynamicPropNames.add('textContent');
+            t.objectProperty(t.stringLiteral('textContent'), values[0] as any),
+          )
+          dynamicPropNames.add('textContent')
         }
 
         if (['models', 'model'].includes(directiveName)) {
           values.forEach((value, index) => {
-            const propName = args[index];
+            const propName = args[index]
             // v-model target with variable
             const isDynamic =
               propName &&
               !t.isStringLiteral(propName) &&
-              !t.isNullLiteral(propName);
+              !t.isNullLiteral(propName)
 
             // must be v-model or v-models and is a component
             if (!directive) {
@@ -170,13 +169,13 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                     ? t.stringLiteral('modelValue')
                     : propName,
                   value as any,
-                  isDynamic
-                )
-              );
+                  isDynamic,
+                ),
+              )
               if (!isDynamic) {
                 dynamicPropNames.add(
-                  (propName as t.StringLiteral)?.value || 'modelValue'
-                );
+                  (propName as t.StringLiteral)?.value || 'modelValue',
+                )
               }
 
               if (modifiers[index]?.size) {
@@ -186,24 +185,24 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                       ? t.binaryExpression(
                           '+',
                           propName,
-                          t.stringLiteral('Modifiers')
+                          t.stringLiteral('Modifiers'),
                         )
                       : t.stringLiteral(
                           `${
                             (propName as t.StringLiteral)?.value || 'model'
-                          }Modifiers`
+                          }Modifiers`,
                         ),
                     t.objectExpression(
                       [...modifiers[index]].map((modifier) =>
                         t.objectProperty(
                           t.stringLiteral(modifier),
-                          t.booleanLiteral(true)
-                        )
-                      )
+                          t.booleanLiteral(true),
+                        ),
+                      ),
                     ),
-                    isDynamic
-                  )
-                );
+                    isDynamic,
+                  ),
+                )
               }
             }
 
@@ -212,8 +211,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
               : t.stringLiteral(
                   `onUpdate:${
                     (propName as t.StringLiteral)?.value || 'modelValue'
-                  }`
-                );
+                  }`,
+                )
 
             properties.push(
               t.objectProperty(
@@ -223,68 +222,68 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
                   t.assignmentExpression(
                     '=',
                     value as any,
-                    t.identifier('$event')
-                  )
+                    t.identifier('$event'),
+                  ),
                 ),
-                isDynamic
-              )
-            );
+                isDynamic,
+              ),
+            )
 
             if (!isDynamic) {
-              dynamicPropNames.add((updateName as t.StringLiteral).value);
+              dynamicPropNames.add((updateName as t.StringLiteral).value)
             } else {
-              hasDynamicKeys = true;
+              hasDynamicKeys = true
             }
-          });
+          })
         }
       } else {
         if (name.match(xlinkRE)) {
           name = name.replace(
             xlinkRE,
-            (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`
-          );
+            (_, firstCharacter) => `xlink:${firstCharacter.toLowerCase()}`,
+          )
         }
         properties.push(
           t.objectProperty(
             t.stringLiteral(name),
-            attributeValue || t.booleanLiteral(true)
-          )
-        );
+            attributeValue || t.booleanLiteral(true),
+          ),
+        )
       }
     } else {
       if (properties.length && mergeProps) {
         mergeArgs.push(
-          t.objectExpression(dedupeProperties(properties, mergeProps))
-        );
-        properties = [];
+          t.objectExpression(dedupeProperties(properties, mergeProps)),
+        )
+        properties = []
       }
 
       // JSXSpreadAttribute
-      hasDynamicKeys = true;
+      hasDynamicKeys = true
       transformJSXSpreadAttribute(
         path as NodePath,
         prop as NodePath<t.JSXSpreadAttribute>,
         mergeProps,
-        mergeProps ? mergeArgs : properties
-      );
+        mergeProps ? mergeArgs : properties,
+      )
     }
-  });
+  })
 
   // patchFlag analysis
   if (hasDynamicKeys) {
-    patchFlag |= PatchFlags.FULL_PROPS;
+    patchFlag |= PatchFlags.FULL_PROPS
   } else {
     if (hasClassBinding) {
-      patchFlag |= PatchFlags.CLASS;
+      patchFlag |= PatchFlags.CLASS
     }
     if (hasStyleBinding) {
-      patchFlag |= PatchFlags.STYLE;
+      patchFlag |= PatchFlags.STYLE
     }
     if (dynamicPropNames.size) {
-      patchFlag |= PatchFlags.PROPS;
+      patchFlag |= PatchFlags.PROPS
     }
     if (hasHydrationEventBinding) {
-      patchFlag |= PatchFlags.HYDRATE_EVENTS;
+      patchFlag |= PatchFlags.HYDRATE_EVENTS
     }
   }
 
@@ -292,34 +291,34 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
     (patchFlag === 0 || patchFlag === PatchFlags.HYDRATE_EVENTS) &&
     (hasRef || directives.length > 0)
   ) {
-    patchFlag |= PatchFlags.NEED_PATCH;
+    patchFlag |= PatchFlags.NEED_PATCH
   }
 
   let propsExpression: t.Expression | t.ObjectProperty | t.Literal =
-    t.nullLiteral();
+    t.nullLiteral()
   if (mergeArgs.length) {
     if (properties.length) {
       mergeArgs.push(
-        t.objectExpression(dedupeProperties(properties, mergeProps))
-      );
+        t.objectExpression(dedupeProperties(properties, mergeProps)),
+      )
     }
     if (mergeArgs.length > 1) {
       propsExpression = t.callExpression(
         createIdentifier(state, 'mergeProps'),
-        mergeArgs
-      );
+        mergeArgs,
+      )
     } else {
       // single no need for a mergeProps call
-      propsExpression = mergeArgs[0];
+      propsExpression = mergeArgs[0]
     }
   } else if (properties.length) {
     // single no need for spread
     if (properties.length === 1 && t.isSpreadElement(properties[0])) {
-      propsExpression = (properties[0] as unknown as t.SpreadElement).argument;
+      propsExpression = (properties[0] as unknown as t.SpreadElement).argument
     } else {
       propsExpression = t.objectExpression(
-        dedupeProperties(properties, mergeProps)
-      );
+        dedupeProperties(properties, mergeProps),
+      )
     }
   }
 
@@ -331,8 +330,8 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
     directives,
     patchFlag,
     dynamicPropNames,
-  };
-};
+  }
+}
 
 /**
  * Get children from Array of JSX children
@@ -347,52 +346,52 @@ const getChildren = (
     | t.JSXElement
     | t.JSXFragment
   >[],
-  state: State
+  state: State,
 ): t.Expression[] =>
   paths
     .map((path) => {
       if (path.isJSXText()) {
-        const transformedText = transformJSXText(path);
+        const transformedText = transformJSXText(path)
         if (transformedText) {
           return t.callExpression(createIdentifier(state, 'createTextVNode'), [
             transformedText,
-          ]);
+          ])
         }
-        return transformedText;
+        return transformedText
       }
       if (path.isJSXExpressionContainer()) {
-        const expression = transformJSXExpressionContainer(path);
+        const expression = transformJSXExpressionContainer(path)
 
         if (t.isIdentifier(expression)) {
-          const { name } = expression;
-          const { referencePaths = [] } = path.scope.getBinding(name) || {};
+          const { name } = expression
+          const { referencePaths = [] } = path.scope.getBinding(name) || {}
           referencePaths.forEach((referencePath) => {
-            walksScope(referencePath, name, SlotFlags.DYNAMIC);
-          });
+            walksScope(referencePath, name, SlotFlags.DYNAMIC)
+          })
         }
 
-        return expression;
+        return expression
       }
       if (path.isJSXSpreadChild()) {
-        return transformJSXSpreadChild(path);
+        return transformJSXSpreadChild(path)
       }
       if (path.isCallExpression()) {
-        return (path as NodePath<t.CallExpression>).node;
+        return (path as NodePath<t.CallExpression>).node
       }
       if (path.isJSXElement()) {
-        return transformJSXElement(path, state);
+        return transformJSXElement(path, state)
       }
-      throw new Error(`getChildren: ${path.type} is not supported`);
+      throw new Error(`getChildren: ${path.type} is not supported`)
     })
     .filter(
-      ((value: any) => value != null && !t.isJSXEmptyExpression(value)) as any
-    );
+      ((value: any) => value != null && !t.isJSXEmptyExpression(value)) as any,
+    )
 
 const transformJSXElement = (
   path: NodePath<t.JSXElement>,
-  state: State
+  state: State,
 ): t.CallExpression => {
-  const children = getChildren(path.get('children'), state);
+  const children = getChildren(path.get('children'), state)
   const {
     tag,
     props,
@@ -401,9 +400,9 @@ const transformJSXElement = (
     patchFlag,
     dynamicPropNames,
     slots,
-  } = buildProps(path, state);
+  } = buildProps(path, state)
 
-  const { optimize = false } = state.opts;
+  const { optimize = false } = state.opts
 
   // #541 - directives can't be resolved in optimized slots
   // all parents should be deoptimized
@@ -413,19 +412,19 @@ const transformJSXElement = (
       (d) =>
         d.elements?.[0]?.type === 'CallExpression' &&
         d.elements[0].callee.type === 'Identifier' &&
-        d.elements[0].callee.name === '_resolveDirective'
+        d.elements[0].callee.name === '_resolveDirective',
     )
   ) {
-    let currentPath = path;
+    let currentPath = path
     while (currentPath.parentPath?.isJSXElement()) {
-      currentPath = currentPath.parentPath;
-      currentPath.setData('slotFlag', 0);
+      currentPath = currentPath.parentPath
+      currentPath.setData('slotFlag', 0)
     }
   }
 
-  const slotFlag = path.getData('slotFlag') ?? SlotFlags.STABLE;
-  const optimizeSlots = optimize && slotFlag !== 0;
-  let VNodeChild;
+  const slotFlag = path.getData('slotFlag') ?? SlotFlags.STABLE
+  const optimizeSlots = optimize && slotFlag !== 0
+  let VNodeChild
 
   if (children.length > 1 || slots) {
     /*
@@ -442,8 +441,8 @@ const transformJSXElement = (
                   t.identifier('default'),
                   t.arrowFunctionExpression(
                     [],
-                    t.arrayExpression(buildIIFE(path, children))
-                  )
+                    t.arrayExpression(buildIIFE(path, children)),
+                  ),
                 ),
               ...(slots
                 ? t.isObjectExpression(slots)
@@ -452,53 +451,53 @@ const transformJSXElement = (
                 : []),
               optimizeSlots &&
                 t.objectProperty(t.identifier('_'), t.numericLiteral(slotFlag)),
-            ].filter(Boolean as any)
+            ].filter(Boolean as any),
           )
         : slots
-      : t.arrayExpression(children);
+      : t.arrayExpression(children)
   } else if (children.length === 1) {
     /*
       <A>{a}</A> or <A>{() => a}</A>
      */
-    const { enableObjectSlots = true } = state.opts;
-    const child = children[0];
+    const { enableObjectSlots = true } = state.opts
+    const child = children[0]
     const objectExpression = t.objectExpression(
       [
         t.objectProperty(
           t.identifier('default'),
           t.arrowFunctionExpression(
             [],
-            t.arrayExpression(buildIIFE(path, [child]))
-          )
+            t.arrayExpression(buildIIFE(path, [child])),
+          ),
         ),
         optimizeSlots &&
           (t.objectProperty(
             t.identifier('_'),
-            t.numericLiteral(slotFlag)
+            t.numericLiteral(slotFlag),
           ) as any),
-      ].filter(Boolean)
-    );
+      ].filter(Boolean),
+    )
     if (t.isIdentifier(child) && isComponent) {
       VNodeChild = enableObjectSlots
         ? t.conditionalExpression(
             t.callExpression(
               state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(),
-              [child]
+              [child],
             ),
             child,
-            objectExpression
+            objectExpression,
           )
-        : objectExpression;
+        : objectExpression
     } else if (t.isCallExpression(child) && child.loc && isComponent) {
       // the element was generated and doesn't have location information
       if (enableObjectSlots) {
-        const { scope } = path;
-        const slotId = scope.generateUidIdentifier('slot');
+        const { scope } = path
+        const slotId = scope.generateUidIdentifier('slot')
         if (scope) {
           scope.push({
             id: slotId,
             kind: 'let',
-          });
+          })
         }
         const alternate = t.objectExpression(
           [
@@ -506,24 +505,24 @@ const transformJSXElement = (
               t.identifier('default'),
               t.arrowFunctionExpression(
                 [],
-                t.arrayExpression(buildIIFE(path, [slotId]))
-              )
+                t.arrayExpression(buildIIFE(path, [slotId])),
+              ),
             ),
             optimizeSlots &&
               (t.objectProperty(
                 t.identifier('_'),
-                t.numericLiteral(slotFlag)
+                t.numericLiteral(slotFlag),
               ) as any),
-          ].filter(Boolean)
-        );
-        const assignment = t.assignmentExpression('=', slotId, child);
+          ].filter(Boolean),
+        )
+        const assignment = t.assignmentExpression('=', slotId, child)
         const condition = t.callExpression(
           state.get('@vue/babel-plugin-jsx/runtimeIsSlot')(),
-          [assignment]
-        );
-        VNodeChild = t.conditionalExpression(condition, slotId, alternate);
+          [assignment],
+        )
+        VNodeChild = t.conditionalExpression(condition, slotId, alternate)
       } else {
-        VNodeChild = objectExpression;
+        VNodeChild = objectExpression
       }
     } else if (
       t.isFunctionExpression(child) ||
@@ -531,24 +530,24 @@ const transformJSXElement = (
     ) {
       VNodeChild = t.objectExpression([
         t.objectProperty(t.identifier('default'), child),
-      ]);
+      ])
     } else if (t.isObjectExpression(child)) {
       VNodeChild = t.objectExpression(
         [
           ...child.properties,
           optimizeSlots &&
             t.objectProperty(t.identifier('_'), t.numericLiteral(slotFlag)),
-        ].filter(Boolean as any)
-      );
+        ].filter(Boolean as any),
+      )
     } else {
       VNodeChild = isComponent
         ? t.objectExpression([
             t.objectProperty(
               t.identifier('default'),
-              t.arrowFunctionExpression([], t.arrayExpression([child]))
+              t.arrowFunctionExpression([], t.arrayExpression([child])),
             ),
           ])
-        : t.arrayExpression([child]);
+        : t.arrayExpression([child])
     }
   }
 
@@ -562,27 +561,27 @@ const transformJSXElement = (
       !!dynamicPropNames.size &&
         optimize &&
         t.arrayExpression(
-          [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name))
+          [...dynamicPropNames.keys()].map((name) => t.stringLiteral(name)),
         ),
-    ].filter(Boolean as unknown as ExcludesBoolean)
-  );
+    ].filter(Boolean as unknown as ExcludesBoolean),
+  )
 
   if (!directives.length) {
-    return createVNode;
+    return createVNode
   }
 
   return t.callExpression(createIdentifier(state, 'withDirectives'), [
     createVNode,
     t.arrayExpression(directives),
-  ]);
-};
+  ])
+}
 
 const visitor: Visitor<State> = {
   JSXElement: {
     exit(path, state) {
-      path.replaceWith(transformJSXElement(path, state));
+      path.replaceWith(transformJSXElement(path, state))
     },
   },
-};
+}
 
-export default visitor;
+export default visitor

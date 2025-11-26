@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
-import VueJSX from '@vitejs/plugin-vue-jsx';
+import { defineConfig } from 'vite'
+import VueJSX from '@vitejs/plugin-vue-jsx'
 
 export default defineConfig({
   resolve: {
@@ -11,4 +11,4 @@ export default defineConfig({
     'process.env.BABEL_TYPES_8_BREAKING': 'false',
   },
   plugins: [VueJSX()],
-});
+})

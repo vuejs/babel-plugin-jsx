@@ -1,9 +1,9 @@
-import { transform } from '@babel/core';
-import JSX, { type VueJSXPluginOptions } from '../src';
+import { transform } from '@babel/core'
+import JSX, { type VueJSXPluginOptions } from '../src'
 
 interface Test {
-  name: string;
-  from: string;
+  name: string
+  from: string
 }
 
 const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
@@ -18,14 +18,14 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
       },
       (error, result) => {
         if (error) {
-          return reject(error);
+          return reject(error)
         }
-        resolve(result?.code);
-      }
-    )
-  );
+        resolve(result?.code)
+      },
+    ),
+  )
 
-[
+;[
   {
     name: 'input[type="checkbox"]',
     from: '<input type="checkbox" v-model={test} />',
@@ -222,10 +222,10 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
 ].forEach(({ name, from }) => {
   test(name, async () => {
     expect(
-      await transpile(from, { optimize: true, enableObjectSlots: true })
-    ).toMatchSnapshot(name);
-  });
-});
+      await transpile(from, { optimize: true, enableObjectSlots: true }),
+    ).toMatchSnapshot(name)
+  })
+})
 
 const overridePropsTests: Test[] = [
   {
@@ -236,13 +236,13 @@ const overridePropsTests: Test[] = [
     name: 'multiple',
     from: '<A loading {...a} {...{ b: 1, c: { d: 2 } }} class="x" style={x} />',
   },
-];
+]
 
 overridePropsTests.forEach(({ name, from }) => {
   test(`override props ${name}`, async () => {
-    expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name);
-  });
-});
+    expect(await transpile(from, { mergeProps: false })).toMatchSnapshot(name)
+  })
+})
 
 const slotsTests: Test[] = [
   {
@@ -296,58 +296,58 @@ const slotsTests: Test[] = [
       </>
     `,
   },
-];
+]
 
 slotsTests.forEach(({ name, from }) => {
   test(`passing object slots via JSX children ${name}`, async () => {
     expect(
-      await transpile(from, { optimize: true, enableObjectSlots: true })
-    ).toMatchSnapshot(name);
-  });
-});
+      await transpile(from, { optimize: true, enableObjectSlots: true }),
+    ).toMatchSnapshot(name)
+  })
+})
 
 const objectSlotsTests = [
   {
     name: 'defaultSlot',
     from: '<Badge>{slots.default()}</Badge>',
   },
-];
+]
 
 objectSlotsTests.forEach(({ name, from }) => {
   test(`disable object slot syntax with ${name}`, async () => {
     expect(
-      await transpile(from, { optimize: true, enableObjectSlots: false })
-    ).toMatchSnapshot(name);
-  });
-});
+      await transpile(from, { optimize: true, enableObjectSlots: false }),
+    ).toMatchSnapshot(name)
+  })
+})
 
 const pragmaTests = [
   {
     name: 'custom',
     from: '<div>pragma</div>',
   },
-];
+]
 
 pragmaTests.forEach(({ name, from }) => {
   test(`set pragma to ${name}`, async () => {
-    expect(await transpile(from, { pragma: 'custom' })).toMatchSnapshot(name);
-  });
-});
+    expect(await transpile(from, { pragma: 'custom' })).toMatchSnapshot(name)
+  })
+})
 
 const isCustomElementTests = [
   {
     name: 'isCustomElement',
     from: '<foo><span>foo</span></foo>',
   },
-];
+]
 
 isCustomElementTests.forEach(({ name, from }) => {
   test(name, async () => {
     expect(
-      await transpile(from, { isCustomElement: (tag) => tag === 'foo' })
-    ).toMatchSnapshot(name);
-  });
-});
+      await transpile(from, { isCustomElement: (tag) => tag === 'foo' }),
+    ).toMatchSnapshot(name)
+  })
+})
 
 const fragmentTests = [
   {
@@ -358,10 +358,10 @@ const fragmentTests = [
       const Root2 = () => <_Fragment>root2</_Fragment>
       `,
   },
-];
+]
 
 fragmentTests.forEach(({ name, from }) => {
   test(name, async () => {
-    expect(await transpile(from)).toMatchSnapshot(name);
-  });
-});
+    expect(await transpile(from)).toMatchSnapshot(name)
+  })
+})

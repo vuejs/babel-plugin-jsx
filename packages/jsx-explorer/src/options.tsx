@@ -1,7 +1,7 @@
-import { createApp, defineComponent, reactive } from 'vue';
-import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx';
+import { createApp, defineComponent, reactive } from 'vue'
+import { type VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
 
-export { VueJSXPluginOptions };
+export { VueJSXPluginOptions }
 
 export const compilerOptions: VueJSXPluginOptions = reactive({
   mergeProps: true,
@@ -9,7 +9,7 @@ export const compilerOptions: VueJSXPluginOptions = reactive({
   transformOn: false,
   enableObjectSlots: true,
   resolveType: false,
-});
+})
 
 const App = defineComponent({
   setup() {
@@ -34,7 +34,7 @@ const App = defineComponent({
                 onChange={(e: Event) => {
                   compilerOptions.mergeProps = (
                     e.target as HTMLInputElement
-                  ).checked;
+                  ).checked
                 }}
               />
               <label for="mergeProps">mergeProps</label>
@@ -49,7 +49,7 @@ const App = defineComponent({
                 onChange={(e: Event) => {
                   compilerOptions.optimize = (
                     e.target as HTMLInputElement
-                  ).checked;
+                  ).checked
                 }}
               />
               <label for="optimize">optimize</label>
@@ -64,7 +64,7 @@ const App = defineComponent({
                 onChange={(e: Event) => {
                   compilerOptions.transformOn = (
                     e.target as HTMLInputElement
-                  ).checked;
+                  ).checked
                 }}
               />
               <label for="transformOn">transformOn</label>
@@ -79,7 +79,7 @@ const App = defineComponent({
                 onChange={(e: Event) => {
                   compilerOptions.enableObjectSlots = (
                     e.target as HTMLInputElement
-                  ).checked;
+                  ).checked
                 }}
               />
               <label for="enableObjectSlots">enableObjectSlots</label>
@@ -94,7 +94,7 @@ const App = defineComponent({
                 onChange={(e: Event) => {
                   compilerOptions.resolveType = (
                     e.target as HTMLInputElement
-                  ).checked;
+                  ).checked
                 }}
               />
               <label for="resolveType">resolveType</label>
@@ -102,10 +102,10 @@ const App = defineComponent({
           </ul>
         </div>
       </>,
-    ];
+    ]
   },
-});
+})
 
 export function initOptions() {
-  createApp(App).mount(document.getElementById('header')!);
+  createApp(App).mount(document.getElementById('header')!)
 }

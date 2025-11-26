@@ -1,13 +1,13 @@
-import { transformAsync } from '@babel/core';
+import { transformAsync } from '@babel/core'
 // @ts-expect-error missing types
-import typescript from '@babel/plugin-syntax-typescript';
-import ResolveType from '../src';
+import typescript from '@babel/plugin-syntax-typescript'
+import ResolveType from '../src'
 
 async function transform(code: string): Promise<string> {
   const result = await transformAsync(code, {
     plugins: [[typescript, { isTSX: true }], ResolveType],
-  });
-  return result!.code!;
+  })
+  return result!.code!
 }
 
 describe('resolve type', () => {
@@ -26,10 +26,10 @@ describe('resolve type', () => {
         defineComponent((props: Props & Props2) => {
           return () => h('div', props.msg);
         })
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('with generic', async () => {
       const result = await transform(
@@ -42,10 +42,10 @@ describe('resolve type', () => {
         defineComponent<Props>((props) => {
           return () => h('div', props.msg);
         })
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('with static default value and generic', async () => {
       const result = await transform(
@@ -58,10 +58,10 @@ describe('resolve type', () => {
         defineComponent<Props>((props = { msg: 'hello' }) => {
           return () => h('div', props.msg);
         })
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('with static default value', async () => {
       const result = await transform(
@@ -70,10 +70,10 @@ describe('resolve type', () => {
         defineComponent((props: { msg?: string } = { msg: 'hello' }) => {
           return () => h('div', props.msg);
         })
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('with dynamic default value', async () => {
       const result = await transform(
@@ -83,11 +83,11 @@ describe('resolve type', () => {
         defineComponent((props: { msg?: string } = defaults) => {
           return () => h('div', props.msg);
         })
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
-  });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
+  })
 
   describe('runtime emits', () => {
     test('basic', async () => {
@@ -103,10 +103,10 @@ describe('resolve type', () => {
             return () => {};
           }
         );
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('with generic emit type', async () => {
       const result = await transform(
@@ -122,11 +122,11 @@ describe('resolve type', () => {
             return () => {};
           }
         );
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
-  });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
+  })
 
   test('w/ tsx', async () => {
     const result = await transform(
@@ -135,10 +135,10 @@ describe('resolve type', () => {
       defineComponent(() => {
         return () => <div/ >;
       });
-      `
-    );
-    expect(result).toMatchSnapshot();
-  });
+      `,
+    )
+    expect(result).toMatchSnapshot()
+  })
 
   describe('defineComponent scope', () => {
     test('fake', async () => {
@@ -148,10 +148,10 @@ describe('resolve type', () => {
         defineComponent((props: { msg?: string }) => {
           return () => <div/ >;
         });
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('w/o import', async () => {
       const result = await transform(
@@ -159,10 +159,10 @@ describe('resolve type', () => {
         defineComponent((props: { msg?: string }) => {
           return () => <div/ >;
         });
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('import sub-package', async () => {
       const result = await transform(
@@ -171,11 +171,11 @@ describe('resolve type', () => {
         defineComponent((props: { msg?: string }) => {
           return () => <div/ >;
         });
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
-  });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
+  })
 
   describe('infer component name', () => {
     test('no options', async () => {
@@ -183,39 +183,39 @@ describe('resolve type', () => {
         `
         import { defineComponent } from 'vue';
         const Foo = defineComponent(() => {})
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('object options', async () => {
       const result = await transform(
         `
         import { defineComponent } from 'vue';
         const Foo = defineComponent(() => {}, { foo: 'bar' })
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('identifier options', async () => {
       const result = await transform(
         `
         import { defineComponent } from 'vue';
         const Foo = defineComponent(() => {}, opts)
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
 
     test('rest param', async () => {
       const result = await transform(
         `
         import { defineComponent } from 'vue';
         const Foo = defineComponent(() => {}, ...args)
-        `
-      );
-      expect(result).toMatchSnapshot();
-    });
-  });
-});
+        `,
+      )
+      expect(result).toMatchSnapshot()
+    })
+  })
+})

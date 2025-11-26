@@ -1,9 +1,9 @@
 // @ts-check
-import { builtinModules } from 'node:module';
-import tseslint from 'typescript-eslint';
-import importX from 'eslint-plugin-import-x';
-import eslint from '@eslint/js';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import { builtinModules } from 'node:module'
+import tseslint from 'typescript-eslint'
+import importX from 'eslint-plugin-import-x'
+import eslint from '@eslint/js'
+import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -63,5 +63,5 @@ export default tseslint.config(
   eslintConfigPrettier,
   {
     ignores: ['**/dist/', '**/coverage/'],
-  }
-);
+  },
+)
