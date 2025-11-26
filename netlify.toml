@@ -1,5 +1,5 @@
 [build.environment]
-NODE_VERSION = "22"
+NODE_VERSION = "lts/*"
 
 [build]
 command = "pnpm run build && pnpm run build:playground"
