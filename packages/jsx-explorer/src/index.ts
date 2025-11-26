@@ -41,15 +41,15 @@ function main() {
       },
     }
 
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+  monaco.typescript.typescriptDefaults.setDiagnosticsOptions({
     noSemanticValidation: true,
   })
-  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+  monaco.typescript.typescriptDefaults.setCompilerOptions({
     allowJs: true,
     allowNonTsExtensions: true,
-    jsx: monaco.languages.typescript.JsxEmit.Preserve,
-    target: monaco.languages.typescript.ScriptTarget.Latest,
-    module: monaco.languages.typescript.ModuleKind.ESNext,
+    jsx: monaco.typescript.JsxEmit.Preserve,
+    target: monaco.typescript.ScriptTarget.Latest,
+    module: monaco.typescript.ModuleKind.ESNext,
     isolatedModules: true,
   })
 

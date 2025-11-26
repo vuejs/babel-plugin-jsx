@@ -1,7 +1,7 @@
 import { createApp, defineComponent, reactive } from 'vue'
 import type { VueJSXPluginOptions } from '@vue/babel-plugin-jsx'
 
-export { VueJSXPluginOptions }
+export type { VueJSXPluginOptions }
 
 export const compilerOptions: VueJSXPluginOptions = reactive({
   mergeProps: true,

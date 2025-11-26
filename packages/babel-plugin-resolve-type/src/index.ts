@@ -10,7 +10,7 @@ import {
 } from '@vue/compiler-sfc'
 import type * as BabelCore from '@babel/core'
 
-export { SimpleTypeResolveOptions as Options }
+export type { SimpleTypeResolveOptions as Options }
 
 const plugin: (
   api: object,

@@ -3,9 +3,6 @@ import { defineConfig } from 'vitest/config'
 import Jsx from './packages/babel-plugin-jsx/src'
 
 export default defineConfig({
-  resolve: {
-    conditions: ['dev'],
-  },
   esbuild: {
     jsx: 'preserve',
   },

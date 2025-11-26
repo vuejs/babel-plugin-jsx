@@ -169,15 +169,15 @@ const App = {
 ```
 
 ```jsx
-<input v-model={[val, ['modifier']]} />;
+;<input v-model={[val, ['modifier']]} />
 // 或者
-<input v-model_modifier={val} />
+;<input v-model_modifier={val} />
 ```
 
 ```jsx
-<A v-model={[val, 'argument', ['modifier']]} />;
+;<A v-model={[val, 'argument', ['modifier']]} />
 // 或者
-<input v-model:argument_modifier={val} />
+;<input v-model:argument_modifier={val} />
 ```
 
 会编译成：

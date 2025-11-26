@@ -11,7 +11,7 @@ import type { State, VueJSXPluginOptions } from './interface'
 import type * as BabelCore from '@babel/core'
 import type { NodePath, Visitor } from '@babel/traverse'
 
-export { VueJSXPluginOptions }
+export type { VueJSXPluginOptions }
 
 const hasJSX = (parentPath: NodePath<t.Program>) => {
   let fileHasJSX = false

@@ -1,19 +1,22 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "esnext",
     "jsx": "preserve",
     "jsxImportSource": "vue",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": ["es2023", "DOM"],
+    "moduleDetection": "force",
     "customConditions": ["dev"],
-    "module": "ESNext",
+    "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "types": ["vitest/globals"],
-    "allowJs": true,
     "strict": true,
     "noUnusedLocals": true,
+    "declaration": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["packages/*/src", "packages/*/test", "vitest.config.ts"]
 }
