@@ -16,7 +16,7 @@
     "test": "vitest",
     "lint": "eslint --cache .",
     "format": "prettier --write .",
-    "typecheck": "tsc",
+    "typecheck": "tsgo",
     "release": "bumpp -r"
   },
   "devDependencies": {
@@ -28,6 +28,7 @@
     "@types/babel__helper-module-imports": "^7.18.3",
     "@types/babel__helper-plugin-utils": "^7.10.3",
     "@types/node": "^24.10.1",
+    "@typescript/native-preview": "7.0.0-dev.20251202.1",
     "@vitest/coverage-v8": "^4.0.14",
     "@vue/babel-plugin-jsx": "workspace:*",
     "bumpp": "^10.3.1",
