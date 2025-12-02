@@ -1,8 +1,8 @@
 {
   "name": "@vue/jsx-explorer",
+  "type": "module",
   "version": "2.0.1",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

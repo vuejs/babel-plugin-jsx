@@ -75,15 +75,12 @@ const plugin: (
           if (!t.isIdentifier(node.callee, { name: 'defineComponent' })) return
           if (!checkDefineComponent(path)) return
 
-          // eslint-disable-next-line baseline-js/use-baseline
           const comp = node.arguments[0]
           if (!comp || !t.isFunction(comp)) return
 
-          // eslint-disable-next-line baseline-js/use-baseline
           let options = node.arguments[1]
           if (!options) {
             options = t.objectExpression([])
-            // eslint-disable-next-line baseline-js/use-baseline
             node.arguments.push(options)
           }
 
@@ -94,12 +91,9 @@ const plugin: (
             emitsGenerics = node.typeParameters.params[1]
           }
 
-          // eslint-disable-next-line baseline-js/use-baseline
           node.arguments[1] =
             processProps(comp, propsGenerics, options) || options
-          // eslint-disable-next-line baseline-js/use-baseline
           node.arguments[1] =
-            // eslint-disable-next-line baseline-js/use-baseline
             processEmits(comp, emitsGenerics, node.arguments[1]) || options
         },
         VariableDeclarator(path) {
@@ -131,7 +125,6 @@ const plugin: (
       if (args.length === 0) return
 
       if (args.length === 1) {
-        // eslint-disable-next-line baseline-js/use-baseline
         init.node.arguments.push(t.objectExpression([]))
       }
       args[1] = addProperty(t, args[1], nameProperty)

@@ -1,26 +1,20 @@
 {
   "name": "@vue/babel-plugin-resolve-type",
+  "type": "module",
   "version": "2.0.1",
   "description": "Babel plugin for resolving Vue types.",
-  "type": "module",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
+  "funding": "https://github.com/sponsors/sxzz",
   "homepage": "https://github.com/vuejs/babel-plugin-jsx/tree/dev/packages/babel-plugin-resolve-type#readme",
-  "bugs": {
-    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vuejs/babel-plugin-jsx.git",
     "directory": "packages/babel-plugin-resolve-type"
   },
-  "author": "Kevin Deng <sxzz@sxzz.moe>",
-  "funding": "https://github.com/sponsors/sxzz",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "bugs": {
+    "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
+  },
   "exports": {
     ".": {
       "dev": "./src/index.ts",
@@ -28,6 +22,12 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
