@@ -50,7 +50,7 @@
     "@babel/types": "^7.28.5",
     "@vue/babel-helper-vue-transform-on": "workspace:*",
     "@vue/babel-plugin-resolve-type": "workspace:*",
-    "@vue/shared": "^3.5.25"
+    "@vue/shared": "^3.5.26"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
