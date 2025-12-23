@@ -42,7 +42,7 @@
     "@babel/helper-module-imports": "^7.27.1",
     "@babel/helper-plugin-utils": "^7.27.1",
     "@babel/parser": "^7.28.5",
-    "@vue/compiler-sfc": "^3.5.25"
+    "@vue/compiler-sfc": "^3.5.26"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
