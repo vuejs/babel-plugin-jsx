@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@babel/plugin-syntax-typescript": "^7.27.1",
-    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-babel": "^7.0.0",
     "@sxzz/eslint-config": "^7.4.4",
     "@sxzz/prettier-config": "^2.2.6",
     "@types/babel__core": "^7.20.5",
