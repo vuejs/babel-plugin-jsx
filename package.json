@@ -31,7 +31,7 @@
     "@typescript/native-preview": "7.0.0-dev.20251222.1",
     "@vitest/coverage-v8": "^4.0.16",
     "@vue/babel-plugin-jsx": "workspace:*",
-    "bumpp": "^10.3.2",
+    "bumpp": "^11.0.1",
     "eslint": "^9.39.2",
     "jsdom": "^27.3.0",
     "prettier": "3.7.3",
