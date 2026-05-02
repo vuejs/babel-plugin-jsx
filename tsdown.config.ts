@@ -9,9 +9,12 @@ export default defineConfig({
   dts: { oxc: true },
   target: 'node20.19',
   platform: 'neutral',
-  inlineOnly: [],
+  deps: {
+    onlyBundle: [],
+  },
   exports: {
     devExports: 'dev',
   },
   publint: 'ci-only',
+  attw: 'ci-only',
 })

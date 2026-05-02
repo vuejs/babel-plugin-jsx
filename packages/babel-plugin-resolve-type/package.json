@@ -22,9 +22,6 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -38,15 +35,15 @@
     "@babel/core": "^7.0.0-0"
   },
   "dependencies": {
-    "@babel/code-frame": "^7.29.0",
-    "@babel/helper-module-imports": "^7.28.6",
-    "@babel/helper-plugin-utils": "^7.28.6",
-    "@babel/parser": "^7.29.3",
-    "@vue/compiler-sfc": "^3.5.33"
+    "@babel/code-frame": "catalog:",
+    "@babel/helper-module-imports": "catalog:",
+    "@babel/helper-plugin-utils": "catalog:",
+    "@babel/parser": "catalog:",
+    "@vue/compiler-sfc": "catalog:"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@types/babel__code-frame": "^7.27.0",
+    "@babel/core": "catalog:",
+    "@types/babel__code-frame": "catalog:",
     "vue": "catalog:"
   }
 }

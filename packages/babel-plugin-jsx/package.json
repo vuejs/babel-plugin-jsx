@@ -21,9 +21,6 @@
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -42,23 +39,23 @@
     }
   },
   "dependencies": {
-    "@babel/helper-module-imports": "^7.28.6",
-    "@babel/helper-plugin-utils": "^7.28.6",
-    "@babel/plugin-syntax-jsx": "^7.28.6",
-    "@babel/template": "^7.28.6",
-    "@babel/traverse": "^7.29.0",
-    "@babel/types": "^7.29.0",
+    "@babel/helper-module-imports": "catalog:",
+    "@babel/helper-plugin-utils": "catalog:",
+    "@babel/plugin-syntax-jsx": "catalog:",
+    "@babel/template": "catalog:",
+    "@babel/traverse": "catalog:",
+    "@babel/types": "catalog:",
     "@vue/babel-helper-vue-transform-on": "workspace:*",
     "@vue/babel-plugin-resolve-type": "workspace:*",
-    "@vue/shared": "^3.5.33"
+    "@vue/shared": "catalog:"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.3",
-    "@types/babel__template": "^7.4.4",
-    "@types/babel__traverse": "^7.28.0",
-    "@vue/test-utils": "^2.4.10",
-    "regenerator-runtime": "^0.14.1",
+    "@babel/core": "catalog:",
+    "@babel/preset-env": "catalog:",
+    "@types/babel__template": "catalog:",
+    "@types/babel__traverse": "catalog:",
+    "@vue/test-utils": "catalog:",
+    "regenerator-runtime": "catalog:",
     "vue": "catalog:"
   }
 }
