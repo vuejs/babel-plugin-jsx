@@ -1,4 +1,6 @@
 packages:
   - packages/*
+allowBuilds:
+  esbuild: set this to true or false
 catalog:
-  vue: ^3.5.26
+  vue: ^3.5.33
