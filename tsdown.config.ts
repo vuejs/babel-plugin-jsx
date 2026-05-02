@@ -6,8 +6,7 @@ export default defineConfig({
     './packages/babel-plugin-resolve-type',
   ],
   entry: ['src/index.ts'],
-  dts: { oxc: true },
-  target: 'node20.19',
+  target: 'node22.18',
   platform: 'neutral',
   deps: {
     onlyBundle: [],
