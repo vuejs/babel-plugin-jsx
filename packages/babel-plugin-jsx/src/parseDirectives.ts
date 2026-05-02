@@ -52,7 +52,6 @@ const parseDirectives = (params: {
   let directiveArgument
   let directiveModifiers
   if ('namespace' in path.node.name) {
-    ;[directiveName, directiveArgument] = params.name.split(':')
     directiveName = path.node.name.namespace.name
     directiveArgument = path.node.name.name.name
     directiveModifiers = directiveArgument.split('_').slice(1)

@@ -32,6 +32,23 @@ const plugin: (
           options,
           ast: file.ast.program.body,
           isCE: false,
+          warn(msg, node) {
+            console.warn(
+              `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(
+                file.code,
+                {
+                  start: {
+                    line: node.loc!.start.line,
+                    column: node.loc!.start.column + 1,
+                  },
+                  end: {
+                    line: node.loc!.end.line,
+                    column: node.loc!.end.column + 1,
+                  },
+                },
+              )}`,
+            )
+          },
           error(msg, node) {
             throw new Error(
               `[@vue/babel-plugin-resolve-type] ${msg}\n\n${filename}\n${codeFrameColumns(

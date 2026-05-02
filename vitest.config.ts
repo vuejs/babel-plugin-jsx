@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config'
 import Jsx from './packages/babel-plugin-jsx/src'
 
 export default defineConfig({
-  esbuild: {
+  oxc: {
     jsx: 'preserve',
   },
   plugins: [
