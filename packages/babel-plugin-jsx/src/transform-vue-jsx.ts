@@ -1,5 +1,5 @@
 import { addDefault } from '@babel/helper-module-imports'
-import t from '@babel/types'
+import * as t from '@babel/types'
 import parseDirectives from './parseDirectives'
 import { PatchFlags } from './patchFlags'
 import { SlotFlags } from './slotFlags'
@@ -21,7 +21,7 @@ import {
   walksScope,
 } from './utils'
 import type { Slots, State } from './interface'
-import type { NodePath, Visitor } from '@babel/traverse'
+import type { NodePath, Visitor } from '@babel/core'
 
 const xlinkRE = /^xlink([A-Z])/
 

@@ -1,5 +1,4 @@
 import { transformAsync } from '@babel/core'
-// @ts-expect-error missing types
 import typescript from '@babel/plugin-syntax-typescript'
 import VueJsx from '../src'
 

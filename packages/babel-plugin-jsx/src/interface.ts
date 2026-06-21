@@ -1,5 +1,5 @@
-import type * as BabelCore from '@babel/core'
-import type t from '@babel/types'
+import type { File } from '@babel/core'
+import type * as t from '@babel/types'
 import type { Options } from '@vue/babel-plugin-resolve-type'
 
 export type Slots = t.Identifier | t.ObjectExpression | null
@@ -8,7 +8,7 @@ export type State = {
   get: (name: string) => any
   set: (name: string, value: any) => any
   opts: VueJSXPluginOptions
-  file: BabelCore.BabelFile
+  file: File
 }
 
 export interface VueJSXPluginOptions {

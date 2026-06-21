@@ -1,11 +1,11 @@
 import { transformAsync } from '@babel/core'
-// @ts-expect-error missing types
+import jsx from '@babel/plugin-syntax-jsx'
 import typescript from '@babel/plugin-syntax-typescript'
 import ResolveType from '../src'
 
 async function transform(code: string): Promise<string> {
   const result = await transformAsync(code, {
-    plugins: [[typescript, { isTSX: true }], ResolveType],
+    plugins: [typescript, jsx, ResolveType],
   })
   return result!.code!
 }
