@@ -2,7 +2,7 @@ packages:
   - packages/*
 
 catalog:
-  '@arethetypeswrong/core': ^0.18.2
+  '@arethetypeswrong/core': ^0.18.3
   '@babel/code-frame': ^8.0.0
   '@babel/core': ^8.0.0
   '@babel/helper-module-imports': ^8.0.0
@@ -31,7 +31,7 @@ catalog:
   jsdom: ^29.1.1
   monaco-editor: ^0.55.1
   prettier: 3.8.3
-  publint: ^0.3.18
+  publint: ^0.3.21
   regenerator-runtime: ^0.14.1
   tsdown: ^0.21.10
   tslib: ^2.8.1
