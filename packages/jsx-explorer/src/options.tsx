@@ -106,6 +106,6 @@ const App = defineComponent({
   },
 })
 
-export function initOptions() {
+export function initOptions(): void {
   createApp(App).mount(document.querySelector('#header')!)
 }

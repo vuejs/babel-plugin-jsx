@@ -2,7 +2,7 @@ import { transformAsync } from '@babel/core'
 import jsx from '@babel/plugin-syntax-jsx'
 import typescript from '@babel/plugin-syntax-typescript'
 import { describe, expect, test } from 'vitest'
-import ResolveType from '../src'
+import ResolveType from '../src/index.ts'
 
 async function transform(code: string): Promise<string> {
   const result = await transformAsync(code, {

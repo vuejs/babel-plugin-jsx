@@ -4,9 +4,9 @@ import syntaxJsx from '@babel/plugin-syntax-jsx'
 import template from '@babel/template'
 import * as t from '@babel/types'
 import ResolveType from '@vue/babel-plugin-resolve-type'
-import sugarFragment from './sugar-fragment'
-import transformVueJSX from './transform-vue-jsx'
-import type { State, VueJSXPluginOptions } from './interface'
+import sugarFragment from './sugar-fragment.ts'
+import transformVueJSX from './transform-vue-jsx.ts'
+import type { State, VueJSXPluginOptions } from './interface.ts'
 import type {
   NodePath,
   PluginAPI,

@@ -1,6 +1,6 @@
 import * as t from '@babel/types'
-import { createIdentifier, FRAGMENT } from './utils'
-import type { State } from './interface'
+import { createIdentifier, FRAGMENT } from './utils.ts'
+import type { State } from './interface.ts'
 import type { NodePath, Visitor } from '@babel/core'
 
 const transformFragment = (

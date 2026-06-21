@@ -1,6 +1,6 @@
 import { babel } from '@rollup/plugin-babel'
 import { defineConfig } from 'vitest/config'
-import Jsx from './packages/babel-plugin-jsx/src'
+import Jsx from './packages/babel-plugin-jsx/src/index.ts'
 
 export default defineConfig({
   oxc: {

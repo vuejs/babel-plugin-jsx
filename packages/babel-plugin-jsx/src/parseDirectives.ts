@@ -1,6 +1,6 @@
 import * as t from '@babel/types'
-import { createIdentifier } from './utils'
-import type { State } from './interface'
+import { createIdentifier } from './utils.ts'
+import type { State } from './interface.ts'
 import type { NodePath } from '@babel/core'
 
 export type Tag =
@@ -35,22 +35,28 @@ const parseModifiers = (value: any): string[] =>
         .filter(Boolean)
     : []
 
-const parseDirectives = (params: {
+function parseDirectives(params: {
   name: string
   path: NodePath<t.JSXAttribute>
   value: t.Expression | null
   state: State
   tag: Tag
   isComponent: boolean
-}) => {
+}): {
+  directiveName: string
+  modifiers: Set<string>[]
+  values: (t.Expression | null)[]
+  args: t.Expression[]
+  directive: t.Expression[] | undefined
+} {
   const { path, value, state, tag, isComponent } = params
   const args: Array<t.Expression | t.NullLiteral> = []
   const vals: t.Expression[] = []
   const modifiersSet: Set<string>[] = []
 
-  let directiveName
-  let directiveArgument
-  let directiveModifiers
+  let directiveName: string
+  let directiveArgument: string | undefined
+  let directiveModifiers: string[]
   if ('namespace' in path.node.name) {
     directiveName = path.node.name.namespace.name
     directiveArgument = path.node.name.name.name
@@ -66,7 +72,7 @@ const parseDirectives = (params: {
     .replace(/^\S/, (s: string) => s.toLowerCase())
 
   if (directiveArgument) {
-    args.push(t.stringLiteral(directiveArgument.split('_')[0]))
+    args.push(t.stringLiteral(directiveArgument.split('_', 1)[0]))
   }
 
   const isVModels = directiveName === 'models'

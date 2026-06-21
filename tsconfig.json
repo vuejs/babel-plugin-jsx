@@ -6,16 +6,21 @@
     "lib": ["es2023", "DOM"],
     "moduleDetection": "force",
     "customConditions": ["vue-jsx-source"],
-    "module": "preserve",
-    "moduleResolution": "bundler",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "isolatedDeclarations": true,
+    "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["packages/*/src", "packages/*/test", "vitest.config.ts"]
+  "include": ["packages/*/src", "packages/*/test"]
 }

@@ -1,7 +1,7 @@
 import { transformAsync } from '@babel/core'
 import typescript from '@babel/plugin-syntax-typescript'
 import { describe, expect, test } from 'vitest'
-import VueJsx from '../src'
+import VueJsx from '../src/index.ts'
 
 describe('resolve type', () => {
   describe('runtime props', () => {

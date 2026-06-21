@@ -7,8 +7,8 @@ import {
   compilerOptions,
   initOptions,
   type VueJSXPluginOptions,
-} from './options'
-import './editor.worker'
+} from './options.tsx'
+import './editor.worker.ts'
 import './index.css'
 
 main()

@@ -1,8 +1,8 @@
 import { addDefault } from '@babel/helper-module-imports'
 import * as t from '@babel/types'
-import parseDirectives from './parseDirectives'
-import { PatchFlags } from './patchFlags'
-import { SlotFlags } from './slotFlags'
+import parseDirectives from './parseDirectives.ts'
+import { PatchFlags } from './patchFlags.ts'
+import { SlotFlags } from './slotFlags.ts'
 import {
   buildIIFE,
   checkIsComponent,
@@ -19,8 +19,8 @@ import {
   transformJSXText,
   transformText,
   walksScope,
-} from './utils'
-import type { Slots, State } from './interface'
+} from './utils.ts'
+import type { Slots, State } from './interface.ts'
 import type { NodePath, Visitor } from '@babel/core'
 
 const xlinkRE = /^xlink([A-Z])/

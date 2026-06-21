@@ -1,6 +1,6 @@
 import { transform } from '@babel/core'
 import { expect, test } from 'vitest'
-import JSX, { type VueJSXPluginOptions } from '../src'
+import JSX, { type VueJSXPluginOptions } from '../src/index.ts'
 
 interface Test {
   name: string

@@ -1,7 +1,7 @@
 import * as t from '@babel/types'
 import { isHTMLTag, isSVGTag } from '@vue/shared'
-import { SlotFlags } from './slotFlags'
-import type { State } from './interface'
+import { SlotFlags } from './slotFlags.ts'
+import type { State } from './interface.ts'
 import type { NodePath } from '@babel/core'
 export const JSX_HELPER_KEY = 'JSX_HELPER_KEY'
 export const FRAGMENT = 'Fragment'
@@ -26,7 +26,7 @@ export const isDirective = (src: string): boolean =>
  * @returns boolean
  */
 // if _Fragment is already imported, it will end with number
-export const shouldTransformedToSlots = (tag: string) =>
+export const shouldTransformedToSlots = (tag: string): boolean =>
   !new RegExp(String.raw`^_?${FRAGMENT}\d*$`).test(tag) && tag !== KEEP_ALIVE
 
 /**
@@ -128,7 +128,7 @@ export const transformJSXText = (
   return str === '' ? null : t.stringLiteral(str)
 }
 
-export const transformText = (text: string) => {
+export function transformText(text: string): string {
   const lines = text.split(/\r\n|\n|\r/)
 
   let lastNonEmptyLine = 0
@@ -194,7 +194,7 @@ export const transformJSXSpreadChild = (
 export const walksScope = (
   path: NodePath,
   name: string,
-  slotFlag: SlotFlags,
+  slotFlag: (typeof SlotFlags)[keyof typeof SlotFlags],
 ): void => {
   if (path.scope.hasBinding(name) && path.parentPath) {
     if (t.isJSXElement(path.parentPath.node)) {
@@ -204,10 +204,10 @@ export const walksScope = (
   }
 }
 
-export const buildIIFE = (
+export function buildIIFE(
   path: NodePath<t.JSXElement>,
   children: t.Expression[],
-) => {
+): t.Expression[] {
   const { parentPath } = path
   if (parentPath.isAssignmentExpression()) {
     const { left } = parentPath.node as t.AssignmentExpression
@@ -241,7 +241,7 @@ export const buildIIFE = (
 
 const onRE = /^on[^a-z]/
 
-export const isOn = (key: string) => onRE.test(key)
+export const isOn = (key: string): boolean => onRE.test(key)
 
 const mergeAsArray = (
   existing: t.ObjectProperty,
@@ -257,10 +257,10 @@ const mergeAsArray = (
   }
 }
 
-export const dedupeProperties = (
+export function dedupeProperties(
   properties: t.ObjectProperty[] = [],
   mergeProps?: boolean,
-) => {
+): t.ObjectProperty[] {
   if (!mergeProps) {
     return properties
   }
@@ -315,12 +315,12 @@ export const isConstant = (
   return false
 }
 
-export const transformJSXSpreadAttribute = (
+export function transformJSXSpreadAttribute(
   nodePath: NodePath,
   path: NodePath<t.JSXSpreadAttribute>,
   mergeProps: boolean,
   args: (t.ObjectProperty | t.Expression | t.SpreadElement)[],
-) => {
+): void {
   const argument = path.get('argument') as NodePath<
     t.ObjectExpression | t.Identifier
   >
