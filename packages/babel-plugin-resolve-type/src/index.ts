@@ -8,16 +8,22 @@ import {
   type SimpleTypeResolveContext,
   type SimpleTypeResolveOptions,
 } from '@vue/compiler-sfc'
-import type * as BabelCore from '@babel/core'
+import type {
+  NodePath,
+  PluginAPI,
+  PluginObject,
+  PluginPass,
+  types as t,
+} from '@babel/core'
 
 export type { SimpleTypeResolveOptions as Options }
 
 const plugin: (
-  api: object,
-  options: SimpleTypeResolveOptions | null | undefined,
+  api: PluginAPI,
+  options: SimpleTypeResolveOptions,
   dirname: string,
-) => BabelCore.PluginObj<BabelCore.PluginPass> =
-  declare<SimpleTypeResolveOptions>(({ types: t }, options) => {
+) => PluginObject<PluginPass> = declare<object, SimpleTypeResolveOptions>(
+  ({ types: t }, options) => {
     let ctx: SimpleTypeResolveContext | undefined
     let helpers: Set<string> | undefined
 
@@ -101,11 +107,11 @@ const plugin: (
             node.arguments.push(options)
           }
 
-          let propsGenerics: BabelCore.types.TSType | undefined
-          let emitsGenerics: BabelCore.types.TSType | undefined
-          if (node.typeParameters && node.typeParameters.params.length > 0) {
-            propsGenerics = node.typeParameters.params[0]
-            emitsGenerics = node.typeParameters.params[1]
+          let propsGenerics: t.TSType | undefined
+          let emitsGenerics: t.TSType | undefined
+          if (node.typeArguments && node.typeArguments.params.length > 0) {
+            propsGenerics = node.typeArguments.params[0] as t.TSType
+            emitsGenerics = node.typeArguments.params[1] as t.TSType
           }
 
           node.arguments[1] =
@@ -124,9 +130,7 @@ const plugin: (
       },
     }
 
-    function inferComponentName(
-      path: BabelCore.NodePath<BabelCore.types.VariableDeclarator>,
-    ) {
+    function inferComponentName(path: NodePath<t.VariableDeclarator>) {
       const id = path.get('id')
       const init = path.get('init')
       if (!id || !id.isIdentifier() || !init || !init.isCallExpression()) return
@@ -144,16 +148,13 @@ const plugin: (
       if (args.length === 1) {
         init.node.arguments.push(t.objectExpression([]))
       }
-      args[1] = addProperty(t, args[1], nameProperty)
+      args[1] = addProperty(args[1], nameProperty)
     }
 
     function processProps(
-      comp: BabelCore.types.Function,
-      generics: BabelCore.types.TSType | undefined,
-      options:
-        | BabelCore.types.ArgumentPlaceholder
-        | BabelCore.types.SpreadElement
-        | BabelCore.types.Expression,
+      comp: t.Function,
+      generics: t.TSType | undefined,
+      options: t.ArgumentPlaceholder | t.SpreadElement | t.Expression,
     ) {
       const props = comp.params[0]
       if (!props) return
@@ -179,22 +180,27 @@ const plugin: (
       }
 
       const ast = parseExpression(runtimeProps)
-      return addProperty(
-        t,
-        options,
-        t.objectProperty(t.identifier('props'), ast),
-      )
+      return addProperty(options, t.objectProperty(t.identifier('props'), ast))
+    }
+
+    function addProperty<T extends t.Node>(
+      object: T,
+      property: t.ObjectProperty,
+    ) {
+      if (t.isObjectExpression(object)) {
+        object.properties.unshift(property)
+      } else if (t.isExpression(object)) {
+        return t.objectExpression([property, t.spreadElement(object)])
+      }
+      return object
     }
 
     function processEmits(
-      comp: BabelCore.types.Function,
-      generics: BabelCore.types.TSType | undefined,
-      options:
-        | BabelCore.types.ArgumentPlaceholder
-        | BabelCore.types.SpreadElement
-        | BabelCore.types.Expression,
+      comp: t.Function,
+      generics: t.TSType | undefined,
+      options: t.ArgumentPlaceholder | t.SpreadElement | t.Expression,
     ) {
-      let emitType: BabelCore.types.Node | undefined
+      let emitType: t.Node | undefined
       if (generics) {
         emitType = resolveTypeReference(generics)
       }
@@ -206,7 +212,7 @@ const plugin: (
         t.isTSTypeReference(setupCtx) &&
         t.isIdentifier(setupCtx.typeName, { name: 'SetupContext' })
       ) {
-        emitType = setupCtx.typeParameters?.params[0]
+        emitType = setupCtx.typeArguments?.params[0]
       }
       if (!emitType) return
 
@@ -216,14 +222,10 @@ const plugin: (
       const ast = t.arrayExpression(
         Array.from(runtimeEmits).map((e) => t.stringLiteral(e)),
       )
-      return addProperty(
-        t,
-        options,
-        t.objectProperty(t.identifier('emits'), ast),
-      )
+      return addProperty(options, t.objectProperty(t.identifier('emits'), ast))
     }
 
-    function resolveTypeReference(typeNode: BabelCore.types.TSType) {
+    function resolveTypeReference(typeNode: t.TSType) {
       if (!ctx) return
 
       if (t.isTSTypeReference(typeNode)) {
@@ -239,12 +241,12 @@ const plugin: (
       return
     }
 
-    function getTypeReferenceName(typeRef: BabelCore.types.TSTypeReference) {
+    function getTypeReferenceName(typeRef: t.TSTypeReference) {
       if (t.isIdentifier(typeRef.typeName)) {
         return typeRef.typeName.name
       } else if (t.isTSQualifiedName(typeRef.typeName)) {
         const parts: string[] = []
-        let current: BabelCore.types.TSEntityName = typeRef.typeName
+        let current: t.TSEntityName = typeRef.typeName
 
         while (t.isTSQualifiedName(current)) {
           if (t.isIdentifier(current.right)) {
@@ -299,10 +301,11 @@ const plugin: (
 
       return null
     }
-  })
+  },
+)
 export default plugin
 
-function getTypeAnnotation(node: BabelCore.types.Node) {
+function getTypeAnnotation(node: t.Node) {
   if (
     'typeAnnotation' in node &&
     node.typeAnnotation &&
@@ -312,9 +315,7 @@ function getTypeAnnotation(node: BabelCore.types.Node) {
   }
 }
 
-function checkDefineComponent(
-  path: BabelCore.NodePath<BabelCore.types.CallExpression>,
-) {
+function checkDefineComponent(path: NodePath<t.CallExpression>) {
   const defineCompImport = path.scope.getBinding('defineComponent')?.path.parent
   if (!defineCompImport) return true
 
@@ -324,16 +325,4 @@ function checkDefineComponent(
   )
 }
 
-function addProperty<T extends BabelCore.types.Node>(
-  t: (typeof BabelCore)['types'],
-  object: T,
-  property: BabelCore.types.ObjectProperty,
-) {
-  if (t.isObjectExpression(object)) {
-    object.properties.unshift(property)
-  } else if (t.isExpression(object)) {
-    return t.objectExpression([property, t.spreadElement(object)])
-  }
-  return object
-}
 export { plugin as 'module.exports' }

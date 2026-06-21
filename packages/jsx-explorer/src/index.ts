@@ -1,4 +1,3 @@
-// @ts-expect-error missing types
 import typescript from '@babel/plugin-syntax-typescript'
 import { transform } from '@babel/standalone'
 import babelPluginJsx from '@vue/babel-plugin-jsx'

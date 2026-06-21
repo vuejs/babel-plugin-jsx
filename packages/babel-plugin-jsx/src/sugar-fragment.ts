@@ -1,18 +1,16 @@
-import t from '@babel/types'
+import * as t from '@babel/types'
 import { createIdentifier, FRAGMENT } from './utils'
 import type { State } from './interface'
-import type { NodePath, Visitor } from '@babel/traverse'
+import type { NodePath, Visitor } from '@babel/core'
 
 const transformFragment = (
   path: NodePath<t.JSXFragment>,
   Fragment: t.JSXIdentifier | t.JSXMemberExpression,
 ) => {
-  const children = path.get('children') || []
   return t.jsxElement(
     t.jsxOpeningElement(Fragment, []),
     t.jsxClosingElement(Fragment),
-    children.map(({ node }) => node),
-    false,
+    path.node.children.slice(),
   )
 }
 

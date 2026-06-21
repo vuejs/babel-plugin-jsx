@@ -1,7 +1,7 @@
-import t from '@babel/types'
+import * as t from '@babel/types'
 import { createIdentifier } from './utils'
 import type { State } from './interface'
-import type { NodePath } from '@babel/traverse'
+import type { NodePath } from '@babel/core'
 
 export type Tag =
   | t.Identifier
@@ -187,7 +187,7 @@ const resolveDirective = (
     return modelToUse
   }
   const referenceName = `v${directiveName[0].toUpperCase()}${directiveName.slice(1)}`
-  if (path.scope.references[referenceName]) {
+  if (path.scope.getProgramParent().referencesSet.has(referenceName)) {
     return t.identifier(referenceName)
   }
   return t.callExpression(createIdentifier(state, 'resolveDirective'), [

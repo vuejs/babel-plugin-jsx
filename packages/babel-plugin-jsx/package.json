@@ -31,7 +31,7 @@
     }
   },
   "peerDependencies": {
-    "@babel/core": "^7.0.0-0"
+    "@babel/core": "^8.0.0"
   },
   "peerDependenciesMeta": {
     "@babel/core": {
@@ -43,7 +43,6 @@
     "@babel/helper-plugin-utils": "catalog:",
     "@babel/plugin-syntax-jsx": "catalog:",
     "@babel/template": "catalog:",
-    "@babel/traverse": "catalog:",
     "@babel/types": "catalog:",
     "@vue/babel-helper-vue-transform-on": "workspace:*",
     "@vue/babel-plugin-resolve-type": "workspace:*",
@@ -52,8 +51,6 @@
   "devDependencies": {
     "@babel/core": "catalog:",
     "@babel/preset-env": "catalog:",
-    "@types/babel__template": "catalog:",
-    "@types/babel__traverse": "catalog:",
     "@vue/test-utils": "catalog:",
     "regenerator-runtime": "catalog:",
     "vue": "catalog:"

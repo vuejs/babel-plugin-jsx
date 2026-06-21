@@ -32,7 +32,7 @@
     }
   },
   "peerDependencies": {
-    "@babel/core": "^7.0.0-0"
+    "@babel/core": "^8.0.0"
   },
   "dependencies": {
     "@babel/code-frame": "catalog:",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@babel/core": "catalog:",
-    "@types/babel__code-frame": "catalog:",
+    "@babel/plugin-syntax-jsx": "catalog:",
     "vue": "catalog:"
   }
 }
