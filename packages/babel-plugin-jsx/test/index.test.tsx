@@ -9,11 +9,11 @@ import {
   type CSSProperties,
 } from 'vue'
 
-const patchFlagExpect = (
+function patchFlagExpect(
   wrapper: VueWrapper<ComponentPublicInstance>,
   flag: number,
   dynamic: string[] | null,
-) => {
+) {
   const { patchFlag, dynamicProps } = wrapper.vm.$.subTree as any
 
   expect(patchFlag).toBe(flag)

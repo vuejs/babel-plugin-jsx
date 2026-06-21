@@ -124,12 +124,14 @@ const App = defineComponent({
 Fragment
 
 ```jsx
-const App = () => (
-  <>
-    <span>I'm</span>
-    <span>Fragment</span>
-  </>
-)
+function App() {
+  return (
+    <>
+      <span>I'm</span>
+      <span>Fragment</span>
+    </>
+  )
+}
 ```
 
 ### Attributes / Props
@@ -266,12 +268,14 @@ const App = {
 > Note: In `jsx`, _`v-slot`_ should be replaced with **`v-slots`**
 
 ```jsx
-const A = (props, { slots }) => (
-  <>
-    <h1>{slots.default ? slots.default() : 'foo'}</h1>
-    <h2>{slots.bar?.()}</h2>
-  </>
-)
+function A(props, { slots }) {
+  return (
+    <>
+      <h1>{slots.default ? slots.default() : 'foo'}</h1>
+      <h2>{slots.bar?.()}</h2>
+    </>
+  )
+}
 
 const App = {
   setup() {

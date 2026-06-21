@@ -120,12 +120,14 @@ const App = defineComponent({
 Fragment
 
 ```jsx
-const App = () => (
-  <>
-    <span>I'm</span>
-    <span>Fragment</span>
-  </>
-)
+function App() {
+  return (
+    <>
+      <span>I'm</span>
+      <span>Fragment</span>
+    </>
+  )
+}
 ```
 
 ### Attributes / Props
@@ -262,12 +264,14 @@ const App = {
 > 注意: 在 `jsx` 中，应该使用 **`v-slots`** 代替 _`v-slot`_
 
 ```jsx
-const A = (props, { slots }) => (
-  <>
-    <h1>{slots.default ? slots.default() : 'foo'}</h1>
-    <h2>{slots.bar?.()}</h2>
-  </>
-)
+function A(props, { slots }) {
+  return (
+    <>
+      <h1>{slots.default ? slots.default() : 'foo'}</h1>
+      <h2>{slots.bar?.()}</h2>
+    </>
+  )
+}
 
 const App = {
   setup() {

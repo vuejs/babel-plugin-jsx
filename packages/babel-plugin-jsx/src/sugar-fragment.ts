@@ -3,10 +3,10 @@ import { createIdentifier, FRAGMENT } from './utils.ts'
 import type { State } from './interface.ts'
 import type { NodePath, Visitor } from '@babel/core'
 
-const transformFragment = (
+function transformFragment(
   path: NodePath<t.JSXFragment>,
   Fragment: t.JSXIdentifier | t.JSXMemberExpression,
-) => {
+) {
   return t.jsxElement(
     t.jsxOpeningElement(Fragment, []),
     t.jsxClosingElement(Fragment),

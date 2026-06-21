@@ -6,6 +6,7 @@ export default sxzz(
     rules: {
       'import/no-default-export': 'off',
       'unicorn/filename-case': 'off',
+      'antfu/top-level-function': 'error',
     },
   },
 )

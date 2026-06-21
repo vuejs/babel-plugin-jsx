@@ -14,7 +14,7 @@ export type Tag =
  *
  * @param path Path<JSXOpeningElement>
  */
-const getType = (path: NodePath<t.JSXOpeningElement>) => {
+function getType(path: NodePath<t.JSXOpeningElement>) {
   const typePath = path.get('attributes').find((attribute) => {
     if (!attribute.isJSXAttribute()) {
       return false
@@ -28,12 +28,13 @@ const getType = (path: NodePath<t.JSXOpeningElement>) => {
   return typePath ? typePath.get('value').node : null
 }
 
-const parseModifiers = (value: any): string[] =>
-  t.isArrayExpression(value)
+function parseModifiers(value: any): string[] {
+  return t.isArrayExpression(value)
     ? value.elements
         .map((el) => (t.isStringLiteral(el) ? el.value : ''))
         .filter(Boolean)
     : []
+}
 
 function parseDirectives(params: {
   name: string
@@ -155,12 +156,12 @@ function parseDirectives(params: {
   }
 }
 
-const resolveDirective = (
+function resolveDirective(
   path: NodePath<t.JSXAttribute>,
   state: State,
   tag: Tag,
   directiveName: string,
-) => {
+) {
   if (directiveName === 'show') {
     return createIdentifier(state, 'vShow')
   }

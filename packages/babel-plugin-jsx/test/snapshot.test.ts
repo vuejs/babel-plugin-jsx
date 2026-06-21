@@ -7,8 +7,8 @@ interface Test {
   from: string
 }
 
-const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
-  new Promise((resolve, reject) =>
+function transpile(source: string, options: VueJSXPluginOptions = {}) {
+  return new Promise((resolve, reject) =>
     transform(
       source,
       {
@@ -25,6 +25,7 @@ const transpile = (source: string, options: VueJSXPluginOptions = {}) =>
       },
     ),
   )
+}
 
 ;[
   {

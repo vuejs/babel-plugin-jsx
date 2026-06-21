@@ -7,18 +7,23 @@ export const JSX_HELPER_KEY = 'JSX_HELPER_KEY'
 export const FRAGMENT = 'Fragment'
 export const KEEP_ALIVE = 'KeepAlive'
 
-export const createIdentifier = (
+export function createIdentifier(
   state: State,
   name: string,
-): t.Identifier | t.MemberExpression => state.get(name)()
+): t.Identifier | t.MemberExpression {
+  return state.get(name)()
+}
 
 /**
  * Checks if string is describing a directive
  * @param src string
  */
-export const isDirective = (src: string): boolean =>
-  src.startsWith('v-') ||
-  (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z')
+export function isDirective(src: string): boolean {
+  return (
+    src.startsWith('v-') ||
+    (src.startsWith('v') && src.length >= 2 && src[1] >= 'A' && src[1] <= 'Z')
+  )
+}
 
 /**
  * Should transformed to slots
@@ -26,16 +31,19 @@ export const isDirective = (src: string): boolean =>
  * @returns boolean
  */
 // if _Fragment is already imported, it will end with number
-export const shouldTransformedToSlots = (tag: string): boolean =>
-  !new RegExp(String.raw`^_?${FRAGMENT}\d*$`).test(tag) && tag !== KEEP_ALIVE
+export function shouldTransformedToSlots(tag: string): boolean {
+  return (
+    !new RegExp(String.raw`^_?${FRAGMENT}\d*$`).test(tag) && tag !== KEEP_ALIVE
+  )
+}
 
 /**
  * Check if a Node is a component
  */
-export const checkIsComponent = (
+export function checkIsComponent(
   path: NodePath<t.JSXOpeningElement>,
   state: State,
-): boolean => {
+): boolean {
   const namePath = path.get('name')
 
   if (namePath.isJSXMemberExpression()) {
@@ -57,9 +65,9 @@ export const checkIsComponent = (
  * @param path JSXMemberExpression
  * @returns MemberExpression
  */
-export const transformJSXMemberExpression = (
+export function transformJSXMemberExpression(
   path: NodePath<t.JSXMemberExpression>,
-): t.MemberExpression => {
+): t.MemberExpression {
   const objectPath = path.node.object
   const propertyPath = path.node.property
   const transformedObject = t.isJSXMemberExpression(objectPath)
@@ -79,10 +87,10 @@ export const transformJSXMemberExpression = (
  * @param state State
  * @returns Identifier | StringLiteral | MemberExpression | CallExpression
  */
-export const getTag = (
+export function getTag(
   path: NodePath<t.JSXElement>,
   state: State,
-): t.Identifier | t.CallExpression | t.StringLiteral | t.MemberExpression => {
+): t.Identifier | t.CallExpression | t.StringLiteral | t.MemberExpression {
   const namePath = path.get('openingElement').get('name')
   if (namePath.isJSXIdentifier()) {
     const { name } = namePath.node
@@ -107,7 +115,7 @@ export const getTag = (
   throw new Error(`getTag: ${namePath.type} is not supported`)
 }
 
-export const getJSXAttributeName = (path: NodePath<t.JSXAttribute>): string => {
+export function getJSXAttributeName(path: NodePath<t.JSXAttribute>): string {
   const nameNode = path.node.name
   if (t.isJSXIdentifier(nameNode)) {
     return nameNode.name
@@ -121,9 +129,9 @@ export const getJSXAttributeName = (path: NodePath<t.JSXAttribute>): string => {
  * @param path JSXText
  * @returns StringLiteral | null
  */
-export const transformJSXText = (
+export function transformJSXText(
   path: NodePath<t.JSXText | t.StringLiteral>,
-): t.StringLiteral | null => {
+): t.StringLiteral | null {
   const str = transformText(path.node.value)
   return str === '' ? null : t.stringLiteral(str)
 }
@@ -178,24 +186,28 @@ export function transformText(text: string): string {
  * @param path JSXExpressionContainer
  * @returns Expression
  */
-export const transformJSXExpressionContainer = (
+export function transformJSXExpressionContainer(
   path: NodePath<t.JSXExpressionContainer>,
-): t.Expression => path.get('expression').node as t.Expression
+): t.Expression {
+  return path.get('expression').node as t.Expression
+}
 
 /**
  * Transform JSXSpreadChild
  * @param path JSXSpreadChild
  * @returns SpreadElement
  */
-export const transformJSXSpreadChild = (
+export function transformJSXSpreadChild(
   path: NodePath<t.JSXSpreadChild>,
-): t.SpreadElement => t.spreadElement(path.get('expression').node)
+): t.SpreadElement {
+  return t.spreadElement(path.get('expression').node)
+}
 
-export const walksScope = (
+export function walksScope(
   path: NodePath,
   name: string,
   slotFlag: (typeof SlotFlags)[keyof typeof SlotFlags],
-): void => {
+): void {
   if (path.scope.hasBinding(name) && path.parentPath) {
     if (t.isJSXElement(path.parentPath.node)) {
       path.parentPath.setData('slotFlag', slotFlag)
@@ -243,10 +255,7 @@ const onRE = /^on[^a-z]/
 
 export const isOn = (key: string): boolean => onRE.test(key)
 
-const mergeAsArray = (
-  existing: t.ObjectProperty,
-  incoming: t.ObjectProperty,
-) => {
+function mergeAsArray(existing: t.ObjectProperty, incoming: t.ObjectProperty) {
   if (t.isArrayExpression(existing.value)) {
     existing.value.elements.push(incoming.value as t.Expression)
   } else {
@@ -292,9 +301,9 @@ export function dedupeProperties(
  * @param node
  * @returns boolean
  */
-export const isConstant = (
+export function isConstant(
   node: t.Expression | t.Identifier | t.Literal | t.SpreadElement | null,
-): boolean => {
+): boolean {
   if (t.isIdentifier(node)) {
     return node.name === 'undefined'
   }

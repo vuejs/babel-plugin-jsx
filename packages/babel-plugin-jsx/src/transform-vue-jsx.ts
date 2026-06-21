@@ -27,10 +27,10 @@ const xlinkRE = /^xlink([A-Z])/
 
 type ExcludesBoolean = <T>(x: T | false | true) => x is T
 
-const getJSXAttributeValue = (
+function getJSXAttributeValue(
   path: NodePath<t.JSXAttribute>,
   state: State,
-): t.StringLiteral | t.Expression | null => {
+): t.StringLiteral | t.Expression | null {
   const valuePath = path.get('value')
   if (valuePath.isJSXElement()) {
     return transformJSXElement(valuePath, state)
@@ -45,7 +45,7 @@ const getJSXAttributeValue = (
   return null
 }
 
-const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
+function buildProps(path: NodePath<t.JSXElement>, state: State) {
   const tag = getTag(path, state)
   const isComponent = checkIsComponent(path.get('openingElement'), state)
   const props = path.get('openingElement').get('attributes')
@@ -338,7 +338,7 @@ const buildProps = (path: NodePath<t.JSXElement>, state: State) => {
  * @param paths Array<JSXText | JSXExpressionContainer  | JSXElement | JSXFragment>
  * @returns Array<Expression | SpreadElement>
  */
-const getChildren = (
+function getChildren(
   paths: NodePath<
     | t.JSXText
     | t.JSXExpressionContainer
@@ -347,8 +347,8 @@ const getChildren = (
     | t.JSXFragment
   >[],
   state: State,
-): t.Expression[] =>
-  paths
+): t.Expression[] {
+  return paths
     .map((path) => {
       if (path.isJSXText()) {
         const transformedText = transformJSXText(path)
@@ -386,11 +386,12 @@ const getChildren = (
     .filter(
       ((value: any) => value != null && !t.isJSXEmptyExpression(value)) as any,
     )
+}
 
-const transformJSXElement = (
+function transformJSXElement(
   path: NodePath<t.JSXElement>,
   state: State,
-): t.CallExpression => {
+): t.CallExpression {
   const children = getChildren(path.get('children'), state)
   const {
     tag,

@@ -17,7 +17,7 @@ import type {
 
 export type { VueJSXPluginOptions }
 
-const hasJSX = (parentPath: NodePath<t.Program>) => {
+function hasJSX(parentPath: NodePath<t.Program>) {
   return t.traverseFast(parentPath.node, (node) => {
     if (t.isJSXElement(node) || t.isJSXFragment(node)) {
       return t.traverseFast.stop
