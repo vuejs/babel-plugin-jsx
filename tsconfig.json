@@ -5,7 +5,7 @@
     "jsxImportSource": "vue",
     "lib": ["es2023", "DOM"],
     "moduleDetection": "force",
-    "customConditions": ["dev"],
+    "customConditions": ["vue-jsx-source"],
     "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
