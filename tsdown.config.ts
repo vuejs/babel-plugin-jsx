@@ -6,7 +6,6 @@ export default defineConfig({
     './packages/babel-plugin-resolve-type',
   ],
   entry: ['src/index.ts'],
-  target: 'node22.18',
   platform: 'neutral',
   deps: {
     onlyBundle: [],
