@@ -12,7 +12,7 @@ export default defineConfig({
     onlyBundle: [],
   },
   exports: {
-    devExports: 'dev',
+    devExports: 'vue-jsx-source',
   },
   publint: 'ci-only',
   attw: 'ci-only',

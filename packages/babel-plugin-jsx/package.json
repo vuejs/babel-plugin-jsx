@@ -16,7 +16,7 @@
   },
   "exports": {
     ".": {
-      "dev": "./src/index.ts",
+      "vue-jsx-source": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
@@ -24,6 +24,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "^22.18.0 || >=24.11.0"
+  },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",

@@ -9,6 +9,9 @@
     "vue",
     "jsx"
   ],
+  "engines": {
+    "node": "^22.18.0 || >=24.11.0"
+  },
   "scripts": {
     "dev": "pnpm -C packages/jsx-explorer run dev",
     "build": "tsdown",
