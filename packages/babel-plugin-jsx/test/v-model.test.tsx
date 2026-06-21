@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/better-dom-traversing */
 import { mount, shallowMount } from '@vue/test-utils'
 import { expect, test } from 'vitest'
 import { defineComponent, type VNode } from 'vue'
