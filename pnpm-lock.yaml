@@ -127,7 +127,7 @@ importers:
         version: 0.18.3
       '@babel/plugin-syntax-typescript':
         specifier: 'catalog:'
-        version: 8.0.1(@babel/core@8.0.1)
+        version: 8.0.1
       '@rollup/plugin-babel':
         specifier: 'catalog:'
         version: 7.1.0(@types/babel__core@7.20.5)
@@ -3934,7 +3934,7 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
 
-  '@babel/plugin-syntax-typescript@8.0.1(@babel/core@8.0.1)':
+  '@babel/plugin-syntax-typescript@8.0.1':
     dependencies:
       '@babel/helper-plugin-utils': 8.0.1(@babel/core@8.0.1)
 
