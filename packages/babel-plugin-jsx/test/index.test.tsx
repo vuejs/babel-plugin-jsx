@@ -1,4 +1,5 @@
 import { mount, shallowMount, type VueWrapper } from '@vue/test-utils'
+import { describe, expect, test } from 'vitest'
 import {
   defineComponent,
   reactive,

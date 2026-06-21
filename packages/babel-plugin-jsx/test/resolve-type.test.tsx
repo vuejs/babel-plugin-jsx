@@ -1,5 +1,6 @@
 import { transformAsync } from '@babel/core'
 import typescript from '@babel/plugin-syntax-typescript'
+import { describe, expect, test } from 'vitest'
 import VueJsx from '../src'
 
 describe('resolve type', () => {

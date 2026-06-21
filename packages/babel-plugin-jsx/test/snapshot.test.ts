@@ -1,4 +1,5 @@
 import { transform } from '@babel/core'
+import { expect, test } from 'vitest'
 import JSX, { type VueJSXPluginOptions } from '../src'
 
 interface Test {

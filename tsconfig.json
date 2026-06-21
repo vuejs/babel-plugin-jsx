@@ -9,7 +9,6 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": ["vitest/globals"],
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,

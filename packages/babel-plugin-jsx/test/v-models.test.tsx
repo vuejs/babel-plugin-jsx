@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { expect, test } from 'vitest'
 import { defineComponent } from 'vue'
 
 test('single value binding should work', async () => {
