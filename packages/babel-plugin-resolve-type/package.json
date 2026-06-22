@@ -1,7 +1,7 @@
 {
   "name": "@vue/babel-plugin-resolve-type",
   "type": "module",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Babel plugin for resolving Vue types.",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
