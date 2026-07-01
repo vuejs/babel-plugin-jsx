@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@arethetypeswrong/core':
-      specifier: ^0.18.3
-      version: 0.18.3
+      specifier: ^0.18.4
+      version: 0.18.4
     '@babel/code-frame':
       specifier: ^8.0.0
       version: 8.0.0
@@ -124,10 +124,10 @@ importers:
     devDependencies:
       '@arethetypeswrong/core':
         specifier: 'catalog:'
-        version: 0.18.3
+        version: 0.18.4
       '@babel/plugin-syntax-typescript':
         specifier: 'catalog:'
-        version: 8.0.1
+        version: 8.0.1(@babel/core@8.0.1)
       '@rollup/plugin-babel':
         specifier: 'catalog:'
         version: 7.1.0(@types/babel__core@7.20.5)
@@ -166,7 +166,7 @@ importers:
         version: 0.3.21
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.3(@arethetypeswrong/core@0.18.3)(@typescript/native-preview@7.0.0-dev.20260621.1)(publint@0.3.21)(typescript@6.0.3)
+        version: 0.22.3(@arethetypeswrong/core@0.18.4)(@typescript/native-preview@7.0.0-dev.20260621.1)(publint@0.3.21)(typescript@6.0.3)
       tslib:
         specifier: 'catalog:'
         version: 2.8.1
@@ -286,8 +286,8 @@ packages:
   '@andrewbranch/untar.js@1.0.3':
     resolution: {integrity: sha512-Jh15/qVmrLGhkKJBdXlK1+9tY4lZruYjsgkDFj08ZmDiWVBLJcqkok7Z0/R0In+i1rScBpJlSvrTS2Lm41Pbnw==}
 
-  '@arethetypeswrong/core@0.18.3':
-    resolution: {integrity: sha512-sWBB/tdIktaT5xMq0Dz6CJyqcf6oMNdmiKiuPU1lWoJLTL6gjRSsksBuSgqot21hylkklBQY1wiSu+PkZhW7sw==}
+  '@arethetypeswrong/core@0.18.4':
+    resolution: {integrity: sha512-M5F0ePyN6h2Z6XxRiyIPqjGbltotXLjR0CKA0uKspsDu0QmgTNYvRb4RSQPMUs2ZXZHCCYpbaZbFbYOXLxCjUA==}
     engines: {node: '>=20'}
 
   '@asamuzakjp/css-color@5.1.11':
@@ -3593,7 +3593,7 @@ snapshots:
 
   '@andrewbranch/untar.js@1.0.3': {}
 
-  '@arethetypeswrong/core@0.18.3':
+  '@arethetypeswrong/core@0.18.4':
     dependencies:
       '@andrewbranch/untar.js': 1.0.3
       '@loaderkit/resolve': 1.0.6
@@ -3934,7 +3934,7 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
 
-  '@babel/plugin-syntax-typescript@8.0.1':
+  '@babel/plugin-syntax-typescript@8.0.1(@babel/core@8.0.1)':
     dependencies:
       '@babel/helper-plugin-utils': 8.0.1(@babel/core@8.0.1)
 
@@ -6895,7 +6895,7 @@ snapshots:
     dependencies:
       typescript: 6.0.3
 
-  tsdown@0.22.3(@arethetypeswrong/core@0.18.3)(@typescript/native-preview@7.0.0-dev.20260621.1)(publint@0.3.21)(typescript@6.0.3):
+  tsdown@0.22.3(@arethetypeswrong/core@0.18.4)(@typescript/native-preview@7.0.0-dev.20260621.1)(publint@0.3.21)(typescript@6.0.3):
     dependencies:
       ansis: 4.3.1
       cac: 7.0.0
@@ -6913,7 +6913,7 @@ snapshots:
       tree-kill: 1.2.2
       unconfig-core: 7.5.0
     optionalDependencies:
-      '@arethetypeswrong/core': 0.18.3
+      '@arethetypeswrong/core': 0.18.4
       publint: 0.3.21
       typescript: 6.0.3
     transitivePeerDependencies:
