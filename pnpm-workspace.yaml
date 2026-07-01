@@ -2,7 +2,7 @@ packages:
   - packages/*
 
 catalog:
-  '@arethetypeswrong/core': ^0.18.3
+  '@arethetypeswrong/core': ^0.18.4
   '@babel/code-frame': ^8.0.0
   '@babel/core': ^8.0.1
   '@babel/helper-module-imports': ^8.0.0
