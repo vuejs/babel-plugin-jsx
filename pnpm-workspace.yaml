@@ -9,28 +9,28 @@ catalog:
   '@babel/helper-plugin-utils': ^8.0.1
   '@babel/parser': ^8.0.0
   '@babel/plugin-syntax-jsx': ^8.0.1
-  '@babel/plugin-syntax-typescript': ^8.0.1
+  '@babel/plugin-syntax-typescript': ^8.0.3
   '@babel/preset-env': ^8.0.2
-  '@babel/standalone': ^8.0.2
+  '@babel/standalone': ^8.0.3
   '@babel/template': ^8.0.0
   '@babel/types': ^8.0.0
   '@rollup/plugin-babel': ^7.1.0
   '@sxzz/eslint-config': ^8.2.1
   '@sxzz/prettier-config': ^2.3.1
   '@types/babel__standalone': ^7.1.9
-  '@types/node': ^26.0.0
-  '@typescript/native-preview': 7.0.0-dev.20260621.1
+  '@types/node': ^26.1.0
+  '@typescript/native-preview': 7.0.0-dev.20260701.1
   '@vitejs/plugin-vue-jsx': ^5.1.5
   '@vitest/coverage-v8': ^4.1.9
-  '@vue/compiler-sfc': ^3.5.38
-  '@vue/shared': ^3.5.38
+  '@vue/compiler-sfc': ^3.5.39
+  '@vue/shared': ^3.5.39
   '@vue/test-utils': ^2.4.11
   assert: ^2.1.0
   bumpp: ^11.1.0
-  eslint: ^10.5.0
+  eslint: ^10.6.0
   jsdom: ^29.1.1
   monaco-editor: ^0.55.1
-  prettier: 3.8.4
+  prettier: 3.9.4
   publint: ^0.3.21
   regenerator-runtime: ^0.14.1
   tsdown: ^0.22.3
@@ -38,7 +38,7 @@ catalog:
   typescript: ~6.0.3
   vite: ^8.0.16
   vitest: ^4.1.9
-  vue: ^3.5.38
+  vue: ^3.5.39
 
 minimumReleaseAge: 0
 shellEmulator: true
