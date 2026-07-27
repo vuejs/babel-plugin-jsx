@@ -2,6 +2,7 @@ import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 
 // @ts-ignore
+// eslint-disable-next-line unicorn/no-global-object-property-assignment
 globalThis.MonacoEnvironment = {
   globalAPI: true,
   getWorker(_: any, label: string) {

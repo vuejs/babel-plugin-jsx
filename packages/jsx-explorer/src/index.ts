@@ -55,7 +55,7 @@ function main() {
   const editor = monaco.editor.create(document.querySelector('#source')!, {
     ...sharedEditorOptions,
     model: monaco.editor.createModel(
-      decodeURIComponent(globalThis.location.hash.slice(1)) ||
+      decodeURIComponent(location.hash.slice(1)) ||
         persistedState.src ||
         `import { defineComponent } from 'vue'
 
@@ -82,7 +82,7 @@ const App = defineComponent((props) => <div>Hello World</div>)`,
       options: compilerOptions,
     })
     localStorage.setItem('state', state)
-    globalThis.location.hash = encodeURIComponent(src)
+    location.hash = encodeURIComponent(src)
     console.clear()
     try {
       const res = transform(src, {
@@ -120,7 +120,7 @@ function debounce<T extends (...args: any[]) => any>(fn: T, delay = 300): T {
     if (prevTimer) {
       clearTimeout(prevTimer)
     }
-    prevTimer = globalThis.setTimeout(() => {
+    prevTimer = setTimeout(() => {
       fn(...args)
       prevTimer = null
     }, delay)

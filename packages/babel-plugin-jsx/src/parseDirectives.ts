@@ -4,10 +4,7 @@ import type { State } from './interface.ts'
 import type { NodePath } from '@babel/core'
 
 export type Tag =
-  | t.Identifier
-  | t.MemberExpression
-  | t.StringLiteral
-  | t.CallExpression
+  t.Identifier | t.MemberExpression | t.StringLiteral | t.CallExpression
 
 /**
  * Get JSX element type

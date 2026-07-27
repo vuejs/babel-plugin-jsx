@@ -208,12 +208,14 @@ export function walksScope(
   name: string,
   slotFlag: (typeof SlotFlags)[keyof typeof SlotFlags],
 ): void {
-  if (path.scope.hasBinding(name) && path.parentPath) {
-    if (t.isJSXElement(path.parentPath.node)) {
-      path.parentPath.setData('slotFlag', slotFlag)
-    }
-    walksScope(path.parentPath, name, slotFlag)
+  if (!path.scope.hasBinding(name) || !path.parentPath) {
+    return
   }
+
+  if (t.isJSXElement(path.parentPath.node)) {
+    path.parentPath.setData('slotFlag', slotFlag)
+  }
+  walksScope(path.parentPath, name, slotFlag)
 }
 
 export function buildIIFE(

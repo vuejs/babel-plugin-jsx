@@ -228,7 +228,7 @@ const plugin: (
       const runtimeEmits = extractRuntimeEmits(ctx!)
 
       const ast = t.arrayExpression(
-        Array.from(runtimeEmits).map((e) => t.stringLiteral(e)),
+        Array.from(runtimeEmits, (e) => t.stringLiteral(e)),
       )
       return addProperty(options, t.objectProperty(t.identifier('emits'), ast))
     }
