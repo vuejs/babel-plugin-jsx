@@ -25,7 +25,7 @@
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:",
     "@babel/plugin-syntax-typescript": "catalog:",
-    "@rollup/plugin-babel": "catalog:",
+    "@rolldown/plugin-babel": "catalog:",
     "@sxzz/eslint-config": "catalog:",
     "@sxzz/prettier-config": "catalog:",
     "@types/node": "catalog:",

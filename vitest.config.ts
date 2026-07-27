@@ -1,4 +1,4 @@
-import { babel } from '@rollup/plugin-babel'
+import babel from '@rolldown/plugin-babel'
 import { defineConfig } from 'vitest/config'
 import Jsx from './packages/babel-plugin-jsx/src/index.ts'
 
@@ -8,8 +8,7 @@ export default defineConfig({
   },
   plugins: [
     babel({
-      babelHelpers: 'bundled',
-      extensions: ['.tsx', '.jsx'],
+      include: [/\.[jt]sx$/],
       plugins: [
         [
           Jsx,
