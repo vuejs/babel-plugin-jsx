@@ -36,7 +36,7 @@ catalog:
   tsdown: ^0.22.14
   tslib: ^2.8.1
   typescript: ~6.0.3
-  vite: ^8.1.5
+  vite: ^8.2.2
   vitest: ^4.1.10
   vue: ^3.5.40
 
