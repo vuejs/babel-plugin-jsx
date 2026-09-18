@@ -3,7 +3,13 @@
   "type": "module",
   "version": "3.0.0",
   "private": true,
-  "packageManager": "pnpm@11.17.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.5.0",
+      "onFail": "download"
+    }
+  },
   "license": "MIT",
   "keywords": [
     "vue",
