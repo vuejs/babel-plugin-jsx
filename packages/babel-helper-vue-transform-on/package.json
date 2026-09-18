@@ -10,6 +10,7 @@
     "url": "git+https://github.com/vuejs/babel-plugin-jsx.git",
     "directory": "packages/babel-helper-vue-transform-on"
   },
+  "sideEffects": false,
   "exports": {
     ".": "./index.mjs",
     "./package.json": "./package.json"

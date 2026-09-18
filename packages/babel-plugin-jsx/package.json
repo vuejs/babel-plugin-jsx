@@ -14,6 +14,7 @@
   "bugs": {
     "url": "https://github.com/vuejs/babel-plugin-jsx/issues"
   },
+  "sideEffects": false,
   "exports": {
     ".": {
       "vue-jsx-source": "./src/index.ts",
